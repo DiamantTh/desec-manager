@@ -1,16 +1,21 @@
 <?php
 declare(strict_types=1);
 
+use App\Config\ConfigLoader;
 use App\Database\DatabaseConnection;
 use App\Service\StatusReporter;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-$configPath = __DIR__ . '/config/config.php';
+$configDir = __DIR__ . '/config';
 $config = null;
-if (file_exists($configPath)) {
-    $config = require $configPath;
+
+try {
+    $config = ConfigLoader::load($configDir);
     DatabaseConnection::bootstrap($config);
+} catch (\RuntimeException $exception) {
+    error_log($exception->getMessage());
+    $config = null;
 }
 
 $reporter = new StatusReporter($config);

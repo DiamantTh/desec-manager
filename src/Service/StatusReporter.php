@@ -96,7 +96,7 @@ class StatusReporter
         if ($this->config === null) {
             return [
                 'status' => 'critical',
-                'message' => 'config/config.php nicht gefunden – bitte install.php ausführen.',
+                'message' => 'Keine Konfiguration gefunden – bitte install.php ausführen.',
             ];
         }
 

@@ -1,21 +1,23 @@
 <?php
 namespace App\Security;
 
-class WebAuthnService 
+use App\Config\ConfigLoader;
+
+class WebAuthnService
 {
     private string $rpName;
     private ?string $rpId;
     private bool $enabled;
-    
+
     public function __construct()
     {
-        $config = require __DIR__ . '/../../config/config.php';
+        $config = ConfigLoader::load();
         $this->rpName = $config['application']['name'];
-        
+
         // Validiere Domain und setze RP ID
         $domain = $config['application']['domain'];
         if (empty($domain)) {
-            throw new \RuntimeException('application.domain muss in config.php konfiguriert sein');
+            throw new \RuntimeException('application.domain muss in der Konfiguration gesetzt sein');
         }
         
         // Prüfe Domain-Validität für WebAuthn

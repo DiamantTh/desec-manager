@@ -1,18 +1,28 @@
 <?php
 namespace App\Security;
 
-class EncryptionService 
+use App\Config\ConfigLoader;
+
+class EncryptionService
 {
     private string $key;
-    
+
     public function __construct()
     {
         // Lade Encryption Key aus Konfiguration
-        $config = require __DIR__ . '/../../config/config.php';
-        if (empty($config['security']['encryption_key'])) {
+        $config = ConfigLoader::load();
+        $encryptionKey = $config['security']['encryption_key'] ?? null;
+
+        if (!is_string($encryptionKey) || $encryptionKey === '') {
             throw new \RuntimeException('Encryption key not configured');
         }
-        $this->key = base64_decode($config['security']['encryption_key']);
+
+        $decoded = base64_decode($encryptionKey, true);
+        if ($decoded === false) {
+            throw new \RuntimeException('Invalid encryption key encoding');
+        }
+
+        $this->key = $decoded;
     }
     
     public function encrypt(string $data): string 

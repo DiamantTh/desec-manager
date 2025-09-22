@@ -1,6 +1,7 @@
 <?php
 namespace App\Database;
 
+use App\Config\ConfigLoader;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 
@@ -18,11 +19,11 @@ class DatabaseConnection
     public static function getConnection(): Connection
     {
         if (self::$config === null) {
-            $configPath = __DIR__ . '/../../config/config.php';
-            if (!file_exists($configPath)) {
-                throw new \RuntimeException('Database configuration missing. Run install.php first.');
+            try {
+                $config = ConfigLoader::load();
+            } catch (\RuntimeException $exception) {
+                throw new \RuntimeException('Database configuration missing. Run install.php first.', 0, $exception);
             }
-            $config = require $configPath;
             self::bootstrap($config);
         }
 

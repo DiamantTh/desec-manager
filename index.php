@@ -1,33 +1,35 @@
 <?php
 declare(strict_types=1);
 
+use App\Config\ConfigLoader;
+use App\Controller\AdminController;
 use App\Controller\AuthController;
 use App\Controller\DashboardController;
 use App\Controller\DomainController;
 use App\Controller\KeyController;
 use App\Controller\ProfileController;
 use App\Controller\RecordController;
-use App\Controller\AdminController;
 use App\Database\DatabaseConnection;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
 session_start();
 
-$configPath = __DIR__ . '/config/config.php';
+$configDir = __DIR__ . '/config';
 
-if (!file_exists($configPath)) {
+try {
+    $config = ConfigLoader::load($configDir);
+} catch (\RuntimeException $exception) {
     http_response_code(503);
+    error_log($exception->getMessage());
     echo '<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><title>Installation erforderlich</title>';
     echo '<link rel="stylesheet" href="assets/css/bulma.min.css">';
     echo '</head><body><section class="section"><div class="container">';
-    echo '<div class="notification is-warning"><strong>Konfiguration fehlt.</strong> '; 
-    echo 'Bitte führen Sie <code>install.php</code> aus, um <code>config/config.php</code> zu erzeugen.</div>';
+    echo '<div class="notification is-warning"><strong>Konfiguration fehlt.</strong> ';
+    echo 'Bitte führen Sie <code>install.php</code> aus, um <code>config/config.(php|toml|ini)</code> zu erzeugen.</div>';
     echo '</div></section></body></html>';
     exit;
 }
-
-$config = require $configPath;
 
 DatabaseConnection::bootstrap($config);
 

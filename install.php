@@ -50,16 +50,43 @@ $config = [
     ]
 ];
 
-    // Lade Basis-Konfigurationen
-    if (!file_exists(__DIR__ . '/config/argon2.php')) {
-        die("argon2.php Konfiguration nicht gefunden!\n");
-    }
+require_once __DIR__ . '/vendor/autoload.php';
 
-    $securityConfig = require __DIR__ . '/config/argon2.php';
-    
-    // Generiere Encryption Key für API-Keys
-    require_once __DIR__ . '/vendor/autoload.php';
-    $encryptionKey = \App\Security\EncryptionService::generateKey();// Hilfsfunktionen
+// Lade Basis-Konfigurationen
+$distFile = __DIR__ . '/config/config.php.dist';
+if (!file_exists($distFile)) {
+    die("config.php.dist Template nicht gefunden!\n");
+}
+
+$baseConfig = require $distFile;
+if (!is_array($baseConfig)) {
+    die("Ungültige config.php.dist Datei!\n");
+}
+
+$argon2Config = $baseConfig['security']['argon2'] ?? [];
+$argon2AlgorithmName = is_string($argon2Config['algorithm'] ?? null)
+    ? strtolower($argon2Config['algorithm'])
+    : 'argon2id';
+
+$argon2Algorithm = match ($argon2AlgorithmName) {
+    'argon2i', 'password_argon2i' => PASSWORD_ARGON2I,
+    'argon2d', 'password_argon2d' => defined('PASSWORD_ARGON2D') ? PASSWORD_ARGON2D : PASSWORD_ARGON2I,
+    default => PASSWORD_ARGON2ID,
+};
+
+$argon2Options = [];
+if (isset($argon2Config['options']) && is_array($argon2Config['options'])) {
+    foreach (['memory_cost', 'time_cost', 'threads'] as $option) {
+        if (isset($argon2Config['options'][$option])) {
+            $argon2Options[$option] = (int) $argon2Config['options'][$option];
+        }
+    }
+}
+
+// Generiere Encryption Key für API-Keys
+$encryptionKey = \App\Security\EncryptionService::generateKey();
+
+// Hilfsfunktionen
 function generateSecurePassword($length = 16): string {
     return bin2hex(random_bytes($length));
 }
@@ -72,24 +99,16 @@ function validatePassword(string $password): bool {
            preg_match('/[^A-Za-z0-9]/', $password); // Sonderzeichen
 }
 
-function createConfigFile(array $config, string $dbUser, string $dbPass): void {
+function createConfigFile(array $baseConfig, array $config, string $dbUser, string $dbPass, string $encryptionKey): void {
     $configFile = __DIR__ . '/config/config.php';
-    $distFile = __DIR__ . '/config/config.php.dist';
-    
-    if (!file_exists($distFile)) {
-        die("config.php.dist Template nicht gefunden!\n");
-    }
-    
+
     // Backup erstellen falls Datei existiert
     if (file_exists($configFile)) {
         $backup = $configFile . '.bak.' . date('Y-m-d-H-i-s');
         copy($configFile, $backup);
         echo "Backup der existierenden Konfiguration erstellt: {$backup}\n";
     }
-    
-    // Lade das Template
-    $baseConfig = require $distFile;
-    
+
     // Aktualisiere die Datenbank-Konfiguration
     $baseConfig['database']['host'] = $config['db_host'];
     $baseConfig['database']['name'] = $config['db_name'];
@@ -222,7 +241,7 @@ try {
     );
     $stmt->execute([
         $config['admin_user']['username'],
-        password_hash($adminPass, PASSWORD_ARGON2ID, $argon2_options),
+        password_hash($adminPass, $argon2Algorithm, $argon2Options),
         $config['admin_user']['email']
     ]);
 
@@ -232,7 +251,7 @@ try {
     if (!is_dir(__DIR__ . '/config')) {
         mkdir(__DIR__ . '/config');
     }
-    createConfigFile($config, $dbUser, $dbPass);
+    createConfigFile($baseConfig, $config, $dbUser, $dbPass, $encryptionKey);
 
     echo "Configuration file created successfully.\n\n";
 
