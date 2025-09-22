@@ -1,0 +1,22 @@
+; Beispielkonfiguration im INI-Format
+; Die Struktur entspricht config.php.dist
+
+[database]
+host = ""
+name = ""
+user = ""
+pass = ""
+
+[security]
+algo = argon2id
+memory_cost = 65536
+time_cost = 4
+threads = 2
+
+debug = false
+
+[application]
+domain = ""
+name = "DeSEC Manager"
+webauthn_enabled = true
+force_https = true

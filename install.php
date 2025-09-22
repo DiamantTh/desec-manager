@@ -50,16 +50,22 @@ $config = [
     ]
 ];
 
-    // Lade Basis-Konfigurationen
-    if (!file_exists(__DIR__ . '/config/argon2.php')) {
-        die("argon2.php Konfiguration nicht gefunden!\n");
-    }
+// Standard-Argon2id Parameter
+$securityConfig = [
+    'algo' => PASSWORD_ARGON2ID,
+    'options' => [
+        'memory_cost' => 65536,
+        'time_cost' => 4,
+        'threads' => 2,
+    ],
+];
+$argon2_options = $securityConfig['options'];
 
-    $securityConfig = require __DIR__ . '/config/argon2.php';
-    
-    // Generiere Encryption Key für API-Keys
-    require_once __DIR__ . '/vendor/autoload.php';
-    $encryptionKey = \App\Security\EncryptionService::generateKey();// Hilfsfunktionen
+// Generiere Encryption Key für API-Keys
+require_once __DIR__ . '/vendor/autoload.php';
+$encryptionKey = \App\Security\EncryptionService::generateKey();
+
+// Hilfsfunktionen
 function generateSecurePassword($length = 16): string {
     return bin2hex(random_bytes($length));
 }
@@ -73,6 +79,8 @@ function validatePassword(string $password): bool {
 }
 
 function createConfigFile(array $config, string $dbUser, string $dbPass): void {
+    global $encryptionKey;
+
     $configFile = __DIR__ . '/config/config.php';
     $distFile = __DIR__ . '/config/config.php.dist';
     
@@ -222,7 +230,7 @@ try {
     );
     $stmt->execute([
         $config['admin_user']['username'],
-        password_hash($adminPass, PASSWORD_ARGON2ID, $argon2_options),
+        password_hash($adminPass, $securityConfig['algo'], $argon2_options),
         $config['admin_user']['email']
     ]);
 
