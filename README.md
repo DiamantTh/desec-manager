@@ -21,7 +21,7 @@
 1. `composer install`
 2. Optional: Konfigurationsvorlagen prüfen (`config/config.php.dist`, `.yaml.dist`, `.toml.dist`, `.ini.dist`) / Review configuration templates
 3. `php install.php` ausführen und den Weisungen folgen / Run `php install.php` and follow the prompts
-4. Webserver auf `public/` als Document Root konfigurieren / Point your web server to `public/`
+4. Webserver auf das Projektverzeichnis mit `index.php` als Einstieg zeigen / Point your web server to the project root where `index.php` lives
 5. Nach erfolgreicher Installation `install.php` entfernen oder sperren / Remove or protect `install.php` after setup
 
 ## Configuration / Konfiguration
