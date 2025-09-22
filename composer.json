@@ -1,0 +1,24 @@
+{
+    "name": "desec/manager",
+    "description": "deSEC DNS Manager",
+    "type": "project",
+    "require": {
+        "php": ">=7.4",
+        "doctrine/dbal": "^3.7",
+        "guzzlehttp/guzzle": "^7.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "App\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "optimize-autoloader": true
+    }
+}

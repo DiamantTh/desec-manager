@@ -1,0 +1,20 @@
+<?php
+/**
+ * Basis-Konfiguration
+ */
+return [
+    'database' => [
+        'host' => '',      // Wird während der Installation gesetzt
+        'name' => '',
+        'user' => '',
+        'pass' => ''
+    ],
+    'security' => require __DIR__ . '/argon2.php',
+    'debug' => false,
+    'application' => [
+        'domain' => '',    // z.B. 'example.com' oder 'localhost'
+        'name' => 'DeSEC Manager',
+        'webauthn_enabled' => true,  // wird automatisch auf false gesetzt für ungültige TLDs
+        'force_https' => true        // sollte nur in Entwicklung false sein
+    ]
+];

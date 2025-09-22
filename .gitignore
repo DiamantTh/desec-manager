@@ -1,0 +1,5 @@
+.env
+*.enc
+vendor/
+.idea/
+.vscode/

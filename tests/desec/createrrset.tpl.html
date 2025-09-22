@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+<!-- Font Awesome mit lokalen Fonts -->
+<style>
+@font-face {
+    font-family: 'Font Awesome 5 Pro';
+    font-style: normal;
+    font-weight: 900;
+    src: url('../assets/fonts/fa5pro/fa-solid-900.woff2') format('woff2'),
+         url('../assets/fonts/fa5pro/fa-solid-900.woff') format('woff');
+}
+@font-face {
+    font-family: 'Font Awesome 5 Pro';
+    font-style: normal;
+    font-weight: 400;
+    src: url('../assets/fonts/fa5pro/fa-regular-400.woff2') format('woff2'),
+         url('../assets/fonts/fa5pro/fa-regular-400.woff') format('woff');
+}
+@font-face {
+    font-family: 'Font Awesome 5 Pro';
+    font-style: normal;
+    font-weight: 300;
+    src: url('../assets/fonts/fa5pro/fa-light-300.woff2') format('woff2'),
+         url('../assets/fonts/fa5pro/fa-light-300.woff') format('woff');
+}
+</style>
+</head>
+<body class="has-text-white-bis" style="background:url('bg.jpg')">
+  <section class="hero is-fullheight" style="background:none;">
+      <div class="hero-head">
+      <div class="container">
+        <h1 class="title has-text-white-ter">
+          Create RRSet
+        </h1>
+        <h2 class="subtitle has-text-white-ter">
+          Domain: <!-- domain -->
+        </h2>
+      </div>
+    </div>
+    <div class="hero-body" style="padding:1.5rem; align-items:start">
+      <form method='POST' style='margin: 0 auto'>
+        <div class='field has-addons'>
+          <label class="label has-text-white-bis">Subdomain:</label>
+          <div class='control'>
+            <input type='text' class='input' size='100' style='background:rgba(255,255,255,.1);color:white;' maxlength='256' name='s'>
+          </div>
+          <p class="control">
+            <a class="button is-static">
+              .<!-- domain -->
+            </a>
+          </p>
+        </div>
+        <div class='field'>
+          <label class="label has-text-white-bis">Type:</label>
+          <div class='control'>
+            <input type='text' class='input' size='10' style='background:rgba(255,255,255,.1);color:white;' maxlength='5' name='t'>
+          </div>
+        </div>
+        <div class='field'>
+          <label class="label has-text-white-bis">Records:</label>
+          <div class='control'>
+            <input type='text' class='input' size='100' style='background:rgba(255,255,255,.1);color:white;' maxlength='2048' name='r[]'>
+          </div>
+        </div>
+        <div class='field'>
+          <div class='control'>
+            <input type='text' class='input' size='100' style='background:rgba(255,255,255,.1);color:white;' maxlength='2048' name='r[]'>
+          </div>
+        </div>
+        <div class='field'>
+          <div class='control'>
+            <input type='text' class='input' size='100' style='background:rgba(255,255,255,.1);color:white;' maxlength='2048' name='r[]'>
+          </div>
+        </div>
+        <div class='field'>
+          <div class='control'>
+            <input type='text' class='input' size='100' style='background:rgba(255,255,255,.1);color:white;' maxlength='2048' name='r[]'>
+          </div>
+        </div>
+        <div class='field'>
+          <div class='control'>
+            <input type='text' class='input' size='100' style='background:rgba(255,255,255,.1);color:white;' maxlength='2048' name='r[]'>
+          </div>
+        </div>
+        <div class='field'>
+          <label class="label has-text-white-bis">TTL:</label>
+          <div class='control'>
+            <input type='text' class='input' size='10' style='background:rgba(255,255,255,.1);color:white;' maxlength='10' name='ttl'>
+          </div>
+        </div>
+        <div class='field'>
+          <div class='control has-text-centered'>
+            <button type='submit' class='button is-success is-large' name='sub'><i class='fas la-lg fa-plus'></i>&nbsp; Submit</button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class='hero-foot'>
+      <div class='container'>
+        <a href='listdomdata.php?d=<!-- domain -->'>
+          <span class='button is-info'>
+            <i class='far fa-lg fa-arrow-alt-circle-left'></i>&nbsp; Back to Domain
+          </span>
+        </a>
+      </div>  
+    </div>
+  </section>
+</body>
+</html>

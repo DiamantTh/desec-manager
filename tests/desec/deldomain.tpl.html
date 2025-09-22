@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<![CDATA[<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+<!-- Font Awesome mit lokalen Fonts -->
+<style>
+@font-face {
+    font-family: 'Font Awesome 5 Pro';
+    font-style: normal;
+    font-weight: 900;
+    src: url('../assets/fonts/fa5pro/fa-solid-900.woff2') format('woff2'),
+         url('../assets/fonts/fa5pro/fa-solid-900.woff') format('woff');
+}
+@font-face {
+    font-family: 'Font Awesome 5 Pro';
+    font-style: normal;
+    font-weight: 400;
+    src: url('../assets/fonts/fa5pro/fa-regular-400.woff2') format('woff2'),
+         url('../assets/fonts/fa5pro/fa-regular-400.woff') format('woff');
+}
+@font-face {
+    font-family: 'Font Awesome 5 Pro';
+    font-style: normal;
+    font-weight: 300;
+    src: url('../assets/fonts/fa5pro/fa-light-300.woff2') format('woff2'),
+         url('../assets/fonts/fa5pro/fa-light-300.woff') format('woff');
+}
+</style>
+</head>]]>
+<body class="has-text-white-bis" style="background:url('bg.jpg')">
+  <section class="hero is-fullheight" style="background:none;">
+      <div class="hero-head">
+      <div class="container">
+        <h1 class="title has-text-white-ter">
+          Delete Domain
+        </h1>
+      </div>
+    </div>
+    <div class="hero-body" style="padding:1.5rem;   ">
+      <form method='POST' style='margin: 0 auto'>
+        <div class='field'>
+          <div class="is-size-3" style="margin-bottom:50px;">Do you really want to delete <!-- domain --></div>
+        </div>
+        <!-- data -->
+        <div class='field'>
+          <div class='control has-text-centered'>
+            <a href='listaccdata.php' class="button is-info is-large" style="margin-right:100px;"><i class='fas la-lg fa-arrow-alt-circle-left'></i>&nbsp; No</a>
+            <button type='submit' class='button is-fail is-large' name='sub'><i class='fas la-lg fa-times'></i>&nbsp; Yes</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+</body>
+</html>
