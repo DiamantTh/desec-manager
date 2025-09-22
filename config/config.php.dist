@@ -4,24 +4,24 @@
  */
 return [
     'database' => [
-        'host' => '',      // Wird während der Installation gesetzt
-        'name' => '',
-        'user' => '',
-        'pass' => ''
+        'host' => '',      // Wird während der Installation gesetzt / Set during installation
+        'name' => '',      // Name der Datenbank / Database name
+        'user' => '',      // Datenbankbenutzer / Database user
+        'pass' => ''       // Datenbankpasswort / Database password
     ],
     'security' => [
-        'algo' => PASSWORD_ARGON2ID,
+        'algo' => PASSWORD_ARGON2ID, // Argon2id Hash-Algorithmus / Argon2id hash algorithm
         'options' => [
-            'memory_cost' => 65536,    // 64MB (minimum für sensitive Daten)
-            'time_cost' => 4,          // 4 Iterationen
-            'threads' => 2             // 2 Threads
+            'memory_cost' => 65536,    // 64MB (Minimum für sensible Daten) / 64MB (minimum for sensitive data)
+            'time_cost' => 4,          // 4 Iterationen / 4 iterations
+            'threads' => 2             // 2 Threads / 2 threads
         ]
     ],
     'debug' => false,
     'application' => [
-        'domain' => '',    // z.B. 'example.com' oder 'localhost'
+        'domain' => '',    // z.B. 'example.com' oder 'localhost' / e.g. 'example.com' or 'localhost'
         'name' => 'DeSEC Manager',
-        'webauthn_enabled' => true,  // wird automatisch auf false gesetzt für ungültige TLDs
-        'force_https' => true        // sollte nur in Entwicklung false sein
+        'webauthn_enabled' => true,  // Wird automatisch auf false gesetzt für ungültige TLDs / Automatically becomes false for invalid TLDs
+        'force_https' => true        // Sollte nur in Entwicklung false sein / Only set to false during development
     ]
 ];

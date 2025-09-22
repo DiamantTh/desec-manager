@@ -1,0 +1,35 @@
+# Beispielkonfiguration im TOML-Format / Example configuration in TOML format
+# Werte orientieren sich an config.php.dist / Values mirror config.php.dist
+
+[database]
+# Wird während der Installation gesetzt / Set during installation
+host = ""
+# Name der Datenbank / Database name
+name = ""
+# Datenbankbenutzer / Database user
+user = ""
+# Datenbankpasswort / Database password
+pass = ""
+
+[security]
+# Argon2id Hash-Algorithmus / Argon2id hash algorithm
+algo = "argon2id"
+[security.options]
+# 64MB Minimum für sensible Daten / 64MB minimum for sensitive data
+memory_cost = 65536
+# 4 Iterationen / 4 iterations
+time_cost = 4
+# 2 Threads / 2 threads
+threads = 2
+
+# Debug-Modus / Debug mode
+debug = false
+
+[application]
+# z.B. "example.com" oder "localhost" / e.g. "example.com" or "localhost"
+domain = ""
+name = "DeSEC Manager"
+# Wird für ungültige TLDs deaktiviert / Turns false for invalid TLDs
+webauthn_enabled = true
+# Nur in Entwicklung auf false setzen / Only set to false during development
+force_https = true
