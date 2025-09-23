@@ -62,7 +62,6 @@ $controller = new $controllerClass($config);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DeSEC Manager</title>
     <link rel="stylesheet" href="assets/css/bulma.min.css">
-    <link rel="stylesheet" href="assets/css/fa5free/fa-all.css">
     <link rel="stylesheet" href="assets/css/app.css">
     <?php if (file_exists(__DIR__ . "/assets/css/{$route}.css")): ?>
     <link rel="stylesheet" href="assets/css/<?= $route ?>.css">
@@ -79,29 +78,25 @@ $controller = new $controllerClass($config);
 
         <div class="navbar-menu">
             <div class="navbar-start">
-                <a class="navbar-item <?= $route === 'dashboard' ? 'is-active' : '' ?>" 
+                <a class="navbar-item <?= $route === 'dashboard' ? 'is-active' : '' ?>"
                    href="?route=dashboard">
-                    <span class="icon"><i class="fas fa-home"></i></span>
-                    <span>Dashboard</span>
+                    Dashboard
                 </a>
-                
-                <a class="navbar-item <?= $route === 'domains' ? 'is-active' : '' ?>" 
+
+                <a class="navbar-item <?= $route === 'domains' ? 'is-active' : '' ?>"
                    href="?route=domains">
-                    <span class="icon"><i class="fas fa-globe"></i></span>
-                    <span>Domains</span>
+                    Domains
                 </a>
-                
-                <a class="navbar-item <?= $route === 'keys' ? 'is-active' : '' ?>" 
+
+                <a class="navbar-item <?= $route === 'keys' ? 'is-active' : '' ?>"
                    href="?route=keys">
-                    <span class="icon"><i class="fas fa-key"></i></span>
-                    <span>API Keys</span>
+                    API Keys
                 </a>
 
                 <?php if (!empty($_SESSION['is_admin'])): ?>
-                <a class="navbar-item <?= $route === 'admin' ? 'is-active' : '' ?>" 
+                <a class="navbar-item <?= $route === 'admin' ? 'is-active' : '' ?>"
                    href="?route=admin">
-                    <span class="icon"><i class="fas fa-users-cog"></i></span>
-                    <span>Admin</span>
+                    Admin
                 </a>
                 <?php endif; ?>
             </div>
@@ -109,19 +104,16 @@ $controller = new $controllerClass($config);
             <div class="navbar-end">
                 <div class="navbar-item has-dropdown is-hoverable">
                     <a class="navbar-link">
-                        <span class="icon"><i class="fas fa-user"></i></span>
-                        <span><?= htmlspecialchars($_SESSION['username'] ?? 'Benutzer') ?></span>
+                        <?= htmlspecialchars($_SESSION['username'] ?? 'Benutzer') ?>
                     </a>
 
                     <div class="navbar-dropdown is-right">
                         <a class="navbar-item" href="?route=profile">
-                            <span class="icon"><i class="fas fa-id-card"></i></span>
-                            <span>Profil</span>
+                            Profil
                         </a>
                         <hr class="navbar-divider">
                         <a class="navbar-item" href="?route=auth&action=logout">
-                            <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
-                            <span>Abmelden</span>
+                            Abmelden
                         </a>
                     </div>
                 </div>

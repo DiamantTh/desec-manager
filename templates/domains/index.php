@@ -10,8 +10,7 @@
         <div class="card">
             <header class="card-header">
                 <p class="card-header-title">
-                    <span class="icon"><i class="fas fa-globe"></i></span>
-                    <span class="ml-2">Domains</span>
+                    Domains
                 </p>
             </header>
             <div class="card-content">
@@ -49,7 +48,7 @@
                                                     </div>
                                                     <div class="control">
                                                         <button type="submit" class="button is-danger is-small">
-                                                            <span class="icon"><i class="fas fa-trash"></i></span>
+                                                            Löschen
                                                         </button>
                                                     </div>
                                                 </div>
@@ -101,8 +100,7 @@
                         <div class="field">
                             <div class="control">
                                 <button type="submit" class="button is-primary is-fullwidth">
-                                    <span class="icon"><i class="fas fa-plus"></i></span>
-                                    <span>Domain hinzufügen</span>
+                                    Domain hinzufügen
                                 </button>
                             </div>
                         </div>
@@ -135,8 +133,7 @@
                         </div>
                         <div class="field">
                             <button type="submit" class="button is-link is-fullwidth">
-                                <span class="icon"><i class="fas fa-sync-alt"></i></span>
-                                <span>Synchronisieren</span>
+                                Synchronisieren
                             </button>
                         </div>
                         <p class="help">Holt Domains vom deSEC-Account und legt fehlende Einträge lokal an.</p>
