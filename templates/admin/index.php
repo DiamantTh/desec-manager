@@ -9,8 +9,7 @@
         <div class="card">
             <header class="card-header">
                 <p class="card-header-title">
-                    <span class="icon"><i class="fas fa-users-cog"></i></span>
-                    <span class="ml-2">Administratoren</span>
+                    Administratoren
                 </p>
             </header>
             <div class="card-content">
@@ -69,8 +68,7 @@
                     <div class="field">
                         <div class="control">
                             <button type="submit" class="button is-primary is-fullwidth">
-                                <span class="icon"><i class="fas fa-plus"></i></span>
-                                <span>Administrator anlegen</span>
+                                Administrator anlegen
                             </button>
                         </div>
                     </div>

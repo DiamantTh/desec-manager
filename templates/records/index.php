@@ -61,8 +61,7 @@
                 <label class="label">&nbsp;</label>
                 <div class="control">
                     <button type="submit" class="button is-primary is-fullwidth">
-                        <span class="icon"><i class="fas fa-redo"></i></span>
-                        <span>Aktualisieren</span>
+                        Aktualisieren
                     </button>
                 </div>
             </div>
@@ -82,8 +81,7 @@
         <div class="card">
             <header class="card-header">
                 <p class="card-header-title">
-                    <span class="icon"><i class="fas fa-database"></i></span>
-                    <span class="ml-2">RRsets für <?= htmlspecialchars($selectedDomain, ENT_QUOTES, 'UTF-8') ?></span>
+                    RRsets für <?= htmlspecialchars($selectedDomain, ENT_QUOTES, 'UTF-8') ?>
                 </p>
             </header>
             <div class="card-content">
@@ -114,7 +112,7 @@
                                     <td class="has-text-right">
                                         <div class="buttons is-right">
                                             <button type="button" class="button is-small js-inline-toggle">
-                                                <span class="icon"><i class="fas fa-edit"></i></span>
+                                                Bearbeiten
                                             </button>
                                             <form method="post" class="is-inline-block js-delete-form">
                                                 <input type="hidden" name="action" value="delete">
@@ -123,7 +121,7 @@
                                                 <input type="hidden" name="type" value="<?= htmlspecialchars($rrset['type'], ENT_QUOTES, 'UTF-8') ?>">
                                                 <input type="hidden" name="subname" value="<?= htmlspecialchars($rrset['subname'], ENT_QUOTES, 'UTF-8') ?>">
                                                 <button type="submit" class="button is-danger is-small">
-                                                    <span class="icon"><i class="fas fa-trash"></i></span>
+                                                    Löschen
                                                 </button>
                                             </form>
                                         </div>
@@ -148,8 +146,7 @@
                                             <div class="field is-grouped is-justify-content-flex-end">
                                                 <div class="control">
                                                     <button type="submit" class="button is-primary is-small">
-                                                        <span class="icon"><i class="fas fa-save"></i></span>
-                                                        <span>Speichern</span>
+                                                        Speichern
                                                     </button>
                                                 </div>
                                                 <div class="control">
@@ -217,8 +214,7 @@
                     </div>
                     <div class="field">
                         <button type="submit" class="button is-primary is-fullwidth">
-                            <span class="icon"><i class="fas fa-plus"></i></span>
-                            <span>RRset speichern</span>
+                            RRset speichern
                         </button>
                     </div>
                     <p class="help">Bei bestehenden RRsets werden vorhandene Einträge ersetzt.</p>

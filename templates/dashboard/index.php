@@ -47,8 +47,7 @@
         <div class="card">
             <header class="card-header">
                 <p class="card-header-title">
-                    <span class="icon"><i class="fas fa-globe"></i></span>
-                    <span class="ml-2">Letzte Domains</span>
+                    Letzte Domains
                 </p>
             </header>
             <div class="card-content">
@@ -79,8 +78,7 @@
         <div class="card">
             <header class="card-header">
                 <p class="card-header-title">
-                    <span class="icon"><i class="fas fa-key"></i></span>
-                    <span class="ml-2">Letzte API Keys</span>
+                    Letzte API Keys
                 </p>
             </header>
             <div class="card-content">

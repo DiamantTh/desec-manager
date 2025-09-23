@@ -9,8 +9,7 @@
         <div class="card">
             <header class="card-header">
                 <p class="card-header-title">
-                    <span class="icon"><i class="fas fa-key"></i></span>
-                    <span class="ml-2">API Keys</span>
+                    API Keys
                 </p>
             </header>
             <div class="card-content">
@@ -40,8 +39,7 @@
                                                 <input type="hidden" name="action" value="deactivate">
                                                 <input type="hidden" name="key_id" value="<?= (int) $key['id'] ?>">
                                                 <button type="submit" class="button is-warning is-small">
-                                                    <span class="icon"><i class="fas fa-ban"></i></span>
-                                                    <span>Deaktivieren</span>
+                                                    Deaktivieren
                                                 </button>
                                             </form>
                                         <?php endif; ?>
@@ -79,8 +77,7 @@
                     <div class="field">
                         <div class="control">
                             <button type="submit" class="button is-primary is-fullwidth">
-                                <span class="icon"><i class="fas fa-save"></i></span>
-                                <span>Speichern</span>
+                                Speichern
                             </button>
                         </div>
                     </div>

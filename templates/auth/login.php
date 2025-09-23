@@ -30,8 +30,7 @@
                 <div class="field is-grouped is-justify-content-flex-end">
                     <div class="control">
                         <button type="submit" class="button is-primary">
-                            <span class="icon"><i class="fas fa-sign-in-alt"></i></span>
-                            <span>Anmelden</span>
+                            Anmelden
                         </button>
                     </div>
                 </div>
