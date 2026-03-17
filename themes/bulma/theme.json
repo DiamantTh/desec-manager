@@ -1,0 +1,16 @@
+{
+  "name": "Bulma Classic",
+  "description": "Standard-Bulma-Look (lokal, keine Farbänderungen). Entspricht dem ursprünglichen Projekt-Erscheinungsbild.",
+  "version": "1.0.0",
+  "framework": "bulma-1.0",
+  "external_css": [
+    "assets/css/bulma.min.css"
+  ],
+  "local_css": [
+    "css/theme.css"
+  ],
+  "external_js": [],
+  "local_js": [],
+  "supports_dark_mode": false,
+  "author": "deSEC Manager"
+}

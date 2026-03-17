@@ -1,35 +1,50 @@
-# Beispielkonfiguration im TOML-Format / Example configuration in TOML format
-# Werte orientieren sich an config.php.dist / Values mirror config.php.dist
+# Beispielkonfiguration im TOML-Format — deSEC Manager
+# Werte orientieren sich an config.php.dist
+# Diese Datei dient nur als Referenz; die tatsächliche Konfiguration ist config.php
 
 [database]
-# Wird während der Installation gesetzt / Set during installation
-host = ""
-# Name der Datenbank / Database name
-name = ""
-# Datenbankbenutzer / Database user
-user = ""
-# Datenbankpasswort / Database password
-pass = ""
+# Treiber: "pdo_mysql" (Standard) oder "pdo_sqlite"
+driver     = "pdo_mysql"
+# Set during installation
+host       = ""
+port       = 3306
+# Set during installation
+name       = ""
+# Set during installation
+user       = ""
+# Set during installation
+pass       = ""
+charset    = "utf8mb4"
+collation  = "utf8mb4_unicode_ci"
+# SQLite: nur 'path' relevant
+# path     = "var/database.sqlite"
 
 [security]
-# Argon2id Hash-Algorithmus / Argon2id hash algorithm
+# Passwort-Hashing-Algorithmus
 algo = "argon2id"
 [security.options]
-# 64MB Minimum für sensible Daten / 64MB minimum for sensitive data
+# 64 MB – Minimum für sensible Daten
 memory_cost = 65536
-# 4 Iterationen / 4 iterations
-time_cost = 4
-# 2 Threads / 2 threads
-threads = 2
-
-# Debug-Modus / Debug mode
-debug = false
+# Iterationen
+time_cost   = 4
+# Parallele Threads
+threads     = 2
+# Verschlüsselungsschlüssel für API-Keys (Base64, gesetzt während Installation)
+encryption_key = ""
 
 [application]
-# z.B. "example.com" oder "localhost" / e.g. "example.com" or "localhost"
-domain = ""
-name = "DeSEC Manager"
-# Wird für ungültige TLDs deaktiviert / Turns false for invalid TLDs
+# Hostname ohne Protokoll
+domain           = ""
+name             = "DeSEC Manager"
+# WebAuthn erfordert HTTPS + gültige TLD
 webauthn_enabled = true
-# Nur in Entwicklung auf false setzen / Only set to false during development
-force_https = true
+# Erzwingt HTTPS; nur in Entwicklung auf false setzen
+force_https      = true
+
+[theme]
+# 'default' = Hellblau+Grün Light/Dark | 'bulma' = klassisches Bulma
+name = "default"
+
+# Debug-Modus — niemals in Produktion aktivieren!
+debug = false
+
