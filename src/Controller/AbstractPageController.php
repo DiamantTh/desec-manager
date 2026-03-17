@@ -18,6 +18,11 @@ abstract class AbstractPageController extends BaseController
     }
 
     /**
+     * Rendert ein Template. Löst es über ThemeManager auf (3 Ebenen).
+     * Im Template-Scope stehen zur Verfügung:
+     *   – alle Variablen aus $data
+     *   – $theme  → ThemeManager-Instanz (für Metadaten im Template)
+     *
      * @param array<string, mixed> $data
      */
     protected function renderTemplate(string $template, array $data = []): void
@@ -29,7 +34,29 @@ abstract class AbstractPageController extends BaseController
             return;
         }
 
+        $data['theme'] = $this->theme;
         extract($data, EXTR_SKIP);
         require $templatePath;
+    }
+
+    /**
+     * Bindet einen optionalen Partial ein (Extension-Point / Hook).
+     * Wenn kein Partial-File gefunden wird, geschieht nichts – kein Fehler.
+     *
+     * Aufruf aus einem Template heraus (da require innerhalb dieser Klasse läuft,
+     * zeigt $this auf den Controller):
+     *   <?php $this->renderPartial('domains/extra_columns', ['row' => $domain]) ?>
+     *
+     * @param array<string, mixed> $data  Variablen die dem Partial übergeben werden
+     */
+    protected function renderPartial(string $partial, array $data = []): void
+    {
+        $path = $this->theme->resolvePartial($partial);
+        if ($path === null) {
+            return;
+        }
+        $data['theme'] = $this->theme;
+        extract($data, EXTR_SKIP);
+        require $path;
     }
 }

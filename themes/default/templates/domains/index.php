@@ -20,6 +20,7 @@
                             <tr>
                                 <th>Domain</th>
                                 <th>Erstellt</th>
+                                <?php $this->renderPartial('domains/extra_columns_head') ?>
                                 <th class="has-text-right">Aktionen</th>
                             </tr>
                         </thead>
@@ -28,6 +29,7 @@
                                 <tr>
                                     <td><?= htmlspecialchars($domain['domain_name'], ENT_QUOTES, 'UTF-8') ?></td>
                                     <td><?= htmlspecialchars($domain['created_at'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
+                                    <?php $this->renderPartial('domains/extra_columns_row', ['domain' => $domain]) ?>
                                     <td class="has-text-right">
                                         <?php if ($apiKeys): ?>
                                             <form method="post" class="is-inline-block">

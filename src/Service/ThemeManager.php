@@ -155,20 +155,16 @@ class ThemeManager
     /**
      * Löst einen Template-Bezeichner zu einem absoluten Dateipfad auf.
      *
-     * Auflösungsreihenfolge (first match wins):
-     *   1. themes/{aktiv}/templates/{template}.php   – Custom-Theme-Override
-     *   2. themes/default/templates/{template}.php   – Default-Theme als Basis
-     *   3. templates/{template}.php                  – Core-Fallback (unberührt)
-     *
-     * Um ein eigenes Theme zu erstellen:
-     *   cp -r themes/default/templates themes/{meinTheme}/templates
-     *   → Dateien nach Wunsch anpassen
+     * 3-stufige Auflösungsreihenfolge:
+     *   1. themes/{aktiv}/templates/{template}.php   – Eigenes Theme (wird übersprungen wenn aktives Theme = default)
+     *   2. themes/default/templates/{template}.php   – Default-Theme (Basis zum Anpassen per Kopie)
+     *   3. templates/{template}.php                  – Core-Fallback (nicht anfassen)
      *
      * @param string $template z. B. "dashboard/index", "auth/login"
      */
     public function resolveTemplate(string $template): string
     {
-        // 1. Aktives Theme (nur wenn nicht selbst "default")
+        // Ebene 1: aktives Custom-Theme (übersprungen wenn es das Default-Theme ist)
         if ($this->themeName !== 'default') {
             $themePath = $this->getThemePath();
             if ($themePath !== null) {
@@ -179,14 +175,51 @@ class ThemeManager
             }
         }
 
-        // 2. Default-Theme als gemeinsame Basis
-        $defaultTemplate = $this->projectRoot . '/themes/default/templates/' . $template . '.php';
-        if (file_exists($defaultTemplate)) {
-            return $defaultTemplate;
+        // Ebene 2: Default-Theme (editierbare Basis)
+        $defaultTpl = $this->projectRoot . '/themes/default/templates/' . $template . '.php';
+        if (file_exists($defaultTpl)) {
+            return $defaultTpl;
         }
 
-        // 3. Core-Fallback (templates/ – wird nicht angefasst)
+        // Ebene 3: Core-Fallback (templates/ – nur lesen, nicht bearbeiten)
         return $this->projectRoot . '/templates/' . $template . '.php';
+    }
+
+    /**
+     * Löst einen optionalen Template-Partial auf.
+     * Gibt null zurück wenn kein Partial gefunden → Extension-Point wird einfach übersprungen.
+     *
+     * Partials liegen in themes/{name}/partials/ und dienen als Hook-Punkte,
+     * über die Templates ohne Kernänderungen erweitert werden können.
+     *
+     * 2-stufige Auflösung:
+     *   1. themes/{aktiv}/partials/{partial}.php   – Theme-eigener Hook
+     *   2. themes/default/partials/{partial}.php   – Default-Hook (Fallback)
+     *
+     * Beispiel im Template:
+     *   <?php $this->renderPartial('domains/extra_columns', ['row' => $domain]) ?>
+     *
+     * @param string $partial z. B. "domains/extra_columns", "records/custom_fields"
+     * @return string|null  Absoluter Pfad oder null wenn nicht vorhanden
+     */
+    public function resolvePartial(string $partial): ?string
+    {
+        if ($this->themeName !== 'default') {
+            $themePath = $this->getThemePath();
+            if ($themePath !== null) {
+                $path = $themePath . '/partials/' . $partial . '.php';
+                if (file_exists($path)) {
+                    return $path;
+                }
+            }
+        }
+
+        $defaultPath = $this->projectRoot . '/themes/default/partials/' . $partial . '.php';
+        if (file_exists($defaultPath)) {
+            return $defaultPath;
+        }
+
+        return null;
     }
 
     // ─── Theme-Info ─────────────────────────────────────────────────────────
