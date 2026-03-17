@@ -56,7 +56,8 @@ class DeSECProxyService
     private function sanitizeRecords(mixed $records): array
     {
         if (is_string($records)) {
-            $records = preg_split('/\r?\n/', $records);
+            $split = preg_split('/\r?\n/', $records);
+            $records = $split !== false ? $split : [];
         }
         if (!is_array($records)) {
             return [];

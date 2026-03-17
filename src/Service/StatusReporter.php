@@ -36,12 +36,14 @@ class StatusReporter
 
         $overall = 'ok';
         foreach ($checks as $check) {
-            if (($check['status'] ?? 'ok') === 'critical') {
+            $status = $check['status'] ?? 'ok';
+            if ($status === 'critical') {
                 $overall = 'critical';
                 break;
             }
-            if ($overall !== 'critical' && ($check['status'] ?? 'ok') === 'degraded') {
+            if ($status === 'degraded') {
                 $overall = 'degraded';
+                // Don't break, continue checking for critical
             }
         }
 
@@ -199,7 +201,8 @@ class StatusReporter
 
     private function formatPrometheusLabel(string $value): string
     {
-        return preg_replace('/[^a-zA-Z0-9_:\-\.]/', '_', $value);
+        $result = preg_replace('/[^a-zA-Z0-9_:\-\.]/', '_', $value);
+        return $result ?? $value;
     }
 
     private function escapeLabel(string $value): string

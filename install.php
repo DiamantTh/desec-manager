@@ -20,8 +20,8 @@ if (!empty($missingExtensions)) {
     die("Fehlende PHP-Erweiterungen: " . implode(', ', $missingExtensions) . "\n");
 }
 
-if (version_compare(PHP_VERSION, '7.4.0') < 0) {
-    die("PHP 7.4 oder höher wird benötigt. Aktuelle Version: " . PHP_VERSION . "\n");
+if (version_compare(PHP_VERSION, '8.1.0') < 0) {
+    die("PHP 8.1 oder höher wird benötigt. Aktuelle Version: " . PHP_VERSION . "\n");
 }
 
 // Prüfe Schreibrechte
@@ -125,7 +125,8 @@ try {
     // 1. Verbindung zur MySQL als root
     echo "Please enter MySQL root password: ";
     system('stty -echo');
-    $rootPassword = trim(fgets(STDIN));
+    $input = fgets(STDIN);
+    $rootPassword = $input !== false ? trim($input) : '';
     system('stty echo');
     echo "\n";
 
