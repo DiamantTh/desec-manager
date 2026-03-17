@@ -12,6 +12,9 @@ class DashboardController extends AbstractPageController
     private ApiKeyRepository $apiKeys;
     private SystemHealthService $systemHealth;
 
+    /**
+     * @param array<string, mixed> $config
+     */
     public function __construct(array $config)
     {
         parent::__construct($config);

@@ -10,7 +10,5 @@ parameters:
         - vendor
     reportUnmatchedIgnoredErrors: false
     ignoreErrors:
-        # Ignore missing config file issues (it's created during installation)
+        # Konfigurationsdatei wird erst bei Installation erstellt
         - '#require\(\): Failed opening#'
-        # Ignore collection types
-        - '#Property App\\Entity\\.*Collection.*#'

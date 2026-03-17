@@ -1,34 +1,29 @@
 <?php
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
-#[ORM\Entity]
-#[ORM\Table(name: 'user_keys')]
+/**
+ * UserKey Entity - Repräsentiert einen öffentlichen Schlüssel für einen Benutzer.
+ * 
+ * Diese Klasse dient als Datenstruktur für SSH/GPG Schlüssel. Die eigentliche
+ * Datenbankanbindung erfolgt über Doctrine DBAL.
+ * 
+ * Datenbank-Tabelle: user_keys
+ * - id: INTEGER PRIMARY KEY AUTO_INCREMENT
+ * - user_id: INTEGER NOT NULL (FK -> users.id)
+ * - public_key: VARCHAR(255) NOT NULL
+ * - key_name: VARCHAR(255) NOT NULL
+ * - created_at: DATETIME NOT NULL
+ * - last_used: DATETIME NULL
+ * - is_active: BOOLEAN DEFAULT TRUE
+ */
 class UserKey
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
-
-    #[ORM\Column(type: 'string', length: 255)]
     private string $publicKey;
-
-    #[ORM\Column(type: 'string', length: 255)]
     private string $keyName;
-
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'keys')]
-    #[ORM\JoinColumn(nullable: false)]
     private User $user;
-
-    #[ORM\Column(type: 'datetime')]
     private \DateTime $createdAt;
-
-    #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTime $lastUsed = null;
-
-    #[ORM\Column(type: 'boolean')]
     private bool $isActive = true;
 
     public function __construct()
@@ -39,6 +34,12 @@ class UserKey
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+        return $this;
     }
 
     public function getPublicKey(): string
@@ -84,7 +85,7 @@ class UserKey
         return $this->lastUsed;
     }
 
-    public function setLastUsed(\DateTime $lastUsed): self
+    public function setLastUsed(?\DateTime $lastUsed): self
     {
         $this->lastUsed = $lastUsed;
         return $this;

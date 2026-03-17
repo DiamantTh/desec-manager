@@ -7,9 +7,13 @@ use Doctrine\DBAL\Connection;
 
 abstract class BaseController
 {
+    /** @var array<string, mixed> */
     protected array $config;
     protected Connection $connection;
 
+    /**
+     * @param array<string, mixed> $config
+     */
     public function __construct(array $config)
     {
         $this->config = $config;
@@ -24,6 +28,9 @@ abstract class BaseController
         ];
     }
 
+    /**
+     * @return array{type: string, message: string}|null
+     */
     protected function consumeFlash(): ?array
     {
         if (!isset($_SESSION['_flash'])) {

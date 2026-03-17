@@ -4,6 +4,9 @@ namespace App\Service;
 
 class SystemHealthService
 {
+    /**
+     * @return array{opcache: array<string, mixed>, apcu: array<string, mixed>}
+     */
     public function getCacheStatus(): array
     {
         return [
@@ -12,6 +15,9 @@ class SystemHealthService
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function detectOpCache(): array
     {
         $extensionLoaded = extension_loaded('Zend OPcache');
@@ -60,6 +66,9 @@ class SystemHealthService
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function detectApcu(): array
     {
         $extensionLoaded = extension_loaded('apcu');
@@ -102,7 +111,7 @@ class SystemHealthService
         ];
     }
 
-    private function toBool($value): bool
+    private function toBool(mixed $value): bool
     {
         if ($value === false) {
             return false;

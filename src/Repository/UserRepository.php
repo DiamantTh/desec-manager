@@ -13,6 +13,9 @@ class UserRepository
         $this->connection = DatabaseConnection::getConnection();
     }
     
+    /**
+     * @return array<string, mixed>|null
+     */
     public function findByUsername(string $username): ?array 
     {
         $qb = $this->connection->createQueryBuilder();
@@ -25,6 +28,9 @@ class UserRepository
             ->fetchAssociative() ?: null;
     }
     
+    /**
+     * @param array<string, mixed> $userData
+     */
     public function create(array $userData): int 
     {
         $this->connection->insert('users', [
@@ -47,6 +53,9 @@ class UserRepository
         );
     }
     
+    /**
+     * @return array<string, mixed>|null
+     */
     public function findById(int $id): ?array 
     {
         $qb = $this->connection->createQueryBuilder();
@@ -59,6 +68,9 @@ class UserRepository
             ->fetchAssociative() ?: null;
     }
     
+    /**
+     * @return array<string, mixed>|null
+     */
     public function findByEmail(string $email): ?array 
     {
         $qb = $this->connection->createQueryBuilder();
@@ -71,6 +83,9 @@ class UserRepository
             ->fetchAssociative() ?: null;
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function findAdmins(): array
     {
         $qb = $this->connection->createQueryBuilder();

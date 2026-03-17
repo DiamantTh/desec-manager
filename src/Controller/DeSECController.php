@@ -13,6 +13,10 @@ class DeSECController
         $this->desecProxy = new DeSECProxyService();
     }
 
+    /**
+     * @param array<string, mixed> $payload
+     * @return array<string, mixed>
+     */
     public function execute(array $payload): array
     {
         if (!isset($_SESSION['user_id'])) {
@@ -36,6 +40,9 @@ class DeSECController
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function listDomains(): array
     {
         if (!isset($_SESSION['user_id'])) {

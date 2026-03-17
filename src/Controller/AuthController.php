@@ -8,6 +8,9 @@ class AuthController extends AbstractPageController
 {
     private UserRepository $users;
 
+    /**
+     * @param array<string, mixed> $config
+     */
     public function __construct(array $config)
     {
         parent::__construct($config);

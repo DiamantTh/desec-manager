@@ -12,6 +12,9 @@ class DomainController extends AbstractPageController
     private ApiKeyRepository $apiKeys;
     private DNSService $dnsService;
 
+    /**
+     * @param array<string, mixed> $config
+     */
     public function __construct(array $config)
     {
         parent::__construct($config);
@@ -88,6 +91,9 @@ class DomainController extends AbstractPageController
         $this->dnsService->deleteDomain($userId, $apiKeyId, $domain);
     }
 
+    /**
+     * @return array{added: list<string>, removed: list<string>}
+     */
     private function handleSync(int $userId): array
     {
         $apiKeyId = (int) ($_POST['api_key_id'] ?? 0);

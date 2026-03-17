@@ -16,6 +16,10 @@ class DeSECProxyService
         $this->domains = new DomainRepository();
     }
 
+    /**
+     * @param array<string, mixed> $params
+     * @return array<int|string, mixed>
+     */
     public function executeRequest(int $userId, string $domainName, string $operation, array $params = []): array
     {
         $apiKeyId = (int) ($params['api_key_id'] ?? 0);
@@ -48,11 +52,17 @@ class DeSECProxyService
         };
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function getDomainOverview(int $userId): array
     {
         return $this->domains->findByUserId($userId);
     }
 
+    /**
+     * @return list<string>
+     */
     private function sanitizeRecords(mixed $records): array
     {
         if (is_string($records)) {

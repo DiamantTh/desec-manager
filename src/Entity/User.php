@@ -1,54 +1,48 @@
 <?php
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-
-#[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: 'users')]
+/**
+ * User Entity - Repräsentiert einen Benutzer im System.
+ * 
+ * Diese Klasse dient als Datenstruktur für Benutzer. Die eigentliche
+ * Datenbankanbindung erfolgt über UserRepository mit Doctrine DBAL.
+ * 
+ * Datenbank-Tabelle: users
+ * - id: INTEGER PRIMARY KEY AUTO_INCREMENT
+ * - username: VARCHAR(255) UNIQUE NOT NULL
+ * - password_hash: VARCHAR(255) NOT NULL
+ * - email: VARCHAR(255) UNIQUE NOT NULL
+ * - is_admin: BOOLEAN DEFAULT FALSE
+ * - created_at: DATETIME NOT NULL
+ * - last_login: DATETIME NULL
+ */
 class User
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
-
-    #[ORM\Column(type: 'string', length: 255, unique: true)]
     private string $username;
-
-    #[ORM\Column(type: 'string', length: 255)]
     private string $passwordHash;
-
-    #[ORM\Column(type: 'string', length: 255, unique: true)]
     private string $email;
-
-    #[ORM\Column(type: 'boolean')]
     private bool $isAdmin = false;
-
-    #[ORM\Column(type: 'datetime')]
     private \DateTime $createdAt;
-
-    #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTime $lastLogin = null;
 
-    #[ORM\OneToMany(targetEntity: ApiKey::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
-    private Collection $apiKeys;
-
-    #[ORM\OneToMany(targetEntity: Domain::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
-    private Collection $domains;
+    /** @var array<int, ApiKey> */
+    private array $apiKeys = [];
 
     public function __construct()
     {
         $this->createdAt = new \DateTime();
-        $this->apiKeys = new ArrayCollection();
-        $this->domains = new ArrayCollection();
     }
 
-    // Getter und Setter
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+        return $this;
     }
 
     public function getUsername(): string
@@ -111,30 +105,19 @@ class User
         return $this;
     }
 
-    public function getApiKeys(): Collection
+    /**
+     * @return array<int, ApiKey>
+     */
+    public function getApiKeys(): array
     {
         return $this->apiKeys;
     }
 
     public function addApiKey(ApiKey $apiKey): self
     {
-        if (!$this->apiKeys->contains($apiKey)) {
+        if (!in_array($apiKey, $this->apiKeys, true)) {
             $this->apiKeys[] = $apiKey;
             $apiKey->setUser($this);
-        }
-        return $this;
-    }
-
-    public function getDomains(): Collection
-    {
-        return $this->domains;
-    }
-
-    public function addDomain(Domain $domain): self
-    {
-        if (!$this->domains->contains($domain)) {
-            $this->domains[] = $domain;
-            $domain->setUser($this);
         }
         return $this;
     }

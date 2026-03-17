@@ -7,8 +7,13 @@ use Doctrine\DBAL\DriverManager;
 class DatabaseConnection
 {
     private static ?Connection $connection = null;
+    
+    /** @var array<string, mixed>|null */
     private static ?array $config = null;
 
+    /**
+     * @param array<string, mixed> $appConfig
+     */
     public static function bootstrap(array $appConfig): void
     {
         self::$config = $appConfig['database'] ?? [];

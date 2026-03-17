@@ -4,6 +4,9 @@ namespace App\Controller;
 
 abstract class AbstractPageController extends BaseController
 {
+    /**
+     * @param array<string, mixed> $data
+     */
     protected function renderTemplate(string $template, array $data = []): void
     {
         $templatePath = __DIR__ . '/../../templates/' . $template . '.php';

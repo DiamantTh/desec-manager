@@ -10,8 +10,10 @@ use Throwable;
 
 class StatusReporter
 {
+    /** @var array<string, mixed>|null */
     private ?array $config;
     private SystemHealthService $systemHealth;
+    /** @var array<string, int>|null */
     private ?array $aggregateMetrics = null;
     private const STATUS_VALUES = [
         'critical' => 0,
@@ -19,12 +21,18 @@ class StatusReporter
         'ok' => 2,
     ];
 
+    /**
+     * @param array<string, mixed>|null $config
+     */
     public function __construct(?array $config)
     {
         $this->config = $config;
         $this->systemHealth = new SystemHealthService();
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function generate(): array
     {
         $checks = [];
@@ -36,7 +44,7 @@ class StatusReporter
 
         $overall = 'ok';
         foreach ($checks as $check) {
-            $status = $check['status'] ?? 'ok';
+            $status = $check['status'];
             if ($status === 'critical') {
                 $overall = 'critical';
                 break;
@@ -59,6 +67,9 @@ class StatusReporter
         ];
     }
 
+    /**
+     * @param array<string, mixed> $report
+     */
     public function renderPrometheus(array $report): string
     {
         $lines = [];
@@ -93,6 +104,9 @@ class StatusReporter
         return implode("\n", $lines);
     }
 
+    /**
+     * @return array{status: string, message?: string}
+     */
     private function checkConfiguration(): array
     {
         if ($this->config === null) {
@@ -107,6 +121,9 @@ class StatusReporter
         ];
     }
 
+    /**
+     * @return array{status: string, details: array<string, array<string, mixed>>}
+     */
     private function checkCaches(): array
     {
         $cacheStatus = $this->systemHealth->getCacheStatus();
@@ -122,6 +139,9 @@ class StatusReporter
         ];
     }
 
+    /**
+     * @return array{status: string, message?: string}
+     */
     private function checkDatabase(): array
     {
         try {
@@ -139,6 +159,9 @@ class StatusReporter
         }
     }
 
+    /**
+     * @return array<string, int>
+     */
     private function collectAggregateMetrics(Connection $connection): array
     {
         $metrics = [];
@@ -163,6 +186,9 @@ class StatusReporter
         $connection->executeQuery('SELECT 1')->fetchOne();
     }
 
+    /**
+     * @return array{status: string, message?: string, http_status?: int}
+     */
     private function checkDeSecApi(): array
     {
         if ($this->config === null) {

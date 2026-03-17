@@ -16,6 +16,9 @@ class ApiKeyRepository
         $this->encryption = new EncryptionService();
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function findByUserId(int $userId, bool $withDecryption = false): array
     {
         $qb = $this->connection->createQueryBuilder();
@@ -37,6 +40,9 @@ class ApiKeyRepository
         return $result;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function findById(int $id): ?array
     {
         $qb = $this->connection->createQueryBuilder();
@@ -51,6 +57,9 @@ class ApiKeyRepository
         return $row ?: null;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function findByIdForUser(int $id, int $userId): ?array
     {
         $row = $this->findById($id);
@@ -62,6 +71,9 @@ class ApiKeyRepository
         return $row;
     }
 
+    /**
+     * @param array<string, mixed> $keyData
+     */
     public function create(array $keyData): int
     {
         $encryptedKey = $this->encryption->encrypt($keyData['api_key']);
@@ -95,6 +107,10 @@ class ApiKeyRepository
         );
     }
 
+    /**
+     * @param array<string, mixed> $row
+     * @return array<string, mixed>
+     */
     public function decryptKey(array $row): array
     {
         $row['api_key'] = $this->encryption->decrypt($row['api_key']);

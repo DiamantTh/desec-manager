@@ -19,6 +19,9 @@ class DNSService
         $this->domains = new DomainRepository();
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function createDomain(int $userId, int $apiKeyId, string $domainName): array
     {
         $this->ensureDomainDoesNotExist($domainName);
@@ -55,6 +58,9 @@ class DNSService
         }
     }
 
+    /**
+     * @return array{added: list<string>, removed: list<string>}
+     */
     public function syncDomains(int $userId, int $apiKeyId): array
     {
         [$client, $token] = $this->createClientForUser($userId, $apiKeyId);
@@ -91,6 +97,9 @@ class DNSService
         }
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function listRRSets(int $userId, int $apiKeyId, string $domainName): array
     {
         $this->assertDomainOwnership($userId, $domainName);
@@ -105,6 +114,9 @@ class DNSService
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getDomainDetails(int $userId, int $apiKeyId, string $domainName): array
     {
         $this->assertDomainOwnership($userId, $domainName);
@@ -119,6 +131,9 @@ class DNSService
         }
     }
 
+    /**
+     * @return array<int|string, mixed>
+     */
     public function listRemoteDomains(int $userId, int $apiKeyId): array
     {
         [$client, $token] = $this->createClientForUser($userId, $apiKeyId);
@@ -132,6 +147,10 @@ class DNSService
         }
     }
 
+    /**
+     * @param list<string> $records
+     * @return array<string, mixed>
+     */
     public function upsertRRSet(
         int $userId,
         int $apiKeyId,
