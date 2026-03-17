@@ -155,21 +155,37 @@ class ThemeManager
     /**
      * Löst einen Template-Bezeichner zu einem absoluten Dateipfad auf.
      *
-     * Reihenfolge:
-     *   1. themes/{name}/templates/{template}.php  (Theme-Override)
-     *   2. templates/{template}.php                (Projekt-Standard)
+     * Auflösungsreihenfolge (first match wins):
+     *   1. themes/{aktiv}/templates/{template}.php   – Custom-Theme-Override
+     *   2. themes/default/templates/{template}.php   – Default-Theme als Basis
+     *   3. templates/{template}.php                  – Core-Fallback (unberührt)
+     *
+     * Um ein eigenes Theme zu erstellen:
+     *   cp -r themes/default/templates themes/{meinTheme}/templates
+     *   → Dateien nach Wunsch anpassen
      *
      * @param string $template z. B. "dashboard/index", "auth/login"
      */
     public function resolveTemplate(string $template): string
     {
-        $themePath = $this->getThemePath();
-        if ($themePath !== null) {
-            $themeTemplate = $themePath . '/templates/' . $template . '.php';
-            if (file_exists($themeTemplate)) {
-                return $themeTemplate;
+        // 1. Aktives Theme (nur wenn nicht selbst "default")
+        if ($this->themeName !== 'default') {
+            $themePath = $this->getThemePath();
+            if ($themePath !== null) {
+                $override = $themePath . '/templates/' . $template . '.php';
+                if (file_exists($override)) {
+                    return $override;
+                }
             }
         }
+
+        // 2. Default-Theme als gemeinsame Basis
+        $defaultTemplate = $this->projectRoot . '/themes/default/templates/' . $template . '.php';
+        if (file_exists($defaultTemplate)) {
+            return $defaultTemplate;
+        }
+
+        // 3. Core-Fallback (templates/ – wird nicht angefasst)
         return $this->projectRoot . '/templates/' . $template . '.php';
     }
 

@@ -14,5 +14,6 @@
     "js/theme.js"
   ],
   "supports_dark_mode": true,
-  "author": "deSEC Manager"
+  "author": "deSEC Manager",
+  "note": "templates/ enthält alle Seiten-Templates. Neues Theme erstellen: cp -r themes/default themes/meinTheme && config theme.name = meinTheme"
 }
