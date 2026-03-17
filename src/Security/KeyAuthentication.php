@@ -52,9 +52,16 @@ class KeyAuthentication
         }
         
         try {
-            $decodedKey = base64_decode($publicKey);
-            $decodedChallenge = base64_decode($challenge);
-            $decodedSignature = base64_decode($signature);
+            $decodedKey = base64_decode($publicKey, true);
+            $decodedChallenge = base64_decode($challenge, true);
+            $decodedSignature = base64_decode($signature, true);
+            
+            // Prüfe auf gültige Dekodierung und nicht-leere Strings
+            if ($decodedKey === false || $decodedKey === '' ||
+                $decodedChallenge === false || $decodedChallenge === '' ||
+                $decodedSignature === false || $decodedSignature === '') {
+                return false;
+            }
             
             // Erstelle den zu verifizierenden Message-String
             $message = sodium_bin2hex($decodedChallenge) . "|" . $expires . "|" . self::KEY_CONTEXT;
@@ -78,7 +85,10 @@ class KeyAuthentication
      */
     public static function sign(string $privateKey, string $data): string 
     {
-        $decodedKey = base64_decode($privateKey);
+        $decodedKey = base64_decode($privateKey, true);
+        if ($decodedKey === false || $decodedKey === '') {
+            throw new \InvalidArgumentException('Invalid private key');
+        }
         $signature = sodium_crypto_sign_detached($data, $decodedKey);
         return base64_encode($signature);
     }
@@ -88,7 +98,10 @@ class KeyAuthentication
      */
     public static function deriveApiKey(string $privateKey): string 
     {
-        $decodedKey = base64_decode($privateKey);
+        $decodedKey = base64_decode($privateKey, true);
+        if ($decodedKey === false || $decodedKey === '') {
+            throw new \InvalidArgumentException('Invalid private key');
+        }
         $context = self::KEY_CONTEXT . "-API";
         
         // Verwende den privaten Schlüssel um einen deterministischen API Key zu generieren

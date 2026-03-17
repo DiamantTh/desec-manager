@@ -12,7 +12,7 @@
 - Systemstatus- und Health-Checks für Integrationen / System status and health checks for integrations
 
 ## Requirements / Voraussetzungen
-- PHP >= 7.4 mit Erweiterungen `pdo_mysql`, `sodium`, `openssl` / PHP >= 7.4 with `pdo_mysql`, `sodium`, `openssl`
+- PHP >= 8.1 mit Erweiterungen `pdo_mysql`, `sodium`, `openssl` / PHP >= 8.1 with `pdo_mysql`, `sodium`, `openssl`
 - Composer zum Installieren der Abhängigkeiten / Composer for dependency installation
 - MySQL/MariaDB-Datenbank / MySQL or MariaDB database
 - Webserver (Apache, Nginx o.ä.) mit PHP-FPM oder mod_php / Web server (Apache, Nginx, etc.) with PHP-FPM or mod_php

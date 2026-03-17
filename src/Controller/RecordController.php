@@ -154,6 +154,9 @@ class RecordController extends AbstractPageController
     private function parseRecords(string $recordsRaw): array
     {
         $lines = preg_split('/\r?\n/', $recordsRaw);
+        if ($lines === false) {
+            return [];
+        }
         $records = [];
         foreach ($lines as $line) {
             $value = trim($line);
