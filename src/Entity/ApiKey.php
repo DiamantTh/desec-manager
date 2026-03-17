@@ -1,48 +1,45 @@
 <?php
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
-#[ORM\Entity(repositoryClass: ApiKeyRepository::class)]
-#[ORM\Table(name: 'api_keys')]
+/**
+ * ApiKey Entity - Repräsentiert einen deSEC API-Schlüssel.
+ * 
+ * Diese Klasse dient als Datenstruktur für API-Schlüssel. Die eigentliche
+ * Datenbankanbindung erfolgt über ApiKeyRepository mit Doctrine DBAL.
+ * 
+ * Datenbank-Tabelle: api_keys
+ * - id: INTEGER PRIMARY KEY AUTO_INCREMENT
+ * - user_id: INTEGER NOT NULL (FK -> users.id)
+ * - name: VARCHAR(255) NOT NULL
+ * - api_key: VARCHAR(255) NOT NULL (verschlüsselt)
+ * - created_at: DATETIME NOT NULL
+ * - last_used: DATETIME NULL
+ * - is_active: BOOLEAN DEFAULT TRUE
+ */
 class ApiKey
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
-
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'apiKeys')]
-    #[ORM\JoinColumn(nullable: false)]
     private User $user;
-
-    #[ORM\Column(type: 'string', length: 255)]
     private string $name;
-
-    #[ORM\Column(type: 'string', length: 255)]
     private string $apiKey;
-
-    #[ORM\Column(type: 'datetime')]
     private \DateTime $createdAt;
-
-    #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTime $lastUsed = null;
-
-    #[ORM\Column(type: 'boolean')]
     private bool $isActive = true;
-
-    #[ORM\OneToMany(targetEntity: Domain::class, mappedBy: 'apiKey', cascade: ['persist', 'remove'])]
-    private Collection $domains;
 
     public function __construct()
     {
         $this->createdAt = new \DateTime();
-        $this->domains = new ArrayCollection();
     }
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+        return $this;
     }
 
     public function getUser(): User
@@ -102,20 +99,6 @@ class ApiKey
     public function setIsActive(bool $isActive): self
     {
         $this->isActive = $isActive;
-        return $this;
-    }
-
-    public function getDomains(): Collection
-    {
-        return $this->domains;
-    }
-
-    public function addDomain(Domain $domain): self
-    {
-        if (!$this->domains->contains($domain)) {
-            $this->domains[] = $domain;
-            $domain->setApiKey($this);
-        }
         return $this;
     }
 }
