@@ -13,6 +13,9 @@ class DomainRepository
         $this->connection = DatabaseConnection::getConnection();
     }
     
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function findByUserId(int $userId): array
     {
         $qb = $this->connection->createQueryBuilder();
@@ -26,6 +29,9 @@ class DomainRepository
             ->fetchAllAssociative();
     }
     
+    /**
+     * @param array<string, mixed> $domainData
+     */
     public function create(array $domainData): void
     {
         $this->connection->insert('domains', [
@@ -42,7 +48,10 @@ class DomainRepository
             'domain_name' => $domainName
         ]);
     }
-    
+
+    /**
+     * @return array<string, mixed>|null
+     */
     public function findByName(string $domainName): ?array
     {
         $qb = $this->connection->createQueryBuilder();
@@ -55,6 +64,9 @@ class DomainRepository
             ->fetchAssociative() ?: null;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function findByUserAndDomain(int $userId, string $domainName): ?array
     {
         $qb = $this->connection->createQueryBuilder();

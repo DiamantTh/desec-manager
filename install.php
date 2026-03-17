@@ -66,7 +66,10 @@ require_once __DIR__ . '/vendor/autoload.php';
 $encryptionKey = \App\Security\EncryptionService::generateKey();
 
 // Hilfsfunktionen
-function generateSecurePassword($length = 16): string {
+/**
+ * @param int<1, max> $length
+ */
+function generateSecurePassword(int $length = 16): string {
     return bin2hex(random_bytes($length));
 }
 
@@ -78,6 +81,9 @@ function validatePassword(string $password): bool {
            preg_match('/[^A-Za-z0-9]/', $password); // Sonderzeichen
 }
 
+/**
+ * @param array<string, mixed> $config
+ */
 function createConfigFile(array $config, string $dbUser, string $dbPass): void {
     global $encryptionKey;
 

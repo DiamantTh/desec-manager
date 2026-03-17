@@ -9,6 +9,9 @@ class KeyController extends AbstractPageController
 {
     private ApiKeyRepository $apiKeys;
 
+    /**
+     * @param array<string, mixed> $config
+     */
     public function __construct(array $config)
     {
         parent::__construct($config);

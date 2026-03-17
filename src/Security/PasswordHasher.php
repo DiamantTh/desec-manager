@@ -2,6 +2,7 @@
 namespace App\Security;
 
 class PasswordHasher {
+    /** @var array{algo: string|int, options: array<string, int>} */
     private array $config;
 
     public function __construct() {

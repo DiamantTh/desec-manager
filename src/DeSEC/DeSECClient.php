@@ -10,6 +10,8 @@ class DeSECClient
     private const API_BASE_URL = 'https://desec.io/api/v1/domains/';
     
     private Client $client;
+    
+    /** @var array<string, string> */
     private array $headers;
 
     public function __construct(string $token)
@@ -32,6 +34,7 @@ class DeSECClient
     }
 
     /**
+     * @return array<string, mixed>
      * @throws DeSECException
      */
     public function listDomains(): array
@@ -40,6 +43,7 @@ class DeSECClient
     }
 
     /**
+     * @return array<string, mixed>
      * @throws DeSECException
      */
     public function createDomain(string $domainName): array
@@ -52,6 +56,7 @@ class DeSECClient
     }
 
     /**
+     * @return array<string, mixed>
      * @throws DeSECException
      */
     public function getDomain(string $domainName): array
@@ -69,6 +74,8 @@ class DeSECClient
     }
 
     /**
+     * @param list<string> $records
+     * @return array<string, mixed>
      * @throws DeSECException
      */
     public function createRRSet(
@@ -89,6 +96,7 @@ class DeSECClient
     }
 
     /**
+     * @return array<int, array<string, mixed>>
      * @throws DeSECException
      */
     public function getRRSets(string $domainName): array
@@ -97,6 +105,7 @@ class DeSECClient
     }
 
     /**
+     * @return array<string, mixed>
      * @throws DeSECException
      */
     public function getRRSet(string $domainName, string $subname, string $type): array
@@ -108,6 +117,8 @@ class DeSECClient
     }
 
     /**
+     * @param list<string> $records
+     * @return array<string, mixed>
      * @throws DeSECException
      */
     public function modifyRRSet(
@@ -144,11 +155,15 @@ class DeSECClient
     }
 
     /**
+     * @param array<int, array<string, mixed>> $rrsets
+     * @return array<string, mixed>
      * @throws DeSECException
      */
     public function bulkUpdateRRSets(string $domainName, array $rrsets): array
     {
-        return $this->request('PUT', $this->getDomainPath($domainName, 'rrsets/'), $rrsets);
+        /** @var array<string, mixed> $result */
+        $result = $this->request('PUT', $this->getDomainPath($domainName, 'rrsets/'), $rrsets);
+        return $result;
     }
 
     /**
@@ -167,6 +182,8 @@ class DeSECClient
     }
 
     /**
+     * @param array<string, mixed>|array<int, array<string, mixed>>|null $data
+     * @return mixed
      * @throws DeSECException
      */
     private function request(string $method, string $endpoint, ?array $data = null, bool $decodeJson = true)

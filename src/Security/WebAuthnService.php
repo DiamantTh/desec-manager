@@ -50,38 +50,11 @@ class WebAuthnService
         return $this->enabled && $this->rpId !== null;
     }
     
-    /**
-     * Validiert eine Domain auf gültige TLD und Format
-     */
-    private function isValidDomain(string $domain): bool
-    {
-        // Erlaubte lokale Domains für Entwicklung
-        if ($domain === 'localhost' || str_ends_with($domain, '.localhost')) {
-            return true;
-        }
-        
-        // Prüfe auf IP-Adresse (nicht erlaubt für WebAuthn)
-        if (filter_var($domain, FILTER_VALIDATE_IP)) {
-            return false;
-        }
-        
-        // Prüfe Domain-Format
-        if (!preg_match('/^[a-z0-9]+(?:[.-][a-z0-9]+)*\.[a-z]{2,}$/i', $domain)) {
-            return false;
-        }
-        
-        // Hole TLD
-        $parts = explode('.', $domain);
-        $tld = end($parts);
-        
-        // Liste bekannter TLDs (sollte regelmäßig aktualisiert werden)
-        $validTlds = ['com', 'org', 'net', 'edu', 'gov', 'mil', 'de', 'eu', /* ... */];
-        
-        return in_array(strtolower($tld), $validTlds);
-    }
     
     /**
      * Generiert eine Challenge für die Registrierung eines neuen FIDO2 Authenticators
+     * 
+     * @return array<string, mixed>
      */
     public function generateRegistrationOptions(string $username, string $userId): array 
     {
@@ -120,6 +93,9 @@ class WebAuthnService
     
     /**
      * Verifiziert die Registrierungsantwort vom Authenticator
+     * 
+     * @param array<string, mixed> $credential
+     * @return array<string, mixed>
      */
     public function verifyRegistration(array $credential): array 
     {
@@ -140,6 +116,9 @@ class WebAuthnService
     
     /**
      * Generiert eine Challenge für die Authentifizierung
+     * 
+     * @param array<int, array<string, mixed>> $allowedCredentials
+     * @return array<string, mixed>
      */
     public function generateAuthenticationOptions(array $allowedCredentials): array 
     {
@@ -161,6 +140,9 @@ class WebAuthnService
     
     /**
      * Verifiziert die Authentifizierungsantwort
+     * 
+     * @param array<string, mixed> $credential
+     * @param array<string, mixed> $storedCredential
      */
     public function verifyAuthentication(
         array $credential,

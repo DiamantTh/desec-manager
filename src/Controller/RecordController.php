@@ -13,6 +13,9 @@ class RecordController extends AbstractPageController
     private ApiKeyRepository $apiKeys;
     private DNSService $dnsService;
 
+    /**
+     * @param array<string, mixed> $config
+     */
     public function __construct(array $config)
     {
         parent::__construct($config);
@@ -151,6 +154,9 @@ class RecordController extends AbstractPageController
         $this->dnsService->deleteRRSet($userId, $apiKeyId, $domain, $subName, $type);
     }
 
+    /**
+     * @return list<string>
+     */
     private function parseRecords(string $recordsRaw): array
     {
         $lines = preg_split('/\r?\n/', $recordsRaw);
