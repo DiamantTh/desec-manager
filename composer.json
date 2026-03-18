@@ -3,9 +3,18 @@
     "description": "deSEC DNS Manager",
     "type": "project",
     "require": {
-        "php": ">=8.1",
+        "php": ">=8.3",
         "doctrine/dbal": "^3.7",
-        "guzzlehttp/guzzle": "^7.8"
+        "guzzlehttp/guzzle": "^7.8",
+        "laminas/laminas-diactoros": "^3.5",
+        "mezzio/mezzio": "^3.20",
+        "mezzio/mezzio-fastroute": "^3.11",
+        "mezzio/mezzio-twigrenderer": "^2.14",
+        "monolog/monolog": "^3.0",
+        "php-di/php-di": "^7.1",
+        "symfony/mailer": "^7.0",
+        "twig/twig": "^3.0",
+        "yosymfony/toml": "^1.0"
     },
     "autoload": {
         "psr-4": {
@@ -22,11 +31,13 @@
         "optimize-autoloader": true
     },
     "require-dev": {
-        "phpstan/phpstan": "^2.1"
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^11.0"
     },
     "scripts": {
         "phpstan": "phpstan analyse --configuration=phpstan.neon",
-        "lint": "php -l src/*.php && find src -name '*.php' -exec php -l {} \\;",
-        "test": "@phpstan"
+        "lint": "find src -name '*.php' -exec php -l {} \\;",
+        "test": "phpunit",
+        "analyse": "@phpstan"
     }
 }

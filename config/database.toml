@@ -1,0 +1,16 @@
+# DeSEC Manager — Datenbankonfiguration
+# Passwort wird aus der Umgebungsvariable DB_PASSWORD gelesen (nicht hier speichern).
+
+[database]
+driver    = "pdo_mysql"   # "pdo_mysql" oder "pdo_sqlite"
+host      = "localhost"
+port      = 3306
+name      = ""            # Datenbankname
+user      = ""            # Datenbankbenutzer
+charset   = "utf8mb4"
+collation = "utf8mb4_unicode_ci"
+
+# SQLite-Konfiguration — nur relevant wenn driver = "pdo_sqlite"
+# Pfad relativ zum Projekt-Root (nicht innerhalb von public/).
+[database.sqlite]
+path = "var/database.sqlite"

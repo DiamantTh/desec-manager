@@ -5,26 +5,19 @@ class PasswordHasher {
     /** @var array{algo: string|int, options: array<string, int>} */
     private array $config;
 
-    public function __construct() {
-        $defaults = [
+    /**
+     * @param array<string, int> $options Argon2id-Optionen (memory_cost, time_cost, threads).
+     *                                    Wird vom DI-Container via TOML-Konfiguration injiziert.
+     */
+    public function __construct(array $options = []) {
+        $this->config = [
             'algo' => PASSWORD_ARGON2ID,
             'options' => [
-                'memory_cost' => 65536,
-                'time_cost' => 4,
-                'threads' => 2,
+                'memory_cost' => (int)($options['memory_cost'] ?? 65536),
+                'time_cost'   => (int)($options['time_cost']   ?? 4),
+                'threads'     => (int)($options['threads']     ?? 2),
             ],
         ];
-
-        $configPath = __DIR__ . '/../../config/config.php';
-        if (file_exists($configPath)) {
-            $appConfig = require $configPath;
-            if (isset($appConfig['security']['algo'], $appConfig['security']['options'])) {
-                $defaults['algo'] = $appConfig['security']['algo'];
-                $defaults['options'] = array_merge($defaults['options'], $appConfig['security']['options']);
-            }
-        }
-
-        $this->config = $defaults;
     }
     
     public function hash(string $password): string {

@@ -1,0 +1,11 @@
+# DeSEC Manager — Anwendungskonfiguration
+# Kopiere config.local.toml.dist → config.local.toml für lokale Überschreibungen.
+# Sensible Werte (Passwörter, Keys) gehören in config.local.toml oder Umgebungsvariablen.
+
+[app]
+name             = "DeSEC Manager"
+domain           = ""          # z.B. "manager.example.com" — wird für WebAuthn und CSRF benötigt
+force_https      = true
+webauthn_enabled = false       # Erst aktivieren wenn web-auth/webauthn-lib installiert und konfiguriert ist
+debug            = false
+theme            = "default"   # Name des Theme-Ordners unter themes/

@@ -4,15 +4,17 @@ namespace App\Security;
 class EncryptionService 
 {
     private string $key;
-    
-    public function __construct()
+
+    /**
+     * @param string $key Base64-kodierter 32-Byte-Sodium-Schlüssel.
+     *                    Wird vom DI-Container via TOML-Konfiguration / ENCRYPTION_KEY-Env injiziert.
+     */
+    public function __construct(string $key)
     {
-        // Lade Encryption Key aus Konfiguration
-        $config = require __DIR__ . '/../../config/config.php';
-        if (empty($config['security']['encryption_key'])) {
+        if ($key === '') {
             throw new \RuntimeException('Encryption key not configured');
         }
-        $this->key = base64_decode($config['security']['encryption_key']);
+        $this->key = base64_decode($key);
     }
     
     public function encrypt(string $data): string 

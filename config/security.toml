@@ -1,0 +1,27 @@
+# DeSEC Manager — Sicherheitskonfiguration
+# ACHTUNG: encryption_key hochsensitiv — ausschließlich über ENCRYPTION_KEY-Umgebungsvariable
+# oder in config.local.toml (gitignored) setzen, niemals in dieser Datei committen.
+
+[security]
+# 32 Byte hex-kodierter Schlüssel für XSalsa20-Poly1305-Verschlüsselung (via libsodium).
+# Erzeugen: php -r "echo sodium_bin2hex(random_bytes(32));"
+encryption_key = ""
+
+# Argon2id-Parameter (OWASP-Empfehlungen — nicht ohne Grund anpassen)
+[security.password]
+algo        = "argon2id"
+memory_cost = 65536   # 64 MB
+time_cost   = 4       # 4 Iterationen
+threads     = 2
+
+# Session-Cookie-Sicherheitsflags
+[security.session]
+secure   = true        # Nur über HTTPS senden
+httponly = true        # Kein JavaScript-Zugriff auf Cookie
+samesite = "Strict"   # CSRF-Schutz via SameSite
+lifetime = 3600       # Session-Gültigkeit in Sekunden (1 Stunde)
+
+# Rate-Limiting für den Login-Endpunkt (APCu-basiert)
+[security.rate_limit]
+login_max_attempts   = 10    # Maximale Fehlversuche pro IP
+login_window_seconds = 900   # Beobachtungszeitraum in Sekunden (15 Minuten)

@@ -1,0 +1,14 @@
+RewriteEngine On
+
+# Statische Dateien direkt ausliefern
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+# Alles andere an index.php weiterleiten
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]
+
+# Sicherheits-Header (werden zusätzlich via Mezzio SecurityHeadersMiddleware gesetzt)
+Header always set X-Content-Type-Options "nosniff"
+Header always set X-Frame-Options "DENY"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
