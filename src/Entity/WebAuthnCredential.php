@@ -1,70 +1,83 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Entity;
 
 /**
- * WebAuthnCredential Entity - Repräsentiert ein WebAuthn/FIDO2 Credential.
- * 
- * Diese Klasse dient als Datenstruktur für WebAuthn Credentials. Die eigentliche
- * Datenbankanbindung erfolgt über Doctrine DBAL.
- * 
+ * WebAuthnCredential — Repräsentiert ein gespeichertes FIDO2-/WebAuthn-Credential.
+ *
+ * Wird als Datenstruktur für Doctrine DBAL verwendet (kein ORM).
+ *
  * Datenbank-Tabelle: webauthn_credentials
- * - id: INTEGER PRIMARY KEY AUTO_INCREMENT
- * - user_id: INTEGER NOT NULL (FK -> users.id)
- * - credential_id: VARCHAR(255) UNIQUE NOT NULL
- * - public_key: TEXT NOT NULL
- * - sign_count: INTEGER DEFAULT 0
- * - attestation_type: VARCHAR(255) NOT NULL
- * - attachment_type: VARCHAR(255) NOT NULL
- * - created_at: DATETIME NOT NULL
- * - last_used: DATETIME NULL
- * - is_active: BOOLEAN DEFAULT TRUE
- * - name: VARCHAR(255) NOT NULL
+ * ┌──────────────────────┬──────────────────────────────────────────────┐
+ * │ Spalte               │ Typ / Bedeutung                              │
+ * ├──────────────────────┼──────────────────────────────────────────────┤
+ * │ id                   │ INTEGER PK AUTO_INCREMENT                    │
+ * │ user_id              │ INTEGER NOT NULL (FK → users.id)             │
+ * │ credential_id        │ TEXT UNIQUE NOT NULL (Base64url-kodiert)      │
+ * │ public_key_cbor      │ TEXT NOT NULL (CBOR-kodierter öffentl. Key)  │
+ * │ sign_count           │ INTEGER DEFAULT 0 (Replay-Schutz)            │
+ * │ aaguid               │ VARCHAR(36) NULL (Authenticator-Typ-UUID)    │
+ * │ transports           │ TEXT NULL (JSON-Array: usb,nfc,ble,hybrid,…) │
+ * │ uv_initialized       │ INTEGER DEFAULT 0 (UV beim Registrieren?)    │
+ * │ backup_eligible      │ INTEGER DEFAULT 0 (Synced Passkey möglich?)  │
+ * │ backup_state         │ INTEGER DEFAULT 0 (Aktuell synchronisiert?)  │
+ * │ attestation_type     │ VARCHAR(32) NOT NULL (none/basic/self/…)     │
+ * │ attachment_type      │ VARCHAR(32) NULL (platform/cross-platform)   │
+ * │ name                 │ VARCHAR(255) NOT NULL (vom Nutzer vergeben)  │
+ * │ is_active            │ INTEGER DEFAULT 1                            │
+ * │ created_at           │ DATETIME NOT NULL                            │
+ * │ last_used            │ DATETIME NULL                                │
+ * └──────────────────────┴──────────────────────────────────────────────┘
+ *
+ * Feld-Glossar:
+ *   aaguid          → Authenticator Attestation GUID: identifiziert Hersteller/Modell
+ *                     (z. B. YubiKey 5 Series). Kann in FIDO MDS3 nachgeschlagen werden.
+ *   transports      → Übertragungsmedien: ["usb","nfc","ble","internal","hybrid"].
+ *                     Wird in allowCredentials.transports gesetzt → Browser wählt optimal.
+ *   uv_initialized  → Ob beim Registrieren UV (PIN/Biometrie) bereits konfiguriert war.
+ *   backup_eligible → BE-Flag: Credential kann cloud-synchronisiert werden (Passkey).
+ *   backup_state    → BS-Flag: Credential ist aktuell tatsächlich synchronisiert.
  */
 class WebAuthnCredential
 {
     private ?int $id = null;
-    private User $user;
+    private int $userId;
     private string $credentialId;
-    private string $publicKey;
+    private string $publicKeyCbor;
     private int $signCount = 0;
-    private string $attestationType;
-    private string $attachmentType;
-    private \DateTime $createdAt;
-    private ?\DateTime $lastUsed = null;
-    private bool $isActive = true;
+    private ?string $aaguid = null;
+    /** @var list<string> */
+    private array $transports = [];
+    private bool $uvInitialized = false;
+    private bool $backupEligible = false;
+    private bool $backupState = false;
+    private string $attestationType = 'none';
+    private ?string $attachmentType = null;
     private string $name;
+    private bool $isActive = true;
+    private \DateTimeImmutable $createdAt;
+    private ?\DateTimeImmutable $lastUsed = null;
 
-    public function __construct()
+    public function __construct(string $name, int $userId)
     {
-        $this->createdAt = new \DateTime();
+        $this->name      = $name;
+        $this->userId    = $userId;
+        $this->createdAt = new \DateTimeImmutable();
     }
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    // ------------------------------------------------------------------
+    // Getter / Setter
+    // ------------------------------------------------------------------
 
-    public function setId(int $id): self
-    {
-        $this->id = $id;
-        return $this;
-    }
+    public function getId(): ?int { return $this->id; }
 
-    public function getUser(): User
-    {
-        return $this->user;
-    }
+    public function setId(int $id): self { $this->id = $id; return $this; }
 
-    public function setUser(User $user): self
-    {
-        $this->user = $user;
-        return $this;
-    }
+    public function getUserId(): int { return $this->userId; }
 
-    public function getCredentialId(): string
-    {
-        return $this->credentialId;
-    }
+    public function getCredentialId(): string { return $this->credentialId; }
 
     public function setCredentialId(string $credentialId): self
     {
@@ -72,21 +85,15 @@ class WebAuthnCredential
         return $this;
     }
 
-    public function getPublicKey(): string
-    {
-        return $this->publicKey;
-    }
+    public function getPublicKeyCbor(): string { return $this->publicKeyCbor; }
 
-    public function setPublicKey(string $publicKey): self
+    public function setPublicKeyCbor(string $publicKeyCbor): self
     {
-        $this->publicKey = $publicKey;
+        $this->publicKeyCbor = $publicKeyCbor;
         return $this;
     }
 
-    public function getSignCount(): int
-    {
-        return $this->signCount;
-    }
+    public function getSignCount(): int { return $this->signCount; }
 
     public function setSignCount(int $signCount): self
     {
@@ -94,10 +101,57 @@ class WebAuthnCredential
         return $this;
     }
 
-    public function getAttestationType(): string
+    /** AAGUID als UUID-String (z. B. "f8a011f3-8c0a-4d15-8006-17111f9edc7d") oder null */
+    public function getAaguid(): ?string { return $this->aaguid; }
+
+    public function setAaguid(?string $aaguid): self
     {
-        return $this->attestationType;
+        $this->aaguid = $aaguid;
+        return $this;
     }
+
+    /** @return list<string> */
+    public function getTransports(): array { return $this->transports; }
+
+    /** @param list<string> $transports */
+    public function setTransports(array $transports): self
+    {
+        $this->transports = $transports;
+        return $this;
+    }
+
+    /**
+     * Ob der Authenticator bei der Registrierung UV (PIN/Biometrie)
+     * eingerichtet hatte — relevant wenn user_verification = "required".
+     */
+    public function isUvInitialized(): bool { return $this->uvInitialized; }
+
+    public function setUvInitialized(bool $uvInitialized): self
+    {
+        $this->uvInitialized = $uvInitialized;
+        return $this;
+    }
+
+    /** BE-Flag: Credential kann in einer Cloud synchronisiert werden */
+    public function isBackupEligible(): bool { return $this->backupEligible; }
+
+    public function setBackupEligible(bool $backupEligible): self
+    {
+        $this->backupEligible = $backupEligible;
+        return $this;
+    }
+
+    /** BS-Flag: Credential ist aktuell synchronisiert */
+    public function isBackupState(): bool { return $this->backupState; }
+
+    public function setBackupState(bool $backupState): self
+    {
+        $this->backupState = $backupState;
+        return $this;
+    }
+
+    /** Attestationstyp: none | self | basic | attca | anonca | ecdaa */
+    public function getAttestationType(): string { return $this->attestationType; }
 
     public function setAttestationType(string $attestationType): self
     {
@@ -105,37 +159,25 @@ class WebAuthnCredential
         return $this;
     }
 
-    public function getAttachmentType(): string
-    {
-        return $this->attachmentType;
-    }
+    /** platform (eingebaut) | cross-platform (externer Key) | null (unbekannt) */
+    public function getAttachmentType(): ?string { return $this->attachmentType; }
 
-    public function setAttachmentType(string $attachmentType): self
+    public function setAttachmentType(?string $attachmentType): self
     {
         $this->attachmentType = $attachmentType;
         return $this;
     }
 
-    public function getCreatedAt(): \DateTime
-    {
-        return $this->createdAt;
-    }
+    /** Vom Nutzer vergebener Name (z. B. "YubiKey 5C", "iPhone Face ID") */
+    public function getName(): string { return $this->name; }
 
-    public function getLastUsed(): ?\DateTime
+    public function setName(string $name): self
     {
-        return $this->lastUsed;
-    }
-
-    public function setLastUsed(?\DateTime $lastUsed): self
-    {
-        $this->lastUsed = $lastUsed;
+        $this->name = $name;
         return $this;
     }
 
-    public function isActive(): bool
-    {
-        return $this->isActive;
-    }
+    public function isActive(): bool { return $this->isActive; }
 
     public function setIsActive(bool $isActive): self
     {
@@ -143,14 +185,95 @@ class WebAuthnCredential
         return $this;
     }
 
-    public function getName(): string
+    public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
+
+    public function getLastUsed(): ?\DateTimeImmutable { return $this->lastUsed; }
+
+    public function setLastUsed(\DateTimeImmutable $lastUsed): self
     {
-        return $this->name;
+        $this->lastUsed = $lastUsed;
+        return $this;
     }
 
-    public function setName(string $name): self
+    // ------------------------------------------------------------------
+    // UX-Hilfsmethoden
+    // ------------------------------------------------------------------
+
+    /**
+     * Liefert ein für die Oberfläche geeignetes Anzeigelabel.
+     * Zeigt Attachment-Typ, Transport-Medien und Sync-Status an.
+     */
+    public function getDisplayLabel(): string
     {
-        $this->name = $name;
-        return $this;
+        $parts = [$this->name];
+
+        if ($this->attachmentType === 'platform') {
+            $parts[] = '(eingebaut)';
+        } elseif ($this->attachmentType === 'cross-platform' && $this->transports !== []) {
+            $parts[] = '(' . implode('/', $this->transports) . ')';
+        }
+
+        if ($this->backupEligible) {
+            $parts[] = $this->backupState ? '☁ sync' : '☁ sync-fähig';
+        }
+
+        return implode(' ', $parts);
+    }
+
+    /**
+     * Serialisiert die Entity für Doctrine DBAL (INSERT / UPDATE).
+     *
+     * @return array<string, mixed>
+     */
+    public function toDbRow(): array
+    {
+        return [
+            'user_id'          => $this->userId,
+            'credential_id'    => $this->credentialId,
+            'public_key_cbor'  => $this->publicKeyCbor,
+            'sign_count'       => $this->signCount,
+            'aaguid'           => $this->aaguid,
+            'transports'       => $this->transports !== [] ? json_encode($this->transports) : null,
+            'uv_initialized'   => (int)$this->uvInitialized,
+            'backup_eligible'  => (int)$this->backupEligible,
+            'backup_state'     => (int)$this->backupState,
+            'attestation_type' => $this->attestationType,
+            'attachment_type'  => $this->attachmentType,
+            'name'             => $this->name,
+            'is_active'        => (int)$this->isActive,
+            'created_at'       => $this->createdAt->format('Y-m-d H:i:s'),
+            'last_used'        => $this->lastUsed?->format('Y-m-d H:i:s'),
+        ];
+    }
+
+    /**
+     * Hydratiert eine Entity aus einer Datenbankzeile (Doctrine DBAL fetch).
+     *
+     * @param array<string, mixed> $row
+     */
+    public static function fromDbRow(array $row): self
+    {
+        $self = new self((string)($row['name'] ?? ''), (int)($row['user_id'] ?? 0));
+        $self->id              = isset($row['id']) ? (int)$row['id'] : null;
+        $self->credentialId    = (string)($row['credential_id'] ?? '');
+        $self->publicKeyCbor   = (string)($row['public_key_cbor'] ?? '');
+        $self->signCount       = (int)($row['sign_count'] ?? 0);
+        $self->aaguid          = isset($row['aaguid']) ? (string)$row['aaguid'] : null;
+        /** @var list<string> $transports */
+        $transports            = isset($row['transports'])
+            ? (json_decode((string)$row['transports'], true) ?? [])
+            : [];
+        $self->transports      = $transports;
+        $self->uvInitialized   = (bool)($row['uv_initialized'] ?? false);
+        $self->backupEligible  = (bool)($row['backup_eligible'] ?? false);
+        $self->backupState     = (bool)($row['backup_state'] ?? false);
+        $self->attestationType = (string)($row['attestation_type'] ?? 'none');
+        $self->attachmentType  = isset($row['attachment_type']) ? (string)$row['attachment_type'] : null;
+        $self->isActive        = (bool)($row['is_active'] ?? true);
+        $self->createdAt       = new \DateTimeImmutable((string)($row['created_at'] ?? 'now'));
+        $self->lastUsed        = isset($row['last_used'])
+            ? new \DateTimeImmutable((string)$row['last_used'])
+            : null;
+        return $self;
     }
 }

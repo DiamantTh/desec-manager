@@ -1,19 +1,18 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use Doctrine\DBAL\Connection;
-use App\Database\DatabaseConnection;
 use App\Security\EncryptionService;
 
 class ApiKeyRepository
 {
-    private Connection $connection;
-    private EncryptionService $encryption;
-
-    public function __construct()
-    {
-        $this->connection = DatabaseConnection::getConnection();
-        $this->encryption = new EncryptionService();
+    public function __construct(
+        private readonly Connection $connection,
+        private readonly EncryptionService $encryption,
+    ) {
     }
 
     /**

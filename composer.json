@@ -12,8 +12,10 @@
         "mezzio/mezzio-twigrenderer": "^2.14",
         "monolog/monolog": "^3.0",
         "php-di/php-di": "^7.1",
+        "spomky-labs/otphp": "^11.4",
         "symfony/mailer": "^7.0",
         "twig/twig": "^3.0",
+        "web-auth/webauthn-lib": "^5.2",
         "yosymfony/toml": "^1.0"
     },
     "autoload": {

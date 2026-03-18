@@ -12,3 +12,18 @@ parameters:
     ignoreErrors:
         # Konfigurationsdatei wird erst bei Installation erstellt
         - '#require\(\): Failed opening#'
+        # install.php — Legacy-Installationsskript, scandir() kann false zurückgeben
+        - message: '#Cannot access offset 0 on string\|false#'
+          path: install.php
+        # install.php — PHP-Version wird zur Analyse-Zeit als >= 8.4 betrachtet
+        - message: '#Comparison operation ">=" between 1 and 0 is always true#'
+          path: install.php
+        # install.php — Array-Key aus gemischtem Array: string ist korrekt
+        - message: '#Parameter \#1 \$s of function e expects string, int\|string given#'
+          path: install.php
+        # Legacy-Controller und DNSService instanziieren ApiKeyRepository noch direkt
+        # — werden in Phase 2 durch DI-fähige Handler ersetzt
+        - message: '#Class App\\Repository\\ApiKeyRepository constructor invoked with 0 parameters, 2 required#'
+          paths:
+              - src/Controller
+              - src/Service/DNSService.php

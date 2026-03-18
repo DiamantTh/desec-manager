@@ -18,6 +18,8 @@ use App\Repository\DomainRepository;
 use App\Repository\UserRepository;
 use App\Security\EncryptionService;
 use App\Security\PasswordHasher;
+use App\Security\TotpService;
+use App\Security\WebAuthnService;
 use App\Service\DeSECProxyService;
 use App\Service\DNSService;
 use App\Service\ThemeManager;
@@ -247,6 +249,18 @@ $builder->addDefinitions([
             'time_cost'   => (int)($cfg['time_cost']   ?? 4),
             'threads'     => (int)($cfg['threads']     ?? 2),
         ]);
+    }),
+
+    WebAuthnService::class => DI\factory(function (ContainerInterface $c): WebAuthnService {
+        /** @var array<string, mixed> $cfg */
+        $cfg = $c->get('config');
+        return new WebAuthnService($cfg);
+    }),
+
+    TotpService::class => DI\factory(function (ContainerInterface $c): TotpService {
+        /** @var array<string, mixed> $cfg */
+        $cfg = $c->get('config');
+        return new TotpService($cfg);
     }),
 
     // -------------------------------------------------------------------------
