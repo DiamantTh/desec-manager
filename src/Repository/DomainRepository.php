@@ -1,16 +1,15 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use Doctrine\DBAL\Connection;
-use App\Database\DatabaseConnection;
 
 class DomainRepository
 {
-    private Connection $connection;
-    
-    public function __construct()
+    public function __construct(private readonly Connection $connection)
     {
-        $this->connection = DatabaseConnection::getConnection();
     }
     
     /**

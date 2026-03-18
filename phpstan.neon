@@ -27,3 +27,11 @@ parameters:
           paths:
               - src/Controller
               - src/Service/DNSService.php
+        # Legacy-Controller instanziieren Repositories noch ohne DI-Argumente
+        # — werden in Phase 2 durch PSR-15-Handler ersetzt
+        - message: '#Class App\\Repository\\(UserRepository|DomainRepository) constructor invoked with 0 parameters, 1 required#'
+          path: src/Controller
+        - message: '#Class App\\Service\\DNSService constructor invoked with 0 parameters, 2 required#'
+          path: src/Controller
+        - message: '#Class App\\Service\\DeSECProxyService constructor invoked with 0 parameters, 2 required#'
+          path: src/Controller

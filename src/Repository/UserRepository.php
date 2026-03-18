@@ -1,16 +1,15 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Repository;
 
 use Doctrine\DBAL\Connection;
-use App\Database\DatabaseConnection;
 
-class UserRepository 
+class UserRepository
 {
-    private Connection $connection;
-    
-    public function __construct() 
+    public function __construct(private readonly Connection $connection)
     {
-        $this->connection = DatabaseConnection::getConnection();
     }
     
     /**
@@ -106,5 +105,51 @@ class UserRepository
     public function isEmailAvailable(string $email): bool
     {
         return $this->findByEmail($email) === null;
+    }
+
+    public function updatePassword(int $userId, string $passwordHash): void
+    {
+        $this->connection->update(
+            'users',
+            ['password_hash' => $passwordHash],
+            ['id' => $userId]
+        );
+    }
+
+    public function setActive(int $userId, bool $active): void
+    {
+        $this->connection->update(
+            'users',
+            ['is_active' => $active ? 1 : 0],
+            ['id' => $userId]
+        );
+    }
+
+    public function delete(int $userId): void
+    {
+        $this->connection->delete('users', ['id' => $userId]);
+    }
+
+    public function enableTotp(int $userId, string $secret, string $algorithm = 'sha256', int $digits = 8): void
+    {
+        $this->connection->update(
+            'users',
+            [
+                'totp_secret'    => $secret,
+                'totp_enabled'   => 1,
+                'totp_algorithm' => $algorithm,
+                'totp_digits'    => $digits,
+            ],
+            ['id' => $userId]
+        );
+    }
+
+    public function disableTotp(int $userId): void
+    {
+        $this->connection->update(
+            'users',
+            ['totp_enabled' => 0, 'totp_secret' => null],
+            ['id' => $userId]
+        );
     }
 }

@@ -32,10 +32,10 @@ return static function (
     ContainerInterface $container
 ): void {
     // --- Sicherheits-Header (für alle Requests, vor dem Routing) ---
-    // $app->pipe(\App\Middleware\SecurityHeadersMiddleware::class);
+    $app->pipe(\App\Middleware\SecurityHeadersMiddleware::class);
 
     // --- Session-Initialisierung mit config/security.toml-Flags ---
-    // $app->pipe(\App\Middleware\SessionMiddleware::class);
+    $app->pipe(\App\Middleware\SessionMiddleware::class);
 
     // --- Routing: Route aus dem Request ableiten ---
     $app->pipe(RouteMiddleware::class);

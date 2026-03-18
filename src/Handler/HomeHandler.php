@@ -10,14 +10,15 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * Root-Handler: Leitet angemeldete User auf /dashboard, andere auf /auth/login.
- *
- * @todo Phase 2: Session-Prüfung und Weiterleitung implementieren.
+ * HomeHandler — leitet / auf /dashboard oder /auth/login weiter.
  */
 class HomeHandler implements RequestHandlerInterface
 {
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
+        if (!empty($_SESSION['user_id'])) {
+            return new RedirectResponse('/dashboard');
+        }
         return new RedirectResponse('/auth/login');
     }
 }

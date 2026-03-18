@@ -13,9 +13,24 @@ declare(strict_types=1);
  */
 
 use App\Config\TomlLoader;
+use App\Handler\AdminHandler;
+use App\Handler\AuthHandler;
+use App\Handler\DashboardHandler;
+use App\Handler\DomainHandler;
+use App\Handler\HomeHandler;
+use App\Handler\KeyHandler;
+use App\Handler\ProfileHandler;
+use App\Handler\RecordHandler;
+use App\Handler\TotpApiHandler;
+use App\Handler\WebAuthnApiHandler;
+use App\Middleware\AuthMiddleware;
+use App\Middleware\SecurityHeadersMiddleware;
+use App\Middleware\SessionMiddleware;
 use App\Repository\ApiKeyRepository;
 use App\Repository\DomainRepository;
 use App\Repository\UserRepository;
+use App\Repository\WebAuthnCredentialRepository;
+use App\Service\SystemHealthService;
 use App\Security\EncryptionService;
 use App\Security\PasswordHasher;
 use App\Security\TotpService;
@@ -266,15 +281,53 @@ $builder->addDefinitions([
     // -------------------------------------------------------------------------
     // Repositories (Doctrine DBAL, kein ORM)
     // -------------------------------------------------------------------------
-    UserRepository::class   => DI\autowire(),
-    ApiKeyRepository::class => DI\autowire(),
-    DomainRepository::class => DI\autowire(),
+    UserRepository::class               => DI\autowire(),
+    ApiKeyRepository::class             => DI\autowire(),
+    DomainRepository::class             => DI\autowire(),
+    WebAuthnCredentialRepository::class => DI\autowire(),
 
     // -------------------------------------------------------------------------
     // Anwendungsdienste
     // -------------------------------------------------------------------------
-    DNSService::class       => DI\autowire(),
-    DeSECProxyService::class => DI\autowire(),
+    DNSService::class          => DI\autowire(),
+    DeSECProxyService::class   => DI\autowire(),
+    SystemHealthService::class => DI\autowire(),
+
+    // -------------------------------------------------------------------------
+    // Middleware
+    // -------------------------------------------------------------------------
+    SecurityHeadersMiddleware::class => DI\create(SecurityHeadersMiddleware::class),
+
+    SessionMiddleware::class => DI\factory(function (ContainerInterface $c): SessionMiddleware {
+        return new SessionMiddleware($c->get('config'));
+    }),
+
+    AuthMiddleware::class => DI\create(AuthMiddleware::class),
+
+    // -------------------------------------------------------------------------
+    // PSR-15-Handler
+    // -------------------------------------------------------------------------
+    HomeHandler::class => DI\autowire(),
+
+    AuthHandler::class => DI\factory(function (ContainerInterface $c): AuthHandler {
+        return new AuthHandler(
+            $c->get(ThemeManager::class),
+            $c->get(UserRepository::class),
+            $c->get(WebAuthnCredentialRepository::class),
+            $c->get(TotpService::class),
+            $c->get(PasswordHasher::class),
+            $c->get('config'),
+        );
+    }),
+
+    DashboardHandler::class   => DI\autowire(),
+    DomainHandler::class      => DI\autowire(),
+    RecordHandler::class      => DI\autowire(),
+    KeyHandler::class         => DI\autowire(),
+    AdminHandler::class       => DI\autowire(),
+    ProfileHandler::class     => DI\autowire(),
+    WebAuthnApiHandler::class => DI\autowire(),
+    TotpApiHandler::class     => DI\autowire(),
 
     ThemeManager::class => DI\factory(function (ContainerInterface $c): ThemeManager {
         /** @var array<string, mixed> $cfg */

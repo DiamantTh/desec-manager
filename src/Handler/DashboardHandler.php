@@ -4,20 +4,39 @@ declare(strict_types=1);
 
 namespace App\Handler;
 
-use Laminas\Diactoros\Response\HtmlResponse;
+use App\Repository\ApiKeyRepository;
+use App\Repository\DomainRepository;
+use App\Service\SystemHealthService;
+use App\Service\ThemeManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-/**
- * Dashboard-Handler: Übersicht nach dem Login.
- *
- * @todo Phase 2: DashboardController-Logik hierher migrieren.
- */
-class DashboardHandler implements RequestHandlerInterface
+class DashboardHandler extends AbstractHandler implements RequestHandlerInterface
 {
+    public function __construct(
+        ThemeManager $theme,
+        private readonly DomainRepository $domains,
+        private readonly ApiKeyRepository $apiKeys,
+        private readonly SystemHealthService $systemHealth,
+    ) {
+        parent::__construct($theme);
+    }
+
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        return new HtmlResponse('<h1>Dashboard – TODO Phase 2</h1>', 501);
+        $userId    = $this->userId();
+        $domainList = $this->domains->findByUserId($userId);
+        $keyList    = $this->apiKeys->findByUserId($userId);
+
+        return $this->render('dashboard/index', [
+            'stats'       => [
+                'domains' => count($domainList),
+                'apiKeys' => count($keyList),
+            ],
+            'domains'     => array_slice($domainList, 0, 5),
+            'apiKeys'     => array_slice($keyList, 0, 5),
+            'cacheStatus' => $this->systemHealth->getCacheStatus(),
+        ]);
     }
 }

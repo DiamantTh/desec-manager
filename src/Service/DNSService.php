@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
 
 use App\DeSEC\DeSECClient;
@@ -10,13 +12,10 @@ use RuntimeException;
 
 class DNSService
 {
-    private ApiKeyRepository $apiKeys;
-    private DomainRepository $domains;
-
-    public function __construct()
-    {
-        $this->apiKeys = new ApiKeyRepository();
-        $this->domains = new DomainRepository();
+    public function __construct(
+        private readonly ApiKeyRepository $apiKeys,
+        private readonly DomainRepository $domains,
+    ) {
     }
 
     /**

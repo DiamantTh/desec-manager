@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service;
 
 use App\Repository\DomainRepository;
@@ -7,13 +9,10 @@ use RuntimeException;
 
 class DeSECProxyService
 {
-    private DNSService $dnsService;
-    private DomainRepository $domains;
-
-    public function __construct()
-    {
-        $this->dnsService = new DNSService();
-        $this->domains = new DomainRepository();
+    public function __construct(
+        private readonly DNSService $dnsService,
+        private readonly DomainRepository $domains,
+    ) {
     }
 
     /**

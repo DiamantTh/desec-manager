@@ -4,20 +4,65 @@ declare(strict_types=1);
 
 namespace App\Handler;
 
-use Laminas\Diactoros\Response\HtmlResponse;
+use App\Repository\ApiKeyRepository;
+use App\Service\ThemeManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-/**
- * Key-Handler: API-Schlüssel auflisten, erstellen und widerrufen.
- *
- * @todo Phase 2: KeyController-Logik hierher migrieren.
- */
-class KeyHandler implements RequestHandlerInterface
+class KeyHandler extends AbstractHandler implements RequestHandlerInterface
 {
+    public function __construct(
+        ThemeManager $theme,
+        private readonly ApiKeyRepository $apiKeys,
+    ) {
+        parent::__construct($theme);
+    }
+
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        return new HtmlResponse('<h1>API-Keys – TODO Phase 2</h1>', 501);
+        $userId  = $this->userId();
+        $message = null;
+        $messageType = 'is-success';
+
+        if ($request->getMethod() === 'POST') {
+            $body   = $request->getParsedBody();
+            $action = $this->bodyString($body, 'action');
+
+            try {
+                if ($action === 'create') {
+                    $name   = $this->bodyString($body, 'name');
+                    $apiKey = $this->bodyString($body, 'api_key');
+
+                    if ($name === '' || $apiKey === '') {
+                        throw new \InvalidArgumentException('Name und API-Key werden benötigt.');
+                    }
+
+                    $this->apiKeys->create([
+                        'user_id' => $userId,
+                        'name'    => $name,
+                        'api_key' => $apiKey,
+                    ]);
+                    $message = 'API-Key wurde gespeichert.';
+
+                } elseif ($action === 'deactivate') {
+                    $keyId = $this->bodyInt($body, 'key_id');
+                    if ($keyId === 0) {
+                        throw new \InvalidArgumentException('API-Key nicht gefunden.');
+                    }
+                    $this->apiKeys->deactivate($keyId, $userId);
+                    $message = 'API-Key wurde deaktiviert.';
+                }
+            } catch (\Throwable $e) {
+                $message     = $e->getMessage();
+                $messageType = 'is-danger';
+            }
+        }
+
+        return $this->render('keys/index', [
+            'apiKeys'     => $this->apiKeys->findByUserId($userId),
+            'message'     => $message,
+            'messageType' => $messageType,
+        ]);
     }
 }
