@@ -61,6 +61,24 @@ abstract class AbstractHandler
         return (string) ob_get_clean();
     }
 
+    /**
+     * Rendert einen optionalen Theme-Partial inline (gibt direkt aus).
+     * Wird im Template als $this->renderPartial(...) aufgerufen.
+     * Gibt nichts aus, wenn kein Partial existiert (Extension-Point-Semantik).
+     *
+     * @param array<string, mixed> $data  Zusätzliche Variablen für das Partial
+     */
+    public function renderPartial(string $partial, array $data = []): void
+    {
+        $path = $this->theme->resolvePartial($partial);
+        if ($path === null) {
+            return;
+        }
+        $data['theme'] = $this->theme;
+        extract($data, EXTR_SKIP);
+        require $path;
+    }
+
     // -------------------------------------------------------------------------
     // HTTP-Hilfsmethoden
     // -------------------------------------------------------------------------

@@ -80,7 +80,7 @@ class ProfileHandler extends AbstractHandler implements RequestHandlerInterface
     ): void {
         $current  = $this->bodyString($body, 'current_password');
         $new      = $this->bodyString($body, 'new_password');
-        $confirm  = $this->bodyString($body, 'confirm_password');
+        $confirm  = $this->bodyString($body, 'new_password_confirm');
 
         if ($current === '' || $new === '' || $confirm === '') {
             throw new \InvalidArgumentException('Bitte alle Felder ausfüllen.');

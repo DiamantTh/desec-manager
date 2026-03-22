@@ -58,10 +58,6 @@ use Mezzio\Router\Middleware\DispatchMiddlewareFactory;
 use Mezzio\Router\Middleware\RouteMiddleware;
 use Mezzio\Router\Middleware\RouteMiddlewareFactory;
 use Mezzio\Router\RouterInterface;
-use Mezzio\Template\TemplateRendererInterface;
-use Mezzio\Twig\TwigEnvironmentFactory;
-use Mezzio\Twig\TwigRenderer;
-use Mezzio\Twig\TwigRendererFactory;
 use Monolog\Handler\StreamHandler;
 use Monolog\Level;
 use Monolog\Logger;
@@ -75,29 +71,10 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mailer\Transport;
-use Twig\Environment;
 
 // --- Konfiguration aus TOML-Dateien laden ---
 $tomlLoader = new TomlLoader(dirname(__DIR__) . '/config');
 $appConfig  = $tomlLoader->load();
-
-// Mezzio-spezifische Konfiguration einbetten (vom mezzio-twigrenderer erwartet)
-$appConfig['templates'] = [
-    'extension' => 'php',
-    'paths'     => [
-        'app'    => [dirname(__DIR__) . '/templates'],
-        'error'  => [dirname(__DIR__) . '/templates/error'],
-    ],
-];
-
-$appConfig['twig'] = [
-    'cache_dir'          => dirname(__DIR__) . '/var/cache/twig',
-    'auto_reload'        => (bool)($appConfig['app']['debug'] ?? false),
-    'autoescape'         => 'html',
-    'autoescape_service' => null,
-    'globals'            => [],
-    'extensions'         => [],
-];
 
 // --- Container aufbauen ---
 $builder = new ContainerBuilder();
@@ -147,19 +124,6 @@ $builder->addDefinitions([
     NotFoundHandler::class => DI\factory(function (ContainerInterface $c): NotFoundHandler {
         return (new NotFoundHandlerFactory())($c);
     }),
-
-    // -------------------------------------------------------------------------
-    // Template-Renderer (Twig via mezzio-twigrenderer)
-    // -------------------------------------------------------------------------
-    Environment::class => DI\factory(function (ContainerInterface $c): Environment {
-        return (new TwigEnvironmentFactory())($c);
-    }),
-
-    TwigRenderer::class => DI\factory(function (ContainerInterface $c): TwigRenderer {
-        return (new TwigRendererFactory())($c);
-    }),
-
-    TemplateRendererInterface::class => DI\get(TwigRenderer::class),
 
     // -------------------------------------------------------------------------
     // Datenbankverbindung (Doctrine DBAL)

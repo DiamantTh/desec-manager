@@ -1,6 +1,7 @@
 parameters:
     level: 8
     phpVersion: 80400
+    memoryLimit: 512M
     paths:
         - src
         - index.php

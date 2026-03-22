@@ -220,6 +220,10 @@ function processStep5(): array
             ['created_at','string',['length'=>32,'notnull'=>false]],
             ['last_login','string',['length'=>32,'notnull'=>false]],
             ['is_active','boolean',['default'=>true]], ['is_admin','boolean',['default'=>false]],
+            ['totp_secret','string',['length'=>255,'notnull'=>false,'default'=>null]],
+            ['totp_enabled','boolean',['default'=>false]],
+            ['totp_algorithm','string',['length'=>16,'default'=>'sha256']],
+            ['totp_digits','integer',['default'=>8]],
         ] as [$col,$type,$opts]) { $t->addColumn($col, $type, $opts); }
         $t->setPrimaryKey(['id']);
         $t->addUniqueIndex(['username']);
@@ -247,6 +251,24 @@ function processStep5(): array
         $d->setPrimaryKey(['id']);
         $d->addForeignKeyConstraint('users', ['user_id'], ['id'], ['onDelete'=>'CASCADE']);
         $d->addUniqueIndex(['domain_name']);
+
+        // webauthn_credentials
+        $w = $schema->createTable('webauthn_credentials');
+        foreach ([
+            ['id','integer',['autoincrement'=>true]],
+            ['user_id','integer',[]],
+            ['credential_id','string',['length'=>512]],
+            ['name','string',['length'=>255]],
+            ['public_key_cbor','text',[]],
+            ['sign_count','integer',['default'=>0]],
+            ['aaguid','string',['length'=>64,'notnull'=>false,'default'=>null]],
+            ['is_active','boolean',['default'=>true]],
+            ['created_at','string',['length'=>32,'notnull'=>false]],
+            ['last_used','string',['length'=>32,'notnull'=>false,'default'=>null]],
+        ] as [$col,$type,$opts]) { $w->addColumn($col, $type, $opts); }
+        $w->setPrimaryKey(['id']);
+        $w->addUniqueIndex(['credential_id']);
+        $w->addForeignKeyConstraint('users', ['user_id'], ['id'], ['onDelete'=>'CASCADE']);
 
         foreach ($schema->toSql($conn->getDatabasePlatform()) as $sql) {
             $conn->executeStatement($sql);
