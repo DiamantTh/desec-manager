@@ -8,6 +8,7 @@ use App\Repository\UserRepository;
 use App\Repository\WebAuthnCredentialRepository;
 use App\Security\PasswordHasher;
 use App\Security\TotpService;
+use App\Security\UserKeyManager;
 use App\Service\ThemeManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -38,6 +39,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
         private readonly WebAuthnCredentialRepository $webAuthnCredentials,
         private readonly TotpService $totp,
         private readonly PasswordHasher $passwordHasher,
+        private readonly UserKeyManager $userKeyManager,
         private readonly array $config,
     ) {
         parent::__construct($theme);
@@ -99,6 +101,17 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
         }
 
         $userId = (int) $user['id'];
+
+        // User-Key entsperren (per-User-Verschlüsselung, Fehler führen zum App-Key-Fallback)
+        $b64Salt    = (string) ($user['enc_key_salt']    ?? '');
+        $b64Wrapped = (string) ($user['enc_key_wrapped'] ?? '');
+        if ($b64Salt !== '' && $b64Wrapped !== '') {
+            try {
+                $this->userKeyManager->unlockFromLogin($password, $b64Salt, $b64Wrapped);
+            } catch (\Throwable) {
+                // Key-Entsperrung fehlgeschlagen — Login dennoch erlauben (Fallback auf App-Key)
+            }
+        }
 
         // --- MFA prüfen: WebAuthn hat Vorrang vor TOTP ---
         $hasWebAuthn = $this->webAuthnCredentials->countActiveByUserId($userId) > 0;
@@ -229,6 +242,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
         $_SESSION['username'] = $username;
         $_SESSION['is_admin'] = $isAdmin;
 
+        $this->userKeyManager->promoteToSession();
         $this->users->updateLastLogin($userId);
     }
 

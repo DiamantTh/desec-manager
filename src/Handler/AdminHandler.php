@@ -6,6 +6,7 @@ namespace App\Handler;
 
 use App\Repository\UserRepository;
 use App\Security\PasswordHasher;
+use App\Security\UserKeyManager;
 use App\Service\ThemeManager;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -18,6 +19,7 @@ class AdminHandler extends AbstractHandler implements RequestHandlerInterface
         ThemeManager $theme,
         private readonly UserRepository $users,
         private readonly PasswordHasher $passwordHasher,
+        private readonly UserKeyManager $userKeyManager,
     ) {
         parent::__construct($theme);
     }
@@ -87,12 +89,15 @@ class AdminHandler extends AbstractHandler implements RequestHandlerInterface
             throw new \RuntimeException('E-Mail-Adresse wird bereits verwendet.');
         }
 
-        $this->users->create([
+        $userId = $this->users->create([
             'username'      => $username,
             'email'         => $email,
             'password_hash' => $this->passwordHasher->hash($password),
             'is_admin'      => true,
             'is_active'     => true,
         ]);
+
+        $keyData = $this->userKeyManager->initForNewUser($password);
+        $this->users->updateWrappedKey($userId, $keyData['salt'], $keyData['wrapped_key']);
     }
 }

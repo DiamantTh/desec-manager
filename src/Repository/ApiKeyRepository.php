@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
-use Doctrine\DBAL\Connection;
+use App\Entity\DecryptedApiKey;
 use App\Security\EncryptionService;
+use App\Security\UserKeyManager;
+use Doctrine\DBAL\Connection;
 
 class ApiKeyRepository
 {
     public function __construct(
         private readonly Connection $connection,
         private readonly EncryptionService $encryption,
+        private readonly UserKeyManager $userKeyManager,
     ) {
     }
 
@@ -75,7 +78,8 @@ class ApiKeyRepository
      */
     public function create(array $keyData): int
     {
-        $encryptedKey = $this->encryption->encrypt($keyData['api_key']);
+        $sessionKey   = $this->userKeyManager->getRawSessionKey();
+        $encryptedKey = $this->encryption->encrypt($keyData['api_key'], $sessionKey);
 
         $this->connection->insert('api_keys', [
             'user_id' => $keyData['user_id'],
@@ -107,12 +111,38 @@ class ApiKeyRepository
     }
 
     /**
+     * Entschlüsselt den api_key-Wert einer Zeile.
+     * Verwendet den per-User-Session-Key wenn verfügbar, sonst den App-Key.
+     *
      * @param array<string, mixed> $row
      * @return array<string, mixed>
      */
     public function decryptKey(array $row): array
     {
-        $row['api_key'] = $this->encryption->decrypt($row['api_key']);
+        $sessionKey   = $this->userKeyManager->getRawSessionKey();
+        $row['api_key'] = $this->encryption->decrypt((string) $row['api_key'], $sessionKey);
         return $row;
+    }
+
+    /**
+     * Lädt einen API-Key entschlüsselt als Value-Object zurück.
+     * Der Klartext-Key wird im Destruktor per sodium_memzero() aus dem RAM gelöscht.
+     */
+    public function findDecryptedById(int $id, int $userId): ?DecryptedApiKey
+    {
+        $row = $this->findByIdForUser($id, $userId);
+        if ($row === null) {
+            return null;
+        }
+
+        $sessionKey = $this->userKeyManager->getRawSessionKey();
+        $plain      = $this->encryption->decrypt((string) $row['api_key'], $sessionKey);
+
+        return new DecryptedApiKey(
+            (int) $row['id'],
+            (int) $row['user_id'],
+            (string) $row['name'],
+            $plain,
+        );
     }
 }

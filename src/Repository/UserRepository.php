@@ -152,4 +152,17 @@ class UserRepository
             ['id' => $userId]
         );
     }
+
+    /**
+     * Speichert Salt und Wrapped-Key des per-User-Encryption-Keys.
+     * Wird bei Anlage eines neuen Users und bei Passwortänderung aufgerufen.
+     */
+    public function updateWrappedKey(int $userId, string $b64Salt, string $b64WrappedKey): void
+    {
+        $this->connection->update(
+            'users',
+            ['enc_key_salt' => $b64Salt, 'enc_key_wrapped' => $b64WrappedKey],
+            ['id' => $userId]
+        );
+    }
 }

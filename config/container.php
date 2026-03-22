@@ -34,6 +34,7 @@ use App\Service\SystemHealthService;
 use App\Security\EncryptionService;
 use App\Security\PasswordHasher;
 use App\Security\TotpService;
+use App\Security\UserKeyManager;
 use App\Security\WebAuthnService;
 use App\Service\DeSECProxyService;
 use App\Service\DNSService;
@@ -242,6 +243,8 @@ $builder->addDefinitions([
         return new TotpService($cfg);
     }),
 
+    UserKeyManager::class => DI\autowire(),
+
     // -------------------------------------------------------------------------
     // Repositories (Doctrine DBAL, kein ORM)
     // -------------------------------------------------------------------------
@@ -280,6 +283,7 @@ $builder->addDefinitions([
             $c->get(WebAuthnCredentialRepository::class),
             $c->get(TotpService::class),
             $c->get(PasswordHasher::class),
+            $c->get(UserKeyManager::class),
             $c->get('config'),
         );
     }),

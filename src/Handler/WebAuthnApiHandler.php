@@ -6,6 +6,7 @@ namespace App\Handler;
 
 use App\Repository\UserRepository;
 use App\Repository\WebAuthnCredentialRepository;
+use App\Security\UserKeyManager;
 use App\Security\WebAuthnService;
 use App\Service\ThemeManager;
 use Laminas\Diactoros\Response\JsonResponse;
@@ -36,6 +37,7 @@ class WebAuthnApiHandler extends AbstractHandler implements RequestHandlerInterf
         private readonly WebAuthnService $webAuthn,
         private readonly WebAuthnCredentialRepository $credentials,
         private readonly UserRepository $users,
+        private readonly UserKeyManager $userKeyManager,
     ) {
         parent::__construct($theme);
     }
@@ -172,6 +174,7 @@ class WebAuthnApiHandler extends AbstractHandler implements RequestHandlerInterf
                     $_SESSION['user_id']  = $userId;
                     $_SESSION['username'] = (string) ($user['username'] ?? '');
                     $_SESSION['is_admin'] = (bool)  ($user['is_admin']  ?? false);
+                    $this->userKeyManager->promoteToSession();
                     $this->users->updateLastLogin($userId);
                 }
             }

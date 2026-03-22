@@ -7,6 +7,7 @@ namespace App\Handler;
 use App\Repository\UserRepository;
 use App\Repository\WebAuthnCredentialRepository;
 use App\Security\PasswordHasher;
+use App\Security\UserKeyManager;
 use App\Service\ThemeManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -25,6 +26,7 @@ class ProfileHandler extends AbstractHandler implements RequestHandlerInterface
         private readonly UserRepository $users,
         private readonly WebAuthnCredentialRepository $webAuthnCredentials,
         private readonly PasswordHasher $passwordHasher,
+        private readonly UserKeyManager $userKeyManager,
     ) {
         parent::__construct($theme);
     }
@@ -96,5 +98,11 @@ class ProfileHandler extends AbstractHandler implements RequestHandlerInterface
         }
 
         $this->users->updatePassword($userId, $this->passwordHasher->hash($new));
+
+        // Verschlüsselungsschlüssel mit neuem Passwort neu verpacken (kein Re-Encrypt aller API-Keys)
+        if ($this->userKeyManager->hasSessionKey()) {
+            $keyData = $this->userKeyManager->reWrapOnPasswordChange($new);
+            $this->users->updateWrappedKey($userId, $keyData['salt'], $keyData['wrapped_key']);
+        }
     }
 }

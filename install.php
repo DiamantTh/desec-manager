@@ -224,6 +224,8 @@ function processStep5(): array
             ['totp_enabled','boolean',['default'=>false]],
             ['totp_algorithm','string',['length'=>16,'default'=>'sha256']],
             ['totp_digits','integer',['default'=>8]],
+            ['enc_key_salt','string',['length'=>64,'notnull'=>false,'default'=>null]],
+            ['enc_key_wrapped','text',['notnull'=>false,'default'=>null]],
         ] as [$col,$type,$opts]) { $t->addColumn($col, $type, $opts); }
         $t->setPrimaryKey(['id']);
         $t->addUniqueIndex(['username']);
@@ -281,6 +283,28 @@ function processStep5(): array
             'username' => $admin['username'], 'password_hash' => $hash,
             'email' => $admin['email'], 'is_admin' => 1, 'is_active' => 1, 'created_at' => $now,
         ]);
+
+        // Verschlüsselungsschlüssel für Admin-Account generieren (Keybase-Muster)
+        $adminId    = (int) $conn->lastInsertId();
+        $encSalt    = base64_encode(random_bytes(SODIUM_CRYPTO_PWHASH_SALTBYTES));
+        $saltRaw    = (string) base64_decode($encSalt, true);
+        $wrapKey    = sodium_crypto_pwhash(
+            SODIUM_CRYPTO_SECRETBOX_KEYBYTES,
+            $admin['password'],
+            $saltRaw,
+            SODIUM_CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE,
+            SODIUM_CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE,
+        );
+        $userKey    = sodium_crypto_secretbox_keygen();
+        $nonce      = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
+        $encWrapped = base64_encode($nonce . sodium_crypto_secretbox($userKey, $nonce, $wrapKey));
+        sodium_memzero($wrapKey);
+        sodium_memzero($userKey);
+        $conn->update(
+            'users',
+            ['enc_key_salt' => $encSalt, 'enc_key_wrapped' => $encWrapped],
+            ['id' => $adminId],
+        );
 
         // Config schreiben
         $dbSection = ['driver'=>$db['driver'],'charset'=>'utf8mb4','collation'=>'utf8mb4_unicode_ci'];

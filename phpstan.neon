@@ -1,7 +1,6 @@
 parameters:
     level: 8
     phpVersion: 80400
-    memoryLimit: 512M
     paths:
         - src
         - index.php
@@ -9,6 +8,7 @@ parameters:
         - status.php
     excludePaths:
         - vendor
+        - src/Controller
     reportUnmatchedIgnoredErrors: false
     ignoreErrors:
         # Konfigurationsdatei wird erst bei Installation erstellt
