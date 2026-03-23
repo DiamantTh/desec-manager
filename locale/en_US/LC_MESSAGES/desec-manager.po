@@ -370,3 +370,6 @@ msgstr ""
 
 msgid "Template not found"
 msgstr ""
+
+msgid "At least 12 characters."
+msgstr ""

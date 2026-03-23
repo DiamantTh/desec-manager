@@ -15,7 +15,7 @@
                 <p class="has-text-weight-semibold"><?= __('Created at') ?></p>
                 <p><?= htmlspecialchars($user['created_at'] ?? '', ENT_QUOTES, 'UTF-8') ?></p>
 
-                <p class="has-text-weight-semibold mt-4"><?= __('Last Login') ?></p>
+                <p class="has-text-weight-semibold mt-4"><?= __('Last login') ?></p>
                 <p><?= htmlspecialchars($user['last_login'] ?? __('Never'), ENT_QUOTES, 'UTF-8') ?></p>
             </div>
         </div>

@@ -372,3 +372,6 @@ msgstr "Langue"
 msgid "Template not found"
 msgstr "Modèle introuvable"
 
+
+msgid "At least 12 characters."
+msgstr "Au moins 12 caractères."

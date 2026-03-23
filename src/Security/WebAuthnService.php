@@ -32,13 +32,13 @@ use Webauthn\TrustPath\EmptyTrustPath;
 use App\Entity\WebAuthnCredential;
 
 /**
- * WebAuthnService — produktionsreife FIDO2/WebAuthn-Implementierung via webauthn-lib v5.
+ * WebAuthnService — production-ready FIDO2/WebAuthn implementation via webauthn-lib v5.
  *
- * Registrierung (2 Schritte):
- *   1. generateRegistrationOptions()  → schickt PublicKeyCredentialCreationOptions JSON an Browser
- *   2. verifyRegistration()           → validiert die Authenticator-Antwort, liefert WebAuthnCredential
+ * Registration (2 steps):
+ *   1. generateRegistrationOptions()  → sends PublicKeyCredentialCreationOptions JSON to the browser
+ *   2. verifyRegistration()           → validates the authenticator response, returns WebAuthnCredential
  *
- * Authentifizierung (2 Schritte):
+ * Authentication (2 steps):
  *   1. generateAuthenticationOptions() → schickt PublicKeyCredentialRequestOptions JSON an Browser
  *   2. verifyAuthentication()          → validiert die Authenticator-Antwort, liefert aktualisierten Source
  *
@@ -64,7 +64,7 @@ class WebAuthnService
     private readonly array $algorithms;
 
     /**
-     * @param array<string, mixed> $config  Vollständige TOML-Konfiguration (Schlüssel 'app' und 'security')
+     * @param array<string, mixed> $config  Full TOML configuration array (keys 'app' and 'security')
      */
     public function __construct(array $config)
     {
@@ -95,13 +95,13 @@ class WebAuthnService
     }
 
     // =========================================================================
-    // Öffentliche API
+    // Public API
     // =========================================================================
 
     /**
-     * Schritt 1 der Registrierung: Optionen für den Browser generieren.
+     * Step 1 of registration: generate options for the browser.
      *
-     * Das zurückgegebene Array kann direkt per json_encode() an den Browser geschickt werden.
+     * The returned array can be sent directly to the browser via json_encode().
      * Die kompletten Optionen werden in $_SESSION['webauthn_options'] gespeichert.
      *
      * @param list<WebAuthnCredential> $excludeCredentials  Bereits registrierte Keys dieses Nutzers
@@ -163,10 +163,10 @@ class WebAuthnService
     /**
      * Schritt 2 der Registrierung: Authenticator-Antwort verifizieren.
      *
-     * @param string $credentialName  Vom Nutzer vergebener Name für diesen Key
+     * @param string $credentialName  User-assigned name for this key
      * @param string $browserJson     Die rohe JSON-Antwort vom Browser (navigator.credentials.create())
-     * @return WebAuthnCredential     Vollständig befüllte Entity — muss noch persistiert werden
-     * @throws \RuntimeException      Bei fehlender Session oder ungültiger Attestation
+     * @return WebAuthnCredential     Fully populated entity — must still be persisted
+     * @throws \RuntimeException      If session data is missing or attestation is invalid
      */
     public function verifyRegistration(string $credentialName, string $browserJson): WebAuthnCredential
     {
@@ -210,7 +210,7 @@ class WebAuthnService
     }
 
     /**
-     * Schritt 1 der Authentifizierung: Optionen für den Browser generieren.
+     * Step 1 of authentication: generate options for the browser.
      *
      * @param list<WebAuthnCredential> $storedCredentials  Alle aktiven Keys des Nutzers
      * @return array<string, mixed>
@@ -251,12 +251,12 @@ class WebAuthnService
     /**
      * Schritt 2 der Authentifizierung: Authenticator-Antwort verifizieren.
      *
-     * Der zurückgegebene Source enthält den aktualisierten Signaturzähler und Backup-Status
+     * The returned source contains the updated signature counter and backup status
      * und muss vom Aufrufer in der Datenbank persistiert werden (sign_count, backup_state).
      *
      * @param string           $browserJson      Rohe JSON-Antwort vom Browser (navigator.credentials.get())
      * @param WebAuthnCredential $storedCredential Das passende gespeicherte Credential aus der DB
-     * @param string           $userHandle       Binärer User-Handle aus der DB
+     * @param string           $userHandle       Binary user handle from the database
      * @return PublicKeyCredentialSource          Aktualisierter Credential-Source (sign_count, backup_state aktuell)
      * @throws \RuntimeException                  Bei fehlender Session, falschem Credential-Typ oder Validierungsfehler
      */
@@ -319,7 +319,7 @@ class WebAuthnService
     }
 
     /**
-     * Baut den Symfony-Serializer für WebAuthn-Objekte via WebauthnSerializerFactory.
+     * Builds the Symfony serializer for WebAuthn objects via WebauthnSerializerFactory.
      */
     private function buildSerializer(): \Symfony\Component\Serializer\SerializerInterface
     {
@@ -339,7 +339,7 @@ class WebAuthnService
 
     /**
      * Rekonstruiert einen PublicKeyCredentialSource aus der gespeicherten WebAuthnCredential-Entity.
-     * Wird für die Assertion-Validierung benötigt.
+     * Required for assertion validation.
      */
     private function buildSourceFromCredential(
         WebAuthnCredential $credential,

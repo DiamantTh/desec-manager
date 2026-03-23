@@ -16,359 +16,362 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "Please enter your username and password."
-msgstr ""
+msgstr "Kérjük, adja meg felhasználónevét és jelszavát."
 
 msgid "Invalid credentials."
-msgstr ""
+msgstr "Érvénytelen bejelentkezési adatok."
 
 msgid "This account has been deactivated."
-msgstr ""
+msgstr "Ez a fiók deaktiválva lett."
 
 msgid "Please enter the code."
-msgstr ""
+msgstr "Kérjük, adja meg a kódot."
 
 msgid "Invalid code. Please try again."
-msgstr ""
+msgstr "Érvénytelen kód. Kérjük, próbálja újra."
 
 msgid "Username"
-msgstr ""
+msgstr "Felhasználónév"
 
 msgid "Password"
-msgstr ""
+msgstr "Jelszó"
 
 msgid "Sign in"
-msgstr ""
+msgstr "Bejelentkezés"
 
 msgid "Default credentials are created during installation."
-msgstr ""
+msgstr "Az alapértelmezett bejelentkezési adatok a telepítés során jönnek létre."
 
 msgid "Two-Factor Authentication"
-msgstr ""
+msgstr "Kétfaktoros hitelesítés"
 
 msgid "Please enter the current code from your authenticator app."
-msgstr ""
+msgstr "Kérjük, adja meg az aktuális kódot a hitelesítő alkalmazásából."
 
 msgid "Authentication code"
-msgstr ""
+msgstr "Hitelesítési kód"
 
 msgid "Cancel"
-msgstr ""
+msgstr "Mégse"
 
 msgid "Confirm"
-msgstr ""
+msgstr "Megerősítés"
 
 msgid "Use Security Key"
-msgstr ""
+msgstr "Biztonsági kulcs használata"
 
 msgid "Insert your security key and click Sign in."
-msgstr ""
+msgstr "Csatlakoztassa a biztonsági kulcsot, majd kattintson a Bejelentkezésre."
 
 msgid "Sign in with security key"
-msgstr ""
+msgstr "Bejelentkezés biztonsági kulccsal"
 
 msgid "Back to login"
-msgstr ""
+msgstr "Vissza a bejelentkezéshez"
 
 msgid "Waiting for key…"
-msgstr ""
+msgstr "Várakozás a kulcsra…"
 
 msgid "Retry"
-msgstr ""
+msgstr "Újra próbálkozás"
 
 msgid "Authentication cancelled or timed out."
-msgstr ""
+msgstr "A hitelesítés megszakítva vagy lejárt."
 
 msgid "An unknown error occurred."
-msgstr ""
+msgstr "Ismeretlen hiba történt."
 
 msgid "Unknown error"
-msgstr ""
+msgstr "Ismeretlen hiba"
 
 msgid "User data could not be loaded."
-msgstr ""
+msgstr "A felhasználói adatok nem tölthetők be."
 
 msgid "Profile"
-msgstr ""
+msgstr "Profil"
 
 msgid "Email"
-msgstr ""
+msgstr "E-mail"
 
 msgid "Created at"
-msgstr ""
+msgstr "Létrehozva"
 
 msgid "Last login"
-msgstr ""
+msgstr "Utolsó bejelentkezés"
 
 msgid "Never"
-msgstr ""
+msgstr "Soha"
 
 msgid "Password changed successfully."
-msgstr ""
+msgstr "A jelszó sikeresen megváltozott."
 
 msgid "Please fill in all fields."
-msgstr ""
+msgstr "Kérjük, töltse ki az összes mezőt."
 
 msgid "Current password is incorrect."
-msgstr ""
+msgstr "A jelenlegi jelszó helytelen."
 
 msgid "New password and confirmation do not match."
-msgstr ""
+msgstr "Az új jelszó és a megerősítés nem egyezik."
 
 msgid "The new password must be at least 12 characters long."
-msgstr ""
+msgstr "Az új jelszónak legalább 12 karakter hosszúnak kell lennie."
 
 msgid "Change password"
-msgstr ""
+msgstr "Jelszó módosítása"
 
 msgid "Current password"
-msgstr ""
+msgstr "Jelenlegi jelszó"
 
 msgid "New password"
-msgstr ""
+msgstr "Új jelszó"
 
 msgid "Confirm new password"
-msgstr ""
+msgstr "Új jelszó megerősítése"
 
 msgid "Save"
-msgstr ""
+msgstr "Mentés"
 
 msgid "Recent Domains"
-msgstr ""
+msgstr "Legutóbbi domainek"
 
 msgid "Recent API Keys"
-msgstr ""
+msgstr "Legutóbbi API-kulcsok"
 
 msgid "No domains registered yet."
-msgstr ""
+msgstr "Még nincs regisztrált domain."
 
 msgid "No API keys added yet."
-msgstr ""
+msgstr "Még nem lett hozzáadva API-kulcs."
 
 msgid "Active"
-msgstr ""
+msgstr "Aktív"
 
 msgid "Inactive"
-msgstr ""
+msgstr "Inaktív"
 
 msgid "Created"
-msgstr ""
+msgstr "Létrehozva"
 
 msgid "%s is active"
-msgstr ""
+msgstr "%s aktív"
 
 msgid "(JIT enabled)"
-msgstr ""
+msgstr "(JIT engedélyezve)"
 
 msgid "Domains"
-msgstr ""
+msgstr "Domainek"
 
 msgid "Actions"
-msgstr ""
+msgstr "Műveletek"
 
 msgid "Delete"
-msgstr ""
+msgstr "Törlés"
 
 msgid "No API keys"
-msgstr ""
+msgstr "Nincs API-kulcs"
 
 msgid "Add domain"
-msgstr ""
+msgstr "Domain hozzáadása"
 
 msgid "Please select"
-msgstr ""
+msgstr "Kérjük, válasszon"
 
 msgid "API Key"
-msgstr ""
+msgstr "API-kulcs"
 
 msgid "Sync with deSEC"
-msgstr ""
+msgstr "Szinkronizálás a deSEC-kel"
 
 msgid "Synchronize"
-msgstr ""
+msgstr "Szinkronizálás"
 
 msgid "Fetches domains from the deSEC account and creates missing local entries."
-msgstr ""
+msgstr "Lekéri a domaineket a deSEC-fiókból és lokálisan létrehozza a hiányzó bejegyzéseket."
 
 msgid "API keys are required first."
-msgstr ""
+msgstr "Először API-kulcsok szükségesek."
 
 msgid "API keys are required."
-msgstr ""
+msgstr "API-kulcsok szükségesek."
 
 msgid "Please select a domain and API key."
-msgstr ""
+msgstr "Kérjük, válasszon domaint és API-kulcsot."
 
 msgid "Invalid domain name."
-msgstr ""
+msgstr "Érvénytelen domain név."
 
 msgid "Domain added successfully."
-msgstr ""
+msgstr "A domain sikeresen hozzáadva."
 
 msgid "Domain and API key are required."
-msgstr ""
+msgstr "A domain és az API-kulcs kötelező."
 
 msgid "Domain removed successfully."
-msgstr ""
+msgstr "A domain sikeresen eltávolítva."
 
 msgid "Please select an API key."
-msgstr ""
+msgstr "Kérjük, válasszon API-kulcsot."
 
 msgid "Sync completed (%d added, %d removed)."
-msgstr ""
+msgstr "Szinkronizálás kész (%d hozzáadva, %d eltávolítva)."
 
 msgid "API Keys"
-msgstr ""
+msgstr "API-kulcsok"
 
 msgid "Name"
-msgstr ""
+msgstr "Név"
 
 msgid "Status"
-msgstr ""
+msgstr "Állapot"
 
 msgid "No API keys found."
-msgstr ""
+msgstr "Nem találhatók API-kulcsok."
 
 msgid "Add new API key"
-msgstr ""
+msgstr "Új API-kulcs hozzáadása"
 
 msgid "Label"
-msgstr ""
+msgstr "Cimke"
 
 msgid "Deactivate"
-msgstr ""
+msgstr "Deaktiválás"
 
 msgid "Name and API key are required."
-msgstr ""
+msgstr "A név és az API-kulcs kötelező."
 
 msgid "No domains available."
-msgstr ""
+msgstr "Nincsenek elérhető domainek."
 
 msgid "Please add a domain before managing DNS records."
-msgstr ""
+msgstr "Kérjük, adjon hozzá egy domaint a DNS-rekordok kezelése előtt."
 
 msgid "No API keys configured."
-msgstr ""
+msgstr "Nincsenek API-kulcsok beállítva."
 
 msgid "Please save at least one deSEC API key to manage DNS records."
-msgstr ""
+msgstr "Legalább egy deSEC API-kulcsot mentsen el a DNS-rekordok kezeléséhez."
 
 msgid "Update"
-msgstr ""
+msgstr "Frissítés"
 
 msgid "RRsets for %s"
-msgstr ""
+msgstr "%s RRsetjei"
 
 msgid "Subname"
-msgstr ""
+msgstr "Alnév"
 
 msgid "Type"
-msgstr ""
+msgstr "Típus"
 
 msgid "Records"
-msgstr ""
+msgstr "Rekordok"
 
 msgid "Edit"
-msgstr ""
+msgstr "Szerkesztés"
 
 msgid "Records (one entry per line)"
-msgstr ""
+msgstr "Rekordok (egy bejegyzés soronként)"
 
 msgid "TTL"
-msgstr ""
+msgstr "TTL"
 
 msgid "No RRsets found."
-msgstr ""
+msgstr "Nem találhatók RRsetek."
 
 msgid "New RRset"
-msgstr ""
+msgstr "Új RRset"
 
 msgid "@ for root"
-msgstr ""
+msgstr "@ a gyökérhez"
 
 msgid "One entry per line"
-msgstr ""
+msgstr "Egy bejegyzés soronként"
 
 msgid "Save RRset"
-msgstr ""
+msgstr "RRset mentése"
 
 msgid "Existing RRsets will be replaced."
-msgstr ""
+msgstr "A meglévő RRsetek le lesznek cserélve."
 
 msgid "Record type not supported."
-msgstr ""
+msgstr "A rekordtípus nem támogatott."
 
 msgid "At least one record must be specified."
-msgstr ""
+msgstr "Legalább egy rekordot meg kell adni."
 
 msgid "Record type missing."
-msgstr ""
+msgstr "Hiányzik a rekordtípus."
 
 msgid "Administrators"
-msgstr ""
+msgstr "Adminisztrátorok"
 
 msgid "Last Login"
-msgstr ""
+msgstr "Utolsó bejelentkezés"
 
 msgid "No administrators found."
-msgstr ""
+msgstr "Nem találhatók adminisztrátorok."
 
 msgid "Add administrator"
-msgstr ""
+msgstr "Adminisztrátor hozzáadása"
 
 msgid "The password will be hashed immediately with Argon2id."
-msgstr ""
+msgstr "A jelszó azonnal Argon2id-del lesz hash-elve."
 
 msgid "Create administrator"
-msgstr ""
+msgstr "Adminisztrátor létrehozása"
 
 msgid "Administrator created successfully."
-msgstr ""
+msgstr "Az adminisztrátor sikeresen létrehozva."
 
 msgid "User has been deactivated."
-msgstr ""
+msgstr "A felhasználó deaktiválva lett."
 
 msgid "User has been deleted."
-msgstr ""
+msgstr "A felhasználó törölve lett."
 
 msgid "Invalid email address."
-msgstr ""
+msgstr "Érvénytelen e-mail cím."
 
 msgid "Username already taken."
-msgstr ""
+msgstr "A felhasználónév már foglalt."
 
 msgid "Not authenticated."
-msgstr ""
+msgstr "Nincs hitelesítve."
 
 msgid "User not found."
-msgstr ""
+msgstr "A felhasználó nem található."
 
 msgid "No authenticator response."
-msgstr ""
+msgstr "Nincs hitelesítő válasz."
 
 msgid "No pending login process."
-msgstr ""
+msgstr "Nincs folyamatban lévő bejelentkezési folyamat."
 
 msgid "Invalid credential JSON."
-msgstr ""
+msgstr "Érvénytelen hitelesítési JSON."
 
 msgid "Unknown credential."
-msgstr ""
+msgstr "Ismeretlen hitelesítési adat."
 
 msgid "Dashboard"
-msgstr ""
+msgstr "Irányítópult"
 
 msgid "Admin"
-msgstr ""
+msgstr "Adminisztráció"
 
 msgid "Sign out"
-msgstr ""
+msgstr "Kijelentkezés"
 
 msgid "User"
-msgstr ""
+msgstr "Felhasználó"
 
 msgid "Language"
-msgstr ""
+msgstr "Nyelv"
 
 msgid "Template not found"
-msgstr ""
+msgstr "Sablon nem található"
 
+
+msgid "At least 12 characters."
+msgstr "Legalább 12 karakter."

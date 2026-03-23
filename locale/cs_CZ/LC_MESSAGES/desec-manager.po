@@ -16,359 +16,362 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
 msgid "Please enter your username and password."
-msgstr ""
+msgstr "Zadejte prosím uživatelské jméno a heslo."
 
 msgid "Invalid credentials."
-msgstr ""
+msgstr "Neplatné přihlašovací údaje."
 
 msgid "This account has been deactivated."
-msgstr ""
+msgstr "Tento účet byl deaktivován."
 
 msgid "Please enter the code."
-msgstr ""
+msgstr "Zadejte prosím kód."
 
 msgid "Invalid code. Please try again."
-msgstr ""
+msgstr "Neplatný kód. Zkuste to prosím znovu."
 
 msgid "Username"
-msgstr ""
+msgstr "Uživatelské jméno"
 
 msgid "Password"
-msgstr ""
+msgstr "Heslo"
 
 msgid "Sign in"
-msgstr ""
+msgstr "Přihlásit se"
 
 msgid "Default credentials are created during installation."
-msgstr ""
+msgstr "Výchozí přihlašovací údaje jsou vytvořeny během instalace."
 
 msgid "Two-Factor Authentication"
-msgstr ""
+msgstr "Dvoufaktorové ověřování"
 
 msgid "Please enter the current code from your authenticator app."
-msgstr ""
+msgstr "Zadejte prosím aktuální kód z vaší ověřovací aplikace."
 
 msgid "Authentication code"
-msgstr ""
+msgstr "Ověřovací kód"
 
 msgid "Cancel"
-msgstr ""
+msgstr "Zrušit"
 
 msgid "Confirm"
-msgstr ""
+msgstr "Potvrdit"
 
 msgid "Use Security Key"
-msgstr ""
+msgstr "Použít bezpečnostní klíč"
 
 msgid "Insert your security key and click Sign in."
-msgstr ""
+msgstr "Vložte bezpečnostní klíč a klikněte na Přihlásit se."
 
 msgid "Sign in with security key"
-msgstr ""
+msgstr "Přihlásit se bezpečnostním klíčem"
 
 msgid "Back to login"
-msgstr ""
+msgstr "Zpět na přihlášení"
 
 msgid "Waiting for key…"
-msgstr ""
+msgstr "Čekání na klíč…"
 
 msgid "Retry"
-msgstr ""
+msgstr "Zkusit znovu"
 
 msgid "Authentication cancelled or timed out."
-msgstr ""
+msgstr "Autentizace zrušena nebo vypršel časový limit."
 
 msgid "An unknown error occurred."
-msgstr ""
+msgstr "Došlo k neznámé chybě."
 
 msgid "Unknown error"
-msgstr ""
+msgstr "Neznámá chyba"
 
 msgid "User data could not be loaded."
-msgstr ""
+msgstr "Data uživatele nelze načíst."
 
 msgid "Profile"
-msgstr ""
+msgstr "Profil"
 
 msgid "Email"
-msgstr ""
+msgstr "E-mail"
 
 msgid "Created at"
-msgstr ""
+msgstr "Vytvořeno dne"
 
 msgid "Last login"
-msgstr ""
+msgstr "Poslední přihlášení"
 
 msgid "Never"
-msgstr ""
+msgstr "Nikdy"
 
 msgid "Password changed successfully."
-msgstr ""
+msgstr "Heslo bylo úspěšně změněno."
 
 msgid "Please fill in all fields."
-msgstr ""
+msgstr "Prosím vyplňte všechna pole."
 
 msgid "Current password is incorrect."
-msgstr ""
+msgstr "Aktuální heslo je nesprávné."
 
 msgid "New password and confirmation do not match."
-msgstr ""
+msgstr "Nové heslo a potvrzení se neshodují."
 
 msgid "The new password must be at least 12 characters long."
-msgstr ""
+msgstr "Nové heslo musí mít alespoň 12 znaků."
 
 msgid "Change password"
-msgstr ""
+msgstr "Změnit heslo"
 
 msgid "Current password"
-msgstr ""
+msgstr "Aktuální heslo"
 
 msgid "New password"
-msgstr ""
+msgstr "Nové heslo"
 
 msgid "Confirm new password"
-msgstr ""
+msgstr "Potvrdit nové heslo"
 
 msgid "Save"
-msgstr ""
+msgstr "Uložit"
 
 msgid "Recent Domains"
-msgstr ""
+msgstr "Nedávné domény"
 
 msgid "Recent API Keys"
-msgstr ""
+msgstr "Nedávné klíče API"
 
 msgid "No domains registered yet."
-msgstr ""
+msgstr "Zatím žádné domény nejsou zaregistrovány."
 
 msgid "No API keys added yet."
-msgstr ""
+msgstr "Zatím nebyly přidány žádné klíče API."
 
 msgid "Active"
-msgstr ""
+msgstr "Aktivní"
 
 msgid "Inactive"
-msgstr ""
+msgstr "Neaktivní"
 
 msgid "Created"
-msgstr ""
+msgstr "Vytvořeno"
 
 msgid "%s is active"
-msgstr ""
+msgstr "%s je aktivní"
 
 msgid "(JIT enabled)"
-msgstr ""
+msgstr "(JIT zapnuto)"
 
 msgid "Domains"
-msgstr ""
+msgstr "Domény"
 
 msgid "Actions"
-msgstr ""
+msgstr "Akce"
 
 msgid "Delete"
-msgstr ""
+msgstr "Smazat"
 
 msgid "No API keys"
-msgstr ""
+msgstr "Žádné klíče API"
 
 msgid "Add domain"
-msgstr ""
+msgstr "Přidat doménu"
 
 msgid "Please select"
-msgstr ""
+msgstr "Vyberte prosím"
 
 msgid "API Key"
-msgstr ""
+msgstr "Klíč API"
 
 msgid "Sync with deSEC"
-msgstr ""
+msgstr "Synchronizovat s deSEC"
 
 msgid "Synchronize"
-msgstr ""
+msgstr "Synchronizovat"
 
 msgid "Fetches domains from the deSEC account and creates missing local entries."
-msgstr ""
+msgstr "Načítá domény z účtu deSEC a vytváří chybějící lokální položky."
 
 msgid "API keys are required first."
-msgstr ""
+msgstr "Nejprve jsou potřeba klíče API."
 
 msgid "API keys are required."
-msgstr ""
+msgstr "Jsou potřeba klíče API."
 
 msgid "Please select a domain and API key."
-msgstr ""
+msgstr "Vyberte prosím doménu a klíč API."
 
 msgid "Invalid domain name."
-msgstr ""
+msgstr "Neplatný název domény."
 
 msgid "Domain added successfully."
-msgstr ""
+msgstr "Doména byla úspěšně přidána."
 
 msgid "Domain and API key are required."
-msgstr ""
+msgstr "Doména a klíč API jsou povinné."
 
 msgid "Domain removed successfully."
-msgstr ""
+msgstr "Doména byla úspěšně odebrána."
 
 msgid "Please select an API key."
-msgstr ""
+msgstr "Vyberte prosím klíč API."
 
 msgid "Sync completed (%d added, %d removed)."
-msgstr ""
+msgstr "Synchronizace dokončena (%d přidáno, %d odebráno)."
 
 msgid "API Keys"
-msgstr ""
+msgstr "Klíče API"
 
 msgid "Name"
-msgstr ""
+msgstr "Název"
 
 msgid "Status"
-msgstr ""
+msgstr "Stav"
 
 msgid "No API keys found."
-msgstr ""
+msgstr "Nebyly nalezeny žádné klíče API."
 
 msgid "Add new API key"
-msgstr ""
+msgstr "Přidat nový klíč API"
 
 msgid "Label"
-msgstr ""
+msgstr "Popisek"
 
 msgid "Deactivate"
-msgstr ""
+msgstr "Deaktivovat"
 
 msgid "Name and API key are required."
-msgstr ""
+msgstr "Název a klíč API jsou povinné."
 
 msgid "No domains available."
-msgstr ""
+msgstr "Nejsou k dispozici žádné domény."
 
 msgid "Please add a domain before managing DNS records."
-msgstr ""
+msgstr "Před správou DNS záznamů přidejte prosím doménu."
 
 msgid "No API keys configured."
-msgstr ""
+msgstr "Nejsou nakonfigurovány žádné klíče API."
 
 msgid "Please save at least one deSEC API key to manage DNS records."
-msgstr ""
+msgstr "Uložte prosím alespoň jeden klíč API deSEC pro správu DNS záznamů."
 
 msgid "Update"
-msgstr ""
+msgstr "Aktualizovat"
 
 msgid "RRsets for %s"
-msgstr ""
+msgstr "RRsets pro %s"
 
 msgid "Subname"
-msgstr ""
+msgstr "Podméno"
 
 msgid "Type"
-msgstr ""
+msgstr "Typ"
 
 msgid "Records"
-msgstr ""
+msgstr "Záznamy"
 
 msgid "Edit"
-msgstr ""
+msgstr "Upravit"
 
 msgid "Records (one entry per line)"
-msgstr ""
+msgstr "Záznamy (jeden záznam na řádek)"
 
 msgid "TTL"
-msgstr ""
+msgstr "TTL"
 
 msgid "No RRsets found."
-msgstr ""
+msgstr "Nebyly nalezeny žádné RRsets."
 
 msgid "New RRset"
-msgstr ""
+msgstr "Nový RRset"
 
 msgid "@ for root"
-msgstr ""
+msgstr "@ pro kořen"
 
 msgid "One entry per line"
-msgstr ""
+msgstr "Jeden záznam na řádek"
 
 msgid "Save RRset"
-msgstr ""
+msgstr "Uložit RRset"
 
 msgid "Existing RRsets will be replaced."
-msgstr ""
+msgstr "Stávající RRsets budou nahrazeny."
 
 msgid "Record type not supported."
-msgstr ""
+msgstr "Typ záznamu není podporován."
 
 msgid "At least one record must be specified."
-msgstr ""
+msgstr "Musí být zadán alespoň jeden záznam."
 
 msgid "Record type missing."
-msgstr ""
+msgstr "Chybí typ záznamu."
 
 msgid "Administrators"
-msgstr ""
+msgstr "Správci"
 
 msgid "Last Login"
-msgstr ""
+msgstr "Poslední přihlášení"
 
 msgid "No administrators found."
-msgstr ""
+msgstr "Nebyli nalezeni žádní správci."
 
 msgid "Add administrator"
-msgstr ""
+msgstr "Přidat správce"
 
 msgid "The password will be hashed immediately with Argon2id."
-msgstr ""
+msgstr "Heslo bude okamžitě zahashováno pomocí Argon2id."
 
 msgid "Create administrator"
-msgstr ""
+msgstr "Vytvořit správce"
 
 msgid "Administrator created successfully."
-msgstr ""
+msgstr "Správce byl úspěšně vytvořen."
 
 msgid "User has been deactivated."
-msgstr ""
+msgstr "Uživatel byl deaktivován."
 
 msgid "User has been deleted."
-msgstr ""
+msgstr "Uživatel byl smazán."
 
 msgid "Invalid email address."
-msgstr ""
+msgstr "Neplatná e-mailová adresa."
 
 msgid "Username already taken."
-msgstr ""
+msgstr "Uživatelské jméno je již obsazeno."
 
 msgid "Not authenticated."
-msgstr ""
+msgstr "Neautentizováno."
 
 msgid "User not found."
-msgstr ""
+msgstr "Uživatel nebyl nalezen."
 
 msgid "No authenticator response."
-msgstr ""
+msgstr "Žádná odpověď od autentizátoru."
 
 msgid "No pending login process."
-msgstr ""
+msgstr "Žádný čekající přihlašovací proces."
 
 msgid "Invalid credential JSON."
-msgstr ""
+msgstr "Neplatný JSON přihlašovacích údajů."
 
 msgid "Unknown credential."
-msgstr ""
+msgstr "Neznámé přihlašovací údaje."
 
 msgid "Dashboard"
-msgstr ""
+msgstr "Přehled"
 
 msgid "Admin"
-msgstr ""
+msgstr "Správa"
 
 msgid "Sign out"
-msgstr ""
+msgstr "Odhlásit se"
 
 msgid "User"
-msgstr ""
+msgstr "Uživatel"
 
 msgid "Language"
-msgstr ""
+msgstr "Jazyk"
 
 msgid "Template not found"
-msgstr ""
+msgstr "Šablona nenalezena"
 
+
+msgid "At least 12 characters."
+msgstr "Alespoň 12 znaků."

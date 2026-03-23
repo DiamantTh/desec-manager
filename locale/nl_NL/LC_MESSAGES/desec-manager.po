@@ -16,359 +16,362 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "Please enter your username and password."
-msgstr ""
+msgstr "Voer uw gebruikersnaam en wachtwoord in."
 
 msgid "Invalid credentials."
-msgstr ""
+msgstr "Ongeldige inloggegevens."
 
 msgid "This account has been deactivated."
-msgstr ""
+msgstr "Dit account is gedeactiveerd."
 
 msgid "Please enter the code."
-msgstr ""
+msgstr "Voer de code in."
 
 msgid "Invalid code. Please try again."
-msgstr ""
+msgstr "Ongeldige code. Probeer het opnieuw."
 
 msgid "Username"
-msgstr ""
+msgstr "Gebruikersnaam"
 
 msgid "Password"
-msgstr ""
+msgstr "Wachtwoord"
 
 msgid "Sign in"
-msgstr ""
+msgstr "Inloggen"
 
 msgid "Default credentials are created during installation."
-msgstr ""
+msgstr "Standaard inloggegevens worden aangemaakt tijdens de installatie."
 
 msgid "Two-Factor Authentication"
-msgstr ""
+msgstr "Twee-factor-authenticatie"
 
 msgid "Please enter the current code from your authenticator app."
-msgstr ""
+msgstr "Voer de huidige code in uit uw authenticator-app."
 
 msgid "Authentication code"
-msgstr ""
+msgstr "Authenticatiecode"
 
 msgid "Cancel"
-msgstr ""
+msgstr "Annuleren"
 
 msgid "Confirm"
-msgstr ""
+msgstr "Bevestigen"
 
 msgid "Use Security Key"
-msgstr ""
+msgstr "Beveiligingssleutel gebruiken"
 
 msgid "Insert your security key and click Sign in."
-msgstr ""
+msgstr "Steek uw beveiligingssleutel in en klik op Inloggen."
 
 msgid "Sign in with security key"
-msgstr ""
+msgstr "Inloggen met beveiligingssleutel"
 
 msgid "Back to login"
-msgstr ""
+msgstr "Terug naar inloggen"
 
 msgid "Waiting for key…"
-msgstr ""
+msgstr "Wachten op sleutel…"
 
 msgid "Retry"
-msgstr ""
+msgstr "Opnieuw proberen"
 
 msgid "Authentication cancelled or timed out."
-msgstr ""
+msgstr "Authenticatie geannuleerd of verlopen."
 
 msgid "An unknown error occurred."
-msgstr ""
+msgstr "Er is een onbekende fout opgetreden."
 
 msgid "Unknown error"
-msgstr ""
+msgstr "Onbekende fout"
 
 msgid "User data could not be loaded."
-msgstr ""
+msgstr "Gebruikersgegevens konden niet worden geladen."
 
 msgid "Profile"
-msgstr ""
+msgstr "Profiel"
 
 msgid "Email"
-msgstr ""
+msgstr "E-mail"
 
 msgid "Created at"
-msgstr ""
+msgstr "Aangemaakt op"
 
 msgid "Last login"
-msgstr ""
+msgstr "Laatste aanmelding"
 
 msgid "Never"
-msgstr ""
+msgstr "Nooit"
 
 msgid "Password changed successfully."
-msgstr ""
+msgstr "Wachtwoord succesvol gewijzigd."
 
 msgid "Please fill in all fields."
-msgstr ""
+msgstr "Vul alle velden in."
 
 msgid "Current password is incorrect."
-msgstr ""
+msgstr "Huidig wachtwoord is onjuist."
 
 msgid "New password and confirmation do not match."
-msgstr ""
+msgstr "Nieuw wachtwoord en bevestiging komen niet overeen."
 
 msgid "The new password must be at least 12 characters long."
-msgstr ""
+msgstr "Het nieuwe wachtwoord moet minimaal 12 tekens lang zijn."
 
 msgid "Change password"
-msgstr ""
+msgstr "Wachtwoord wijzigen"
 
 msgid "Current password"
-msgstr ""
+msgstr "Huidig wachtwoord"
 
 msgid "New password"
-msgstr ""
+msgstr "Nieuw wachtwoord"
 
 msgid "Confirm new password"
-msgstr ""
+msgstr "Nieuw wachtwoord bevestigen"
 
 msgid "Save"
-msgstr ""
+msgstr "Opslaan"
 
 msgid "Recent Domains"
-msgstr ""
+msgstr "Recente domeinen"
 
 msgid "Recent API Keys"
-msgstr ""
+msgstr "Recente API-sleutels"
 
 msgid "No domains registered yet."
-msgstr ""
+msgstr "Nog geen domeinen geregistreerd."
 
 msgid "No API keys added yet."
-msgstr ""
+msgstr "Nog geen API-sleutels toegevoegd."
 
 msgid "Active"
-msgstr ""
+msgstr "Actief"
 
 msgid "Inactive"
-msgstr ""
+msgstr "Inactief"
 
 msgid "Created"
-msgstr ""
+msgstr "Aangemaakt"
 
 msgid "%s is active"
-msgstr ""
+msgstr "%s is actief"
 
 msgid "(JIT enabled)"
-msgstr ""
+msgstr "(JIT ingeschakeld)"
 
 msgid "Domains"
-msgstr ""
+msgstr "Domeinen"
 
 msgid "Actions"
-msgstr ""
+msgstr "Acties"
 
 msgid "Delete"
-msgstr ""
+msgstr "Verwijderen"
 
 msgid "No API keys"
-msgstr ""
+msgstr "Geen API-sleutels"
 
 msgid "Add domain"
-msgstr ""
+msgstr "Domein toevoegen"
 
 msgid "Please select"
-msgstr ""
+msgstr "Selecteer"
 
 msgid "API Key"
-msgstr ""
+msgstr "API-sleutel"
 
 msgid "Sync with deSEC"
-msgstr ""
+msgstr "Synchroniseren met deSEC"
 
 msgid "Synchronize"
-msgstr ""
+msgstr "Synchroniseren"
 
 msgid "Fetches domains from the deSEC account and creates missing local entries."
-msgstr ""
+msgstr "Haalt domeinen op van het deSEC-account en maakt ontbrekende lokale vermeldingen aan."
 
 msgid "API keys are required first."
-msgstr ""
+msgstr "Eerst zijn API-sleutels vereist."
 
 msgid "API keys are required."
-msgstr ""
+msgstr "API-sleutels zijn vereist."
 
 msgid "Please select a domain and API key."
-msgstr ""
+msgstr "Selecteer een domein en API-sleutel."
 
 msgid "Invalid domain name."
-msgstr ""
+msgstr "Ongeldige domeinnaam."
 
 msgid "Domain added successfully."
-msgstr ""
+msgstr "Domein succesvol toegevoegd."
 
 msgid "Domain and API key are required."
-msgstr ""
+msgstr "Domein en API-sleutel zijn vereist."
 
 msgid "Domain removed successfully."
-msgstr ""
+msgstr "Domein succesvol verwijderd."
 
 msgid "Please select an API key."
-msgstr ""
+msgstr "Selecteer een API-sleutel."
 
 msgid "Sync completed (%d added, %d removed)."
-msgstr ""
+msgstr "Synchronisatie voltooid (%d toegevoegd, %d verwijderd)."
 
 msgid "API Keys"
-msgstr ""
+msgstr "API-sleutels"
 
 msgid "Name"
-msgstr ""
+msgstr "Naam"
 
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 msgid "No API keys found."
-msgstr ""
+msgstr "Geen API-sleutels gevonden."
 
 msgid "Add new API key"
-msgstr ""
+msgstr "Nieuwe API-sleutel toevoegen"
 
 msgid "Label"
-msgstr ""
+msgstr "Label"
 
 msgid "Deactivate"
-msgstr ""
+msgstr "Deactiveren"
 
 msgid "Name and API key are required."
-msgstr ""
+msgstr "Naam en API-sleutel zijn vereist."
 
 msgid "No domains available."
-msgstr ""
+msgstr "Geen domeinen beschikbaar."
 
 msgid "Please add a domain before managing DNS records."
-msgstr ""
+msgstr "Voeg een domein toe voordat u DNS-records beheert."
 
 msgid "No API keys configured."
-msgstr ""
+msgstr "Geen API-sleutels geconfigureerd."
 
 msgid "Please save at least one deSEC API key to manage DNS records."
-msgstr ""
+msgstr "Sla minimaal één deSEC API-sleutel op om DNS-records te beheren."
 
 msgid "Update"
-msgstr ""
+msgstr "Bijwerken"
 
 msgid "RRsets for %s"
-msgstr ""
+msgstr "RRsets voor %s"
 
 msgid "Subname"
-msgstr ""
+msgstr "Subnaam"
 
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 msgid "Records"
-msgstr ""
+msgstr "Records"
 
 msgid "Edit"
-msgstr ""
+msgstr "Bewerken"
 
 msgid "Records (one entry per line)"
-msgstr ""
+msgstr "Records (één vermelding per regel)"
 
 msgid "TTL"
-msgstr ""
+msgstr "TTL"
 
 msgid "No RRsets found."
-msgstr ""
+msgstr "Geen RRsets gevonden."
 
 msgid "New RRset"
-msgstr ""
+msgstr "Nieuw RRset"
 
 msgid "@ for root"
-msgstr ""
+msgstr "@ voor root"
 
 msgid "One entry per line"
-msgstr ""
+msgstr "Één vermelding per regel"
 
 msgid "Save RRset"
-msgstr ""
+msgstr "RRset opslaan"
 
 msgid "Existing RRsets will be replaced."
-msgstr ""
+msgstr "Bestaande RRsets worden vervangen."
 
 msgid "Record type not supported."
-msgstr ""
+msgstr "Recordtype wordt niet ondersteund."
 
 msgid "At least one record must be specified."
-msgstr ""
+msgstr "Er moet minimaal één record worden opgegeven."
 
 msgid "Record type missing."
-msgstr ""
+msgstr "Recordtype ontbreekt."
 
 msgid "Administrators"
-msgstr ""
+msgstr "Beheerders"
 
 msgid "Last Login"
-msgstr ""
+msgstr "Laatste aanmelding"
 
 msgid "No administrators found."
-msgstr ""
+msgstr "Geen beheerders gevonden."
 
 msgid "Add administrator"
-msgstr ""
+msgstr "Beheerder toevoegen"
 
 msgid "The password will be hashed immediately with Argon2id."
-msgstr ""
+msgstr "Het wachtwoord wordt onmiddellijk gehasht met Argon2id."
 
 msgid "Create administrator"
-msgstr ""
+msgstr "Beheerder aanmaken"
 
 msgid "Administrator created successfully."
-msgstr ""
+msgstr "Beheerder succesvol aangemaakt."
 
 msgid "User has been deactivated."
-msgstr ""
+msgstr "Gebruiker is gedeactiveerd."
 
 msgid "User has been deleted."
-msgstr ""
+msgstr "Gebruiker is verwijderd."
 
 msgid "Invalid email address."
-msgstr ""
+msgstr "Ongeldig e-mailadres."
 
 msgid "Username already taken."
-msgstr ""
+msgstr "Gebruikersnaam is al in gebruik."
 
 msgid "Not authenticated."
-msgstr ""
+msgstr "Niet geauthenticeerd."
 
 msgid "User not found."
-msgstr ""
+msgstr "Gebruiker niet gevonden."
 
 msgid "No authenticator response."
-msgstr ""
+msgstr "Geen authenticator-antwoord."
 
 msgid "No pending login process."
-msgstr ""
+msgstr "Geen lopend inlogproces."
 
 msgid "Invalid credential JSON."
-msgstr ""
+msgstr "Ongeldige credential JSON."
 
 msgid "Unknown credential."
-msgstr ""
+msgstr "Onbekende credential."
 
 msgid "Dashboard"
-msgstr ""
+msgstr "Dashboard"
 
 msgid "Admin"
-msgstr ""
+msgstr "Beheer"
 
 msgid "Sign out"
-msgstr ""
+msgstr "Uitloggen"
 
 msgid "User"
-msgstr ""
+msgstr "Gebruiker"
 
 msgid "Language"
-msgstr ""
+msgstr "Taal"
 
 msgid "Template not found"
-msgstr ""
+msgstr "Template niet gevonden"
 
+
+msgid "At least 12 characters."
+msgstr "Minimaal 12 tekens."

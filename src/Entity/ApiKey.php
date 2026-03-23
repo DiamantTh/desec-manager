@@ -2,16 +2,16 @@
 namespace App\Entity;
 
 /**
- * ApiKey Entity - Repräsentiert einen deSEC API-Schlüssel.
+ * ApiKey Entity — represents a deSEC API key.
  * 
- * Diese Klasse dient als Datenstruktur für API-Schlüssel. Die eigentliche
- * Datenbankanbindung erfolgt über ApiKeyRepository mit Doctrine DBAL.
+ * This class serves as a data structure for API keys. The actual
+ * database connection is handled by ApiKeyRepository with Doctrine DBAL.
  * 
  * Datenbank-Tabelle: api_keys
  * - id: INTEGER PRIMARY KEY AUTO_INCREMENT
  * - user_id: INTEGER NOT NULL (FK -> users.id)
  * - name: VARCHAR(255) NOT NULL
- * - api_key: VARCHAR(255) NOT NULL (verschlüsselt)
+ * - api_key: VARCHAR(255) NOT NULL (encrypted)
  * - created_at: DATETIME NOT NULL
  * - last_used: DATETIME NULL
  * - is_active: BOOLEAN DEFAULT TRUE

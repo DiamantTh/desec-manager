@@ -16,359 +16,362 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "Please enter your username and password."
-msgstr ""
+msgstr "Inserisci il tuo nome utente e la tua password."
 
 msgid "Invalid credentials."
-msgstr ""
+msgstr "Credenziali non valide."
 
 msgid "This account has been deactivated."
-msgstr ""
+msgstr "Questo account è stato disattivato."
 
 msgid "Please enter the code."
-msgstr ""
+msgstr "Inserisci il codice."
 
 msgid "Invalid code. Please try again."
-msgstr ""
+msgstr "Codice non valido. Riprova."
 
 msgid "Username"
-msgstr ""
+msgstr "Nome utente"
 
 msgid "Password"
-msgstr ""
+msgstr "Password"
 
 msgid "Sign in"
-msgstr ""
+msgstr "Accedi"
 
 msgid "Default credentials are created during installation."
-msgstr ""
+msgstr "Le credenziali predefinite vengono create durante l'installazione."
 
 msgid "Two-Factor Authentication"
-msgstr ""
+msgstr "Autenticazione a due fattori"
 
 msgid "Please enter the current code from your authenticator app."
-msgstr ""
+msgstr "Inserisci il codice attuale dalla tua app di autenticazione."
 
 msgid "Authentication code"
-msgstr ""
+msgstr "Codice di autenticazione"
 
 msgid "Cancel"
-msgstr ""
+msgstr "Annulla"
 
 msgid "Confirm"
-msgstr ""
+msgstr "Conferma"
 
 msgid "Use Security Key"
-msgstr ""
+msgstr "Usa chiave di sicurezza"
 
 msgid "Insert your security key and click Sign in."
-msgstr ""
+msgstr "Inserisci la tua chiave di sicurezza e clicca su Accedi."
 
 msgid "Sign in with security key"
-msgstr ""
+msgstr "Accedi con chiave di sicurezza"
 
 msgid "Back to login"
-msgstr ""
+msgstr "Torna al login"
 
 msgid "Waiting for key…"
-msgstr ""
+msgstr "In attesa della chiave…"
 
 msgid "Retry"
-msgstr ""
+msgstr "Riprova"
 
 msgid "Authentication cancelled or timed out."
-msgstr ""
+msgstr "Autenticazione annullata o scaduta."
 
 msgid "An unknown error occurred."
-msgstr ""
+msgstr "Si è verificato un errore sconosciuto."
 
 msgid "Unknown error"
-msgstr ""
+msgstr "Errore sconosciuto"
 
 msgid "User data could not be loaded."
-msgstr ""
+msgstr "Impossibile caricare i dati dell'utente."
 
 msgid "Profile"
-msgstr ""
+msgstr "Profilo"
 
 msgid "Email"
-msgstr ""
+msgstr "E-mail"
 
 msgid "Created at"
-msgstr ""
+msgstr "Creato il"
 
 msgid "Last login"
-msgstr ""
+msgstr "Ultimo accesso"
 
 msgid "Never"
-msgstr ""
+msgstr "Mai"
 
 msgid "Password changed successfully."
-msgstr ""
+msgstr "Password modificata con successo."
 
 msgid "Please fill in all fields."
-msgstr ""
+msgstr "Si prega di compilare tutti i campi."
 
 msgid "Current password is incorrect."
-msgstr ""
+msgstr "La password attuale non è corretta."
 
 msgid "New password and confirmation do not match."
-msgstr ""
+msgstr "La nuova password e la conferma non corrispondono."
 
 msgid "The new password must be at least 12 characters long."
-msgstr ""
+msgstr "La nuova password deve contenere almeno 12 caratteri."
 
 msgid "Change password"
-msgstr ""
+msgstr "Cambia password"
 
 msgid "Current password"
-msgstr ""
+msgstr "Password attuale"
 
 msgid "New password"
-msgstr ""
+msgstr "Nuova password"
 
 msgid "Confirm new password"
-msgstr ""
+msgstr "Conferma nuova password"
 
 msgid "Save"
-msgstr ""
+msgstr "Salva"
 
 msgid "Recent Domains"
-msgstr ""
+msgstr "Domini recenti"
 
 msgid "Recent API Keys"
-msgstr ""
+msgstr "Chiavi API recenti"
 
 msgid "No domains registered yet."
-msgstr ""
+msgstr "Nessun dominio registrato ancora."
 
 msgid "No API keys added yet."
-msgstr ""
+msgstr "Non è ancora stata aggiunta alcuna chiave API."
 
 msgid "Active"
-msgstr ""
+msgstr "Attivo"
 
 msgid "Inactive"
-msgstr ""
+msgstr "Inattivo"
 
 msgid "Created"
-msgstr ""
+msgstr "Creato"
 
 msgid "%s is active"
-msgstr ""
+msgstr "%s è attivo"
 
 msgid "(JIT enabled)"
-msgstr ""
+msgstr "(JIT abilitato)"
 
 msgid "Domains"
-msgstr ""
+msgstr "Domini"
 
 msgid "Actions"
-msgstr ""
+msgstr "Azioni"
 
 msgid "Delete"
-msgstr ""
+msgstr "Elimina"
 
 msgid "No API keys"
-msgstr ""
+msgstr "Nessuna chiave API"
 
 msgid "Add domain"
-msgstr ""
+msgstr "Aggiungi dominio"
 
 msgid "Please select"
-msgstr ""
+msgstr "Seleziona"
 
 msgid "API Key"
-msgstr ""
+msgstr "Chiave API"
 
 msgid "Sync with deSEC"
-msgstr ""
+msgstr "Sincronizza con deSEC"
 
 msgid "Synchronize"
-msgstr ""
+msgstr "Sincronizza"
 
 msgid "Fetches domains from the deSEC account and creates missing local entries."
-msgstr ""
+msgstr "Recupera i domini dall'account deSEC e crea le voci locali mancanti."
 
 msgid "API keys are required first."
-msgstr ""
+msgstr "Prima sono necessarie le chiavi API."
 
 msgid "API keys are required."
-msgstr ""
+msgstr "Sono necessarie le chiavi API."
 
 msgid "Please select a domain and API key."
-msgstr ""
+msgstr "Seleziona un dominio e una chiave API."
 
 msgid "Invalid domain name."
-msgstr ""
+msgstr "Nome di dominio non valido."
 
 msgid "Domain added successfully."
-msgstr ""
+msgstr "Dominio aggiunto con successo."
 
 msgid "Domain and API key are required."
-msgstr ""
+msgstr "Il dominio e la chiave API sono obbligatori."
 
 msgid "Domain removed successfully."
-msgstr ""
+msgstr "Dominio rimosso con successo."
 
 msgid "Please select an API key."
-msgstr ""
+msgstr "Seleziona una chiave API."
 
 msgid "Sync completed (%d added, %d removed)."
-msgstr ""
+msgstr "Sincronizzazione completata (%d aggiunto/i, %d rimosso/i)."
 
 msgid "API Keys"
-msgstr ""
+msgstr "Chiavi API"
 
 msgid "Name"
-msgstr ""
+msgstr "Nome"
 
 msgid "Status"
-msgstr ""
+msgstr "Stato"
 
 msgid "No API keys found."
-msgstr ""
+msgstr "Nessuna chiave API trovata."
 
 msgid "Add new API key"
-msgstr ""
+msgstr "Aggiungi nuova chiave API"
 
 msgid "Label"
-msgstr ""
+msgstr "Etichetta"
 
 msgid "Deactivate"
-msgstr ""
+msgstr "Disattiva"
 
 msgid "Name and API key are required."
-msgstr ""
+msgstr "Il nome e la chiave API sono obbligatori."
 
 msgid "No domains available."
-msgstr ""
+msgstr "Nessun dominio disponibile."
 
 msgid "Please add a domain before managing DNS records."
-msgstr ""
+msgstr "Si prega di aggiungere un dominio prima di gestire i record DNS."
 
 msgid "No API keys configured."
-msgstr ""
+msgstr "Nessuna chiave API configurata."
 
 msgid "Please save at least one deSEC API key to manage DNS records."
-msgstr ""
+msgstr "Salva almeno una chiave API deSEC per gestire i record DNS."
 
 msgid "Update"
-msgstr ""
+msgstr "Aggiorna"
 
 msgid "RRsets for %s"
-msgstr ""
+msgstr "RRset per %s"
 
 msgid "Subname"
-msgstr ""
+msgstr "Sottonome"
 
 msgid "Type"
-msgstr ""
+msgstr "Tipo"
 
 msgid "Records"
-msgstr ""
+msgstr "Record"
 
 msgid "Edit"
-msgstr ""
+msgstr "Modifica"
 
 msgid "Records (one entry per line)"
-msgstr ""
+msgstr "Record (un'entrata per riga)"
 
 msgid "TTL"
-msgstr ""
+msgstr "TTL"
 
 msgid "No RRsets found."
-msgstr ""
+msgstr "Nessun RRset trovato."
 
 msgid "New RRset"
-msgstr ""
+msgstr "Nuovo RRset"
 
 msgid "@ for root"
-msgstr ""
+msgstr "@ per la radice"
 
 msgid "One entry per line"
-msgstr ""
+msgstr "Un'entrata per riga"
 
 msgid "Save RRset"
-msgstr ""
+msgstr "Salva RRset"
 
 msgid "Existing RRsets will be replaced."
-msgstr ""
+msgstr "I RRset esistenti verranno sostituiti."
 
 msgid "Record type not supported."
-msgstr ""
+msgstr "Tipo di record non supportato."
 
 msgid "At least one record must be specified."
-msgstr ""
+msgstr "Deve essere specificato almeno un record."
 
 msgid "Record type missing."
-msgstr ""
+msgstr "Tipo di record mancante."
 
 msgid "Administrators"
-msgstr ""
+msgstr "Amministratori"
 
 msgid "Last Login"
-msgstr ""
+msgstr "Ultimo accesso"
 
 msgid "No administrators found."
-msgstr ""
+msgstr "Nessun amministratore trovato."
 
 msgid "Add administrator"
-msgstr ""
+msgstr "Aggiungi amministratore"
 
 msgid "The password will be hashed immediately with Argon2id."
-msgstr ""
+msgstr "La password verrà hashata immediatamente con Argon2id."
 
 msgid "Create administrator"
-msgstr ""
+msgstr "Crea amministratore"
 
 msgid "Administrator created successfully."
-msgstr ""
+msgstr "Amministratore creato con successo."
 
 msgid "User has been deactivated."
-msgstr ""
+msgstr "L'utente è stato disattivato."
 
 msgid "User has been deleted."
-msgstr ""
+msgstr "L'utente è stato eliminato."
 
 msgid "Invalid email address."
-msgstr ""
+msgstr "Indirizzo e-mail non valido."
 
 msgid "Username already taken."
-msgstr ""
+msgstr "Nome utente già in uso."
 
 msgid "Not authenticated."
-msgstr ""
+msgstr "Non autenticato."
 
 msgid "User not found."
-msgstr ""
+msgstr "Utente non trovato."
 
 msgid "No authenticator response."
-msgstr ""
+msgstr "Nessuna risposta dall'autenticatore."
 
 msgid "No pending login process."
-msgstr ""
+msgstr "Nessun processo di accesso in sospeso."
 
 msgid "Invalid credential JSON."
-msgstr ""
+msgstr "JSON credenziale non valido."
 
 msgid "Unknown credential."
-msgstr ""
+msgstr "Credenziale sconosciuta."
 
 msgid "Dashboard"
-msgstr ""
+msgstr "Dashboard"
 
 msgid "Admin"
-msgstr ""
+msgstr "Amministrazione"
 
 msgid "Sign out"
-msgstr ""
+msgstr "Disconnettiti"
 
 msgid "User"
-msgstr ""
+msgstr "Utente"
 
 msgid "Language"
-msgstr ""
+msgstr "Lingua"
 
 msgid "Template not found"
-msgstr ""
+msgstr "Template non trovato"
 
+
+msgid "At least 12 characters."
+msgstr "Almeno 12 caratteri."

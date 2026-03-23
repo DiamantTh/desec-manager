@@ -371,3 +371,6 @@ msgstr "Sprache"
 
 msgid "Template not found"
 msgstr "Template nicht gefunden"
+
+msgid "At least 12 characters."
+msgstr "Mindestens 12 Zeichen."

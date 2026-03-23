@@ -14,9 +14,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * WebAuthnApiHandler — JSON-API für FIDO2/WebAuthn-Operationen.
+ * WebAuthnApiHandler — JSON API for FIDO2/WebAuthn operations.
  *
- * Alle Endpunkte liefern JSON zurück (keine HTML-Responses).
+ * All endpoints return JSON (no HTML responses).
  * Authentifizierung:
  *   - Auth-Endpunkte (auth-options, verify-auth): mfa_pending oder user_id in Session
  *   - Registrierungs-/Verwaltungsendpunkte: user_id in Session (AuthMiddleware)
@@ -143,7 +143,7 @@ class WebAuthnApiHandler extends AbstractHandler implements RequestHandlerInterf
         }
 
         try {
-            // Credential-ID aus der Browser-Antwort extrahieren (vor vollständiger Validierung)
+            // Extract credential ID from the browser response (before full validation)
             $decoded = json_decode($credJson, true);
             if (!is_array($decoded) || !isset($decoded['id'])) {
                 return $this->jsonError(__('Invalid credential JSON.'));
@@ -161,7 +161,7 @@ class WebAuthnApiHandler extends AbstractHandler implements RequestHandlerInterf
             // Sign-Counter aktualisieren
             $this->credentials->updateSignCount($credentialId, $source->counter);
 
-            // Wenn MFA-Pending → Login abschließen
+            // If MFA is pending → complete the login
             if (isset($_SESSION['mfa_pending'])) {
                 $user = $this->users->findById($userId);
                 if ($user !== null) {

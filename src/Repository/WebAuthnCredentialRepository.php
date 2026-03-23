@@ -8,7 +8,7 @@ use App\Entity\WebAuthnCredential;
 use Doctrine\DBAL\Connection;
 
 /**
- * Repository für FIDO2/WebAuthn-Credentials.
+ * Repository for FIDO2/WebAuthn credentials.
  *
  * Alle Methoden arbeiten mit der Tabelle `webauthn_credentials`
  * und der WebAuthnCredential-Entity (kein ORM).
@@ -57,7 +57,7 @@ class WebAuthnCredentialRepository
     }
 
     /**
-     * Speichert eine neue Credential-Entität.
+     * Persists a new credential entity.
      */
     public function insert(WebAuthnCredential $credential, int $userId): void
     {
@@ -79,7 +79,7 @@ class WebAuthnCredentialRepository
     }
 
     /**
-     * Umbenennen eines Keys — nur wenn der User auch der Eigentümer ist.
+     * Rename a key — only if the user is also the owner.
      */
     public function rename(string $credentialId, int $userId, string $name): void
     {
@@ -91,7 +91,7 @@ class WebAuthnCredentialRepository
     }
 
     /**
-     * Weich-löschen (is_active = 0) — nur wenn der User auch der Eigentümer ist.
+     * Soft-delete (is_active = 0) — only if the user is also the owner.
      */
     public function deactivate(string $credentialId, int $userId): void
     {
@@ -104,7 +104,7 @@ class WebAuthnCredentialRepository
 
     /**
      * Anzahl der aktiven Credentials eines Nutzers.
-     * Nützlich um zu prüfen, ob WebAuthn-Login möglich ist.
+     * Useful to check whether WebAuthn login is possible.
      */
     public function countActiveByUserId(int $userId): int
     {

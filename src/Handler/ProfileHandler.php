@@ -13,9 +13,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * ProfileHandler — Profil-Ansicht, Passwortänderung und MFA-Übersicht.
+ * ProfileHandler — profile view, password change and MFA overview.
  *
- * Die FIDO2/TOTP-Verwaltung (JSON-API für JS-Aufrufe) liegt in
+ * FIDO2/TOTP management (JSON API for JS calls) is handled by
  * WebAuthnApiHandler und TotpApiHandler.
  */
 class ProfileHandler extends AbstractHandler implements RequestHandlerInterface

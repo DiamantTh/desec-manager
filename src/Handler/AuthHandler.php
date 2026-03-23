@@ -100,7 +100,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
 
         $userId = (int) $user['id'];
 
-        // --- MFA prüfen: WebAuthn hat Vorrang vor TOTP ---
+        // --- Check MFA: WebAuthn takes priority over TOTP ---
         $hasWebAuthn = $this->webAuthnCredentials->countActiveByUserId($userId) > 0;
         $hasTOTP     = !empty($user['totp_enabled']);
 

@@ -2,10 +2,10 @@
 namespace App\Entity;
 
 /**
- * UserKey Entity - Repräsentiert einen öffentlichen Schlüssel für einen Benutzer.
+ * UserKey Entity — represents a public key for a user.
  * 
- * Diese Klasse dient als Datenstruktur für SSH/GPG Schlüssel. Die eigentliche
- * Datenbankanbindung erfolgt über Doctrine DBAL.
+ * This class serves as a data structure for SSH/GPG keys. The actual
+ * database connection is handled by Doctrine DBAL.
  * 
  * Datenbank-Tabelle: user_keys
  * - id: INTEGER PRIMARY KEY AUTO_INCREMENT

@@ -16,359 +16,362 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : (n==0 || (n%100>0 && n%100<20)) ? 1 : 2);\n"
 
 msgid "Please enter your username and password."
-msgstr ""
+msgstr "Vă rugăm să introduceți numele de utilizator și parola."
 
 msgid "Invalid credentials."
-msgstr ""
+msgstr "Credențiale invalide."
 
 msgid "This account has been deactivated."
-msgstr ""
+msgstr "Acest cont a fost dezactivat."
 
 msgid "Please enter the code."
-msgstr ""
+msgstr "Vă rugăm să introduceți codul."
 
 msgid "Invalid code. Please try again."
-msgstr ""
+msgstr "Cod invalid. Vă rugăm să încercați din nou."
 
 msgid "Username"
-msgstr ""
+msgstr "Nume de utilizator"
 
 msgid "Password"
-msgstr ""
+msgstr "Parolă"
 
 msgid "Sign in"
-msgstr ""
+msgstr "Autentificare"
 
 msgid "Default credentials are created during installation."
-msgstr ""
+msgstr "Credențialele implicite sunt create în timpul instalării."
 
 msgid "Two-Factor Authentication"
-msgstr ""
+msgstr "Autentificare cu doi factori"
 
 msgid "Please enter the current code from your authenticator app."
-msgstr ""
+msgstr "Vă rugăm să introduceți codul curent din aplicația dvs. de autentificare."
 
 msgid "Authentication code"
-msgstr ""
+msgstr "Cod de autentificare"
 
 msgid "Cancel"
-msgstr ""
+msgstr "Anulează"
 
 msgid "Confirm"
-msgstr ""
+msgstr "Confirmă"
 
 msgid "Use Security Key"
-msgstr ""
+msgstr "Folosiți cheia de securitate"
 
 msgid "Insert your security key and click Sign in."
-msgstr ""
+msgstr "Introduceți cheia de securitate și faceți clic pe Autentificare."
 
 msgid "Sign in with security key"
-msgstr ""
+msgstr "Autentificare cu cheie de securitate"
 
 msgid "Back to login"
-msgstr ""
+msgstr "Înapoi la autentificare"
 
 msgid "Waiting for key…"
-msgstr ""
+msgstr "Se așteaptă cheia…"
 
 msgid "Retry"
-msgstr ""
+msgstr "Reîncercați"
 
 msgid "Authentication cancelled or timed out."
-msgstr ""
+msgstr "Autentificarea a fost anulată sau a expirat."
 
 msgid "An unknown error occurred."
-msgstr ""
+msgstr "A apărut o eroare necunoscută."
 
 msgid "Unknown error"
-msgstr ""
+msgstr "Eroare necunoscută"
 
 msgid "User data could not be loaded."
-msgstr ""
+msgstr "Datele utilizatorului nu au putut fi încărcate."
 
 msgid "Profile"
-msgstr ""
+msgstr "Profil"
 
 msgid "Email"
-msgstr ""
+msgstr "E-mail"
 
 msgid "Created at"
-msgstr ""
+msgstr "Creat la"
 
 msgid "Last login"
-msgstr ""
+msgstr "Ultima autentificare"
 
 msgid "Never"
-msgstr ""
+msgstr "Niciodată"
 
 msgid "Password changed successfully."
-msgstr ""
+msgstr "Parola a fost schimbată cu succes."
 
 msgid "Please fill in all fields."
-msgstr ""
+msgstr "Vă rugăm să completați toate câmpurile."
 
 msgid "Current password is incorrect."
-msgstr ""
+msgstr "Parola curentă este incorectă."
 
 msgid "New password and confirmation do not match."
-msgstr ""
+msgstr "Parola nouă și confirmarea nu se potrivesc."
 
 msgid "The new password must be at least 12 characters long."
-msgstr ""
+msgstr "Noua parolă trebuie să aibă cel puțin 12 caractere."
 
 msgid "Change password"
-msgstr ""
+msgstr "Schimbați parola"
 
 msgid "Current password"
-msgstr ""
+msgstr "Parola curentă"
 
 msgid "New password"
-msgstr ""
+msgstr "Parolă nouă"
 
 msgid "Confirm new password"
-msgstr ""
+msgstr "Confirmați parola nouă"
 
 msgid "Save"
-msgstr ""
+msgstr "Salvează"
 
 msgid "Recent Domains"
-msgstr ""
+msgstr "Domenii recente"
 
 msgid "Recent API Keys"
-msgstr ""
+msgstr "Chei API recente"
 
 msgid "No domains registered yet."
-msgstr ""
+msgstr "Nu există încă domenii înregistrate."
 
 msgid "No API keys added yet."
-msgstr ""
+msgstr "Nu au fost adăugate încă chei API."
 
 msgid "Active"
-msgstr ""
+msgstr "Activ"
 
 msgid "Inactive"
-msgstr ""
+msgstr "Inactiv"
 
 msgid "Created"
-msgstr ""
+msgstr "Creat"
 
 msgid "%s is active"
-msgstr ""
+msgstr "%s este activ"
 
 msgid "(JIT enabled)"
-msgstr ""
+msgstr "(JIT activat)"
 
 msgid "Domains"
-msgstr ""
+msgstr "Domenii"
 
 msgid "Actions"
-msgstr ""
+msgstr "Acțiuni"
 
 msgid "Delete"
-msgstr ""
+msgstr "Șterge"
 
 msgid "No API keys"
-msgstr ""
+msgstr "Fără chei API"
 
 msgid "Add domain"
-msgstr ""
+msgstr "Adaugă domeniu"
 
 msgid "Please select"
-msgstr ""
+msgstr "Vă rugăm să selectați"
 
 msgid "API Key"
-msgstr ""
+msgstr "Cheie API"
 
 msgid "Sync with deSEC"
-msgstr ""
+msgstr "Sincronizați cu deSEC"
 
 msgid "Synchronize"
-msgstr ""
+msgstr "Sincronizați"
 
 msgid "Fetches domains from the deSEC account and creates missing local entries."
-msgstr ""
+msgstr "Preia domeniile din contul deSEC și creează intrările locale lipsă."
 
 msgid "API keys are required first."
-msgstr ""
+msgstr "Mai întâi sunt necesare chei API."
 
 msgid "API keys are required."
-msgstr ""
+msgstr "Sunt necesare chei API."
 
 msgid "Please select a domain and API key."
-msgstr ""
+msgstr "Vă rugăm să selectați un domeniu și o cheie API."
 
 msgid "Invalid domain name."
-msgstr ""
+msgstr "Nume de domeniu invalid."
 
 msgid "Domain added successfully."
-msgstr ""
+msgstr "Domeniul a fost adăugat cu succes."
 
 msgid "Domain and API key are required."
-msgstr ""
+msgstr "Domeniul și cheia API sunt necesare."
 
 msgid "Domain removed successfully."
-msgstr ""
+msgstr "Domeniul a fost eliminat cu succes."
 
 msgid "Please select an API key."
-msgstr ""
+msgstr "Vă rugăm să selectați o cheie API."
 
 msgid "Sync completed (%d added, %d removed)."
-msgstr ""
+msgstr "Sincronizare finalizată (%d adăugat(e), %d eliminat(e))."
 
 msgid "API Keys"
-msgstr ""
+msgstr "Chei API"
 
 msgid "Name"
-msgstr ""
+msgstr "Nume"
 
 msgid "Status"
-msgstr ""
+msgstr "Stare"
 
 msgid "No API keys found."
-msgstr ""
+msgstr "Nu au fost găsite chei API."
 
 msgid "Add new API key"
-msgstr ""
+msgstr "Adaugă cheie API nouă"
 
 msgid "Label"
-msgstr ""
+msgstr "Etichetă"
 
 msgid "Deactivate"
-msgstr ""
+msgstr "Dezactivați"
 
 msgid "Name and API key are required."
-msgstr ""
+msgstr "Numele și cheia API sunt necesare."
 
 msgid "No domains available."
-msgstr ""
+msgstr "Nu sunt disponibile domenii."
 
 msgid "Please add a domain before managing DNS records."
-msgstr ""
+msgstr "Vă rugăm să adăugați un domeniu înainte de a gestiona înregistrările DNS."
 
 msgid "No API keys configured."
-msgstr ""
+msgstr "Nu există chei API configurate."
 
 msgid "Please save at least one deSEC API key to manage DNS records."
-msgstr ""
+msgstr "Salvați cel puțin o cheie API deSEC pentru a gestiona înregistrările DNS."
 
 msgid "Update"
-msgstr ""
+msgstr "Actualizați"
 
 msgid "RRsets for %s"
-msgstr ""
+msgstr "RRsets pentru %s"
 
 msgid "Subname"
-msgstr ""
+msgstr "Subnume"
 
 msgid "Type"
-msgstr ""
+msgstr "Tip"
 
 msgid "Records"
-msgstr ""
+msgstr "Înregistrări"
 
 msgid "Edit"
-msgstr ""
+msgstr "Editează"
 
 msgid "Records (one entry per line)"
-msgstr ""
+msgstr "Înregistrări (o intrare pe linie)"
 
 msgid "TTL"
-msgstr ""
+msgstr "TTL"
 
 msgid "No RRsets found."
-msgstr ""
+msgstr "Nu au fost găsite RRsets."
 
 msgid "New RRset"
-msgstr ""
+msgstr "RRset nou"
 
 msgid "@ for root"
-msgstr ""
+msgstr "@ pentru rădăcină"
 
 msgid "One entry per line"
-msgstr ""
+msgstr "O intrare pe linie"
 
 msgid "Save RRset"
-msgstr ""
+msgstr "Salvează RRset"
 
 msgid "Existing RRsets will be replaced."
-msgstr ""
+msgstr "RRset-urile existente vor fi înlocuite."
 
 msgid "Record type not supported."
-msgstr ""
+msgstr "Tipul de înregistrare nu este suportat."
 
 msgid "At least one record must be specified."
-msgstr ""
+msgstr "Trebuie specificată cel puțin o înregistrare."
 
 msgid "Record type missing."
-msgstr ""
+msgstr "Tipul de înregistrare lipsește."
 
 msgid "Administrators"
-msgstr ""
+msgstr "Administratori"
 
 msgid "Last Login"
-msgstr ""
+msgstr "Ultima autentificare"
 
 msgid "No administrators found."
-msgstr ""
+msgstr "Nu au fost găsiți administratori."
 
 msgid "Add administrator"
-msgstr ""
+msgstr "Adaugă administrator"
 
 msgid "The password will be hashed immediately with Argon2id."
-msgstr ""
+msgstr "Parola va fi hashată imediat cu Argon2id."
 
 msgid "Create administrator"
-msgstr ""
+msgstr "Creați administrator"
 
 msgid "Administrator created successfully."
-msgstr ""
+msgstr "Administratorul a fost creat cu succes."
 
 msgid "User has been deactivated."
-msgstr ""
+msgstr "Utilizatorul a fost dezactivat."
 
 msgid "User has been deleted."
-msgstr ""
+msgstr "Utilizatorul a fost șters."
 
 msgid "Invalid email address."
-msgstr ""
+msgstr "Adresă de e-mail invalidă."
 
 msgid "Username already taken."
-msgstr ""
+msgstr "Numele de utilizator este deja folosit."
 
 msgid "Not authenticated."
-msgstr ""
+msgstr "Neautentificat."
 
 msgid "User not found."
-msgstr ""
+msgstr "Utilizatorul nu a fost găsit."
 
 msgid "No authenticator response."
-msgstr ""
+msgstr "Niciun răspuns de la autentificator."
 
 msgid "No pending login process."
-msgstr ""
+msgstr "Niciun proces de autentificare în așteptare."
 
 msgid "Invalid credential JSON."
-msgstr ""
+msgstr "JSON de credențiale invalid."
 
 msgid "Unknown credential."
-msgstr ""
+msgstr "Credențiale necunoscute."
 
 msgid "Dashboard"
-msgstr ""
+msgstr "Panou de control"
 
 msgid "Admin"
-msgstr ""
+msgstr "Administrare"
 
 msgid "Sign out"
-msgstr ""
+msgstr "Deconectare"
 
 msgid "User"
-msgstr ""
+msgstr "Utilizator"
 
 msgid "Language"
-msgstr ""
+msgstr "Limbă"
 
 msgid "Template not found"
-msgstr ""
+msgstr "Șablon negăsit"
 
+
+msgid "At least 12 characters."
+msgstr "Cel puțin 12 caractere."
