@@ -64,7 +64,7 @@ function renderPreInstallPage(string $reason): void
         .dsec-hero a { color: #81d4fa; text-decoration: underline; }
         /* ── Feature cards ───────────────────────────────────── */
         .feature-icon { font-size: 1.4rem; margin-right: .4rem; }
-        .card-equal { height: 100%; border-left: 3px solid #4caf50; }
+        .card-equal { height: 100%; border-left: 3px solid #4caf50; background-color: #ffffff; color: #1a1a1a; }
         .card-equal strong { color: #1b5e20; }
         /* ── Footer ──────────────────────────────────────────── */
         .dsec-footer {

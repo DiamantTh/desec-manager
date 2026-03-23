@@ -34,12 +34,12 @@ class DeSECClient
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<int, array<string, mixed>>
      * @throws DeSECException
      */
     public function listDomains(): array
     {
-        return $this->request('GET', '');
+        return $this->fetchAllPages('');
     }
 
     /**
@@ -101,7 +101,7 @@ class DeSECClient
      */
     public function getRRSets(string $domainName): array
     {
-        return $this->request('GET', $this->getDomainPath($domainName, 'rrsets/'));
+        return $this->fetchAllPages($this->getDomainPath($domainName, 'rrsets/'));
     }
 
     /**
@@ -110,9 +110,10 @@ class DeSECClient
      */
     public function getRRSet(string $domainName, string $subname, string $type): array
     {
+        $urlSubname = ($subname === '') ? '@' : $subname;
         return $this->request(
             'GET',
-            $this->getDomainPath($domainName, sprintf('rrsets/%s/%s/', $subname, strtoupper($type)))
+            $this->getDomainPath($domainName, sprintf('rrsets/%s/%s/', $urlSubname, strtoupper($type)))
         );
     }
 
@@ -133,9 +134,10 @@ class DeSECClient
             'ttl' => $ttl
         ];
 
+        $urlSubname = ($subname === '') ? '@' : $subname;
         return $this->request(
             'PATCH',
-            $this->getDomainPath($domainName, sprintf('rrsets/%s/%s/', $subname, strtoupper($type))),
+            $this->getDomainPath($domainName, sprintf('rrsets/%s/%s/', $urlSubname, strtoupper($type))),
             $data
         );
     }
@@ -145,9 +147,10 @@ class DeSECClient
      */
     public function deleteRRSet(string $domainName, string $subname, string $type): bool
     {
+        $urlSubname = ($subname === '') ? '@' : $subname;
         $response = $this->request(
             'DELETE',
-            $this->getDomainPath($domainName, sprintf('rrsets/%s/%s/', $subname, strtoupper($type))),
+            $this->getDomainPath($domainName, sprintf('rrsets/%s/%s/', $urlSubname, strtoupper($type))),
             null,
             false
         );
@@ -176,9 +179,68 @@ class DeSECClient
             ->getContents();
     }
 
-    private function getDomainPath(string $domain, string $suffix = '/'): string
+    private function getDomainPath(string $domain, string $suffix = ''): string
     {
-        return $domain . $suffix;
+        return $domain . '/' . $suffix;
+    }
+
+    /**
+     * Fetches all pages of a paginated GET endpoint and merges the results.
+     *
+     * @return array<int, array<string, mixed>>
+     * @throws DeSECException
+     */
+    private function fetchAllPages(string $endpoint): array
+    {
+        $allResults = [];
+        $cursor = null;
+        $started = false;
+
+        do {
+            $options = [RequestOptions::HEADERS => $this->headers];
+
+            if ($cursor !== null) {
+                $options[RequestOptions::QUERY] = ['cursor' => $cursor];
+            }
+
+            try {
+                $response = $this->client->request('GET', $endpoint, $options);
+            } catch (GuzzleException $e) {
+                throw new DeSECException(
+                    'API request failed: ' . $e->getMessage(),
+                    (int) $e->getCode(),
+                    $e
+                );
+            }
+
+            /** @var mixed $body */
+            $body = json_decode($response->getBody()->getContents(), true);
+            if (is_array($body)) {
+                /** @var array<int, array<string, mixed>> $body */
+                $allResults = array_merge($allResults, $body);
+            }
+
+            $cursor = $this->extractNextCursor($response->getHeader('Link'));
+            $started = true;
+
+        } while ($cursor !== null);
+
+        return $allResults;
+    }
+
+    /**
+     * Extracts the cursor value for the "next" relation from Link headers.
+     *
+     * @param string[] $linkHeaders
+     */
+    private function extractNextCursor(array $linkHeaders): ?string
+    {
+        foreach ($linkHeaders as $header) {
+            if (preg_match('/<[^>]+[?&]cursor=([^>&\s]*)>[^;]*;\s*rel="next"/', $header, $matches)) {
+                return urldecode($matches[1]);
+            }
+        }
+        return null;
     }
 
     /**
