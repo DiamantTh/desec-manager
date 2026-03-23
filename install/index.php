@@ -132,7 +132,7 @@ function processStep2(): array
 
     // ── Datenbank ─────────────────────────────────────────────────────────────
     $driver = (string) ($_POST['db_driver'] ?? 'pdo_mysql');
-    if (!in_array($driver, ['pdo_mysql', 'pdo_sqlite'], true)) {
+    if (!in_array($driver, ['pdo_mysql', 'pdo_sqlite', 'pdo_pgsql'], true)) {
         $errors[] = 'Ungültiger Datenbank-Treiber.';
         return $errors;
     }
@@ -159,6 +159,49 @@ function processStep2(): array
             return $errors;
         }
         $_SESSION['install_db'] = ['driver' => 'pdo_sqlite', 'path' => $path];
+    } elseif ($driver === 'pdo_pgsql') {
+        $host = trim((string) ($_POST['pg_host'] ?? 'localhost'));
+        $port = (int) ($_POST['pg_port'] ?? 5432);
+        $name = trim((string) ($_POST['pg_name'] ?? ''));
+        $user = trim((string) ($_POST['pg_user'] ?? ''));
+        $pass = (string) ($_POST['pg_pass'] ?? '');
+
+        if ($host === '' || strlen($host) > 255) {
+            $errors[] = 'Hostname ungültig (1–255 Zeichen).';
+        }
+        if ($port < 1 || $port > 65535) {
+            $errors[] = 'Port muss zwischen 1 und 65535 liegen.';
+        }
+        if (!preg_match('/^[a-zA-Z0-9_]+$/', $name) || strlen($name) > 63) {
+            $errors[] = 'Datenbankname darf nur Buchstaben, Ziffern und _ enthalten (max. 63 Zeichen).';
+        }
+        if (!preg_match('/^[a-zA-Z0-9_]+$/', $user) || strlen($user) > 63) {
+            $errors[] = 'Datenbankbenutzer darf nur Buchstaben, Ziffern und _ enthalten (max. 63 Zeichen).';
+        }
+        if (!empty($errors)) {
+            return $errors;
+        }
+
+        try {
+            $pdo = new PDO(
+                "pgsql:host={$host};port={$port};dbname={$name}",
+                $user, $pass,
+                [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION]
+            );
+            unset($pdo);
+        } catch (\Exception $ex) {
+            $errors[] = 'PostgreSQL-Verbindung fehlgeschlagen: ' . e($ex->getMessage());
+            return $errors;
+        }
+
+        $_SESSION['install_db'] = [
+            'driver' => 'pdo_pgsql',
+            'host'   => $host,
+            'port'   => $port,
+            'name'   => $name,
+            'user'   => $user,
+            'pass'   => $pass,
+        ];
     } else {
         $host   = trim((string) ($_POST['db_host'] ?? 'localhost'));
         $port   = (int) ($_POST['db_port'] ?? 3306);
@@ -316,17 +359,26 @@ function processStep3(): array
             : base64_encode(random_bytes(32));
 
         // Doctrine-DBAL Verbindungsparameter
-        $params = $db['driver'] === 'pdo_sqlite'
-            ? ['driver' => 'pdo_sqlite', 'path' => $db['path']]
-            : [
-                'driver'  => 'pdo_mysql',
-                'host'    => $db['host'],
-                'port'    => (int) $db['port'],
-                'dbname'  => $db['name'],
-                'user'    => $db['user'],
-                'password'=> $db['pass'],
-                'charset' => 'utf8mb4',
-            ];
+        $params = match ($db['driver']) {
+            'pdo_sqlite' => ['driver' => 'pdo_sqlite', 'path' => $db['path']],
+            'pdo_pgsql'  => [
+                'driver'   => 'pdo_pgsql',
+                'host'     => $db['host'],
+                'port'     => (int) $db['port'],
+                'dbname'   => $db['name'],
+                'user'     => $db['user'],
+                'password' => $db['pass'],
+            ],
+            default => [
+                'driver'   => 'pdo_mysql',
+                'host'     => $db['host'],
+                'port'     => (int) $db['port'],
+                'dbname'   => $db['name'],
+                'user'     => $db['user'],
+                'password' => $db['pass'],
+                'charset'  => 'utf8mb4',
+            ],
+        };
 
         $conn   = \Doctrine\DBAL\DriverManager::getConnection($params);
         $schema = new \Doctrine\DBAL\Schema\Schema();
@@ -398,7 +450,7 @@ function processStep3(): array
         ]);
 
         // Konfigurationsdatei schreiben
-        $dbSection = ['driver' => $db['driver'], 'charset' => 'utf8mb4', 'collation' => 'utf8mb4_unicode_ci'];
+        $dbSection = ['driver' => $db['driver']];
         if ($db['driver'] === 'pdo_sqlite') {
             $dbSection['path'] = $db['path'];
         } else {
@@ -409,6 +461,11 @@ function processStep3(): array
                 'user' => $db['user'],
                 'pass' => $db['pass'],
             ];
+            // charset/collation nur für MySQL/MariaDB
+            if ($db['driver'] === 'pdo_mysql') {
+                $dbSection['charset']   = 'utf8mb4';
+                $dbSection['collation'] = 'utf8mb4_unicode_ci';
+            }
         }
 
         $cfg = [
@@ -479,10 +536,13 @@ function getRequirements(): array
 
     $hasMysql  = extension_loaded('pdo_mysql');
     $hasSqlite = extension_loaded('pdo_sqlite');
+    $hasPgsql  = extension_loaded('pdo_pgsql');
     $c['pdo_db'] = [
-        'ok'       => $hasMysql || $hasSqlite,
+        'ok'       => $hasMysql || $hasSqlite || $hasPgsql,
         'label'    => 'Datenbank-Treiber',
-        'detail'   => 'pdo_mysql: ' . ($hasMysql ? '✓' : '✗') . ' | pdo_sqlite: ' . ($hasSqlite ? '✓' : '✗'),
+        'detail'   => 'pdo_mysql: ' . ($hasMysql ? '✓' : '✗')
+                    . ' | pdo_pgsql: ' . ($hasPgsql ? '✓' : '✗')
+                    . ' | pdo_sqlite: ' . ($hasSqlite ? '✓' : '✗'),
         'critical' => true,
     ];
 
@@ -553,7 +613,8 @@ function renderAccessDenied(): void
     <link rel="stylesheet" href="../assets/css/bulma.min.css">
     <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg">
     <style>
-        body { background: linear-gradient(135deg,#e8f5e9 0%,#e3f0ff 100%); min-height:100vh; }
+        :root { --primary: #00d1b2; --primary-dark: #00c4a7; }
+        body { background: linear-gradient(135deg,#e0f9f6 0%,#e3f0ff 100%); min-height:100vh; }
         .token-card { max-width:640px; margin:3rem auto; }
         pre code { font-size:.875rem; word-break:break-all; white-space:pre-wrap; }
     </style>
@@ -563,7 +624,7 @@ function renderAccessDenied(): void
     <div class="token-card">
         <div class="has-text-centered mb-5">
             <img src="../assets/img/logo.svg" alt="DeSEC Manager" width="64" height="64">
-            <h1 class="title is-4 mt-2" style="color:#1b5e20">DeSEC Manager – Installer</h1>
+            <h1 class="title is-4 mt-2" style="color:#00a896">DeSEC Manager – Installer</h1>
         </div>
 
         <?php if ($wrongToken): ?>
@@ -593,7 +654,7 @@ function renderAccessDenied(): void
                     </div>
                 </div>
                 <button type="submit" class="button is-primary is-fullwidth mt-3"
-                        style="background:#2e7d32;border-color:#2e7d32">
+                        style="background:#00d1b2;border-color:#00c4a7">
                     🔓 Freischalten
                 </button>
             </form>
@@ -668,7 +729,8 @@ $displayStep = $isSuccess ? 4 : $step;   // 4 = Erfolgs-Anzeige
     <title>DeSEC Manager — Installation</title>
     <link rel="stylesheet" href="../assets/css/bulma.min.css">
     <style>
-        body { background: #f0f7ff; }
+        :root { --primary: #00d1b2; --primary-dark: #00c4a7; --success: #48c774; }
+        body { background: #f5f5f5; }
         .wizard-card { max-width: 820px; margin: 2rem auto; }
         .progress-bar { display: flex; gap: .5rem; margin-bottom: 2rem; }
         .progress-bar .pb-step {
@@ -676,20 +738,20 @@ $displayStep = $isSuccess ? 4 : $step;   // 4 = Erfolgs-Anzeige
             border-radius: 8px; font-size: .8rem; font-weight: 700;
             background: #e2e8f0; color: #64748b;
         }
-        .progress-bar .pb-step.done   { background: #4caf50; color: #fff; }
-        .progress-bar .pb-step.active { background: #2196f3; color: #fff; }
+        .progress-bar .pb-step.done   { background: #48c774; color: #fff; }
+        .progress-bar .pb-step.active { background: #00d1b2; color: #fff; }
         .section-divider { border: none; border-top: 2px solid #e2e8f0; margin: 1.5rem 0; }
-        .section-title { font-size: 1rem; font-weight: 700; color: #2196f3; margin-bottom: 1rem; }
+        .section-title { font-size: 1rem; font-weight: 700; color: #00d1b2; margin-bottom: 1rem; }
         code { background: #f1f5f9; padding: .1em .3em; border-radius: 4px; font-size: .875em; }
         pre  { background: #f8fafc; border-radius: 6px; padding: .75rem 1rem; font-size: .85rem; }
         .warn-left { border-left: 4px solid #ff9800; padding-left: 1rem; }
         .tag-required { display: block; width: fit-content; margin-top: .25rem; }
-        #mysql_fields, #sqlite_fields, #root_fields { transition: none; }
+        #mysql_fields, #sqlite_fields, #pgsql_fields, #root_fields { transition: none; }
     </style>
 </head>
 <body>
 <div class="wizard-card card">
-    <header class="card-header" style="background:linear-gradient(135deg,#1565c0,#0d47a1);border-radius:9px 9px 0 0">
+    <header class="card-header" style="background:linear-gradient(135deg,#00c4a7,#008a78);border-radius:9px 9px 0 0">
         <p class="card-header-title" style="color:#fff;font-size:1.1rem">🛠️ DeSEC Manager — Installation</p>
     </header>
     <div class="card-content">
@@ -786,6 +848,7 @@ $displayStep = $isSuccess ? 4 : $step;   // 4 = Erfolgs-Anzeige
                 <div class="control"><div class="select">
                     <select name="db_driver" id="db_driver" onchange="toggleDb()">
                         <option value="pdo_mysql" <?= !extension_loaded('pdo_mysql') ? 'disabled' : '' ?>>MySQL / MariaDB</option>
+                        <option value="pdo_pgsql" <?= !extension_loaded('pdo_pgsql') ? 'disabled' : '' ?>>PostgreSQL</option>
                         <option value="pdo_sqlite" <?= !extension_loaded('pdo_sqlite') ? 'disabled' : '' ?>>SQLite</option>
                     </select>
                 </div></div>
@@ -836,6 +899,39 @@ $displayStep = $isSuccess ? 4 : $step;   // 4 = Erfolgs-Anzeige
                         <label class="label">Root-Passwort</label>
                         <div class="control"><input class="input" type="password" name="db_root_pass" autocomplete="off"></div>
                     </div>
+                </div>
+            </div>
+
+            <div id="pgsql_fields" style="display:none">
+                <div class="columns">
+                    <div class="column is-three-quarters">
+                        <div class="field">
+                            <label class="label">Hostname</label>
+                            <div class="control"><input class="input" type="text" name="pg_host" value="localhost" maxlength="255"></div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="field">
+                            <label class="label">Port</label>
+                            <div class="control"><input class="input" type="number" name="pg_port" value="5432" min="1" max="65535"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Datenbankname <span class="has-text-grey is-size-7">(a-z, 0-9, _)</span></label>
+                    <div class="control"><input class="input" type="text" name="pg_name" value="desec_manager" pattern="[a-zA-Z0-9_]+" maxlength="63"></div>
+                </div>
+                <div class="field">
+                    <label class="label">Benutzer <span class="has-text-grey is-size-7">(a-z, 0-9, _)</span></label>
+                    <div class="control"><input class="input" type="text" name="pg_user" value="desec_user" pattern="[a-zA-Z0-9_]+" maxlength="63"></div>
+                </div>
+                <div class="field">
+                    <label class="label">Passwort</label>
+                    <div class="control"><input class="input" type="password" name="pg_pass" autocomplete="new-password"></div>
+                </div>
+                <div class="notification is-info is-light is-size-7">
+                    Die Datenbank und der Benutzer müssen in PostgreSQL bereits existieren.
+                    Automatisches Anlegen wird für PostgreSQL nicht unterstützt.
                 </div>
             </div>
 
@@ -939,6 +1035,7 @@ $displayStep = $isSuccess ? 4 : $step;   // 4 = Erfolgs-Anzeige
         function toggleDb() {
             var v = document.getElementById('db_driver').value;
             document.getElementById('mysql_fields').style.display  = v === 'pdo_mysql'  ? '' : 'none';
+            document.getElementById('pgsql_fields').style.display  = v === 'pdo_pgsql'  ? '' : 'none';
             document.getElementById('sqlite_fields').style.display = v === 'pdo_sqlite' ? '' : 'none';
         }
         function toggleRoot() {
@@ -978,6 +1075,9 @@ $displayStep = $isSuccess ? 4 : $step;   // 4 = Erfolgs-Anzeige
                     <td>
                         <?php if (($db['driver'] ?? '') === 'pdo_sqlite'): ?>
                             SQLite: <code><?= e($db['path'] ?? '') ?></code>
+                        <?php elseif (($db['driver'] ?? '') === 'pdo_pgsql'): ?>
+                            PostgreSQL: <code><?= e(($db['host'] ?? '') . ':' . ($db['port'] ?? 5432) . '/' . ($db['name'] ?? '')) ?></code>
+                            (Benutzer: <code><?= e($db['user'] ?? '') ?></code>)
                         <?php else: ?>
                             MySQL: <code><?= e(($db['host'] ?? '') . ':' . ($db['port'] ?? 3306) . '/' . ($db['name'] ?? '')) ?></code>
                             (Benutzer: <code><?= e($db['user'] ?? '') ?></code>)

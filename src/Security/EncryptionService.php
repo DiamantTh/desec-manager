@@ -7,12 +7,24 @@ namespace App\Security;
 /**
  * EncryptionService — symmetrische Verschlüsselung mit libsodium.
  *
- * Verwendet XSalsa20-Poly1305 (authenticated encryption).
- * Jeder Aufruf von encrypt() wählt eine neue, zufällige 24-Byte-Nonce —
- * gleiche Daten mit gleichem Schlüssel liefern immer unterschiedliche Ciphertexte.
+ * Cipher-Hierarchie (zur Laufzeit geprüft, bester verfügbarer Cipher wird gewählt):
+ *
+ *   Stufe 3 — AEGIS-256            (libsodium ≥ 1.0.19, z. B. Debian 13 / Ubuntu 24.04+)
+ *     Präfix 0x03 | 32-Byte-Key | 32-Byte-Nonce | AES-NI-beschleunigt | RFC 9826
+ *
+ *   Stufe 2 — XChaCha20-Poly1305  (libsodium ≥ 1.0.12, z. B. Debian 12 mit 1.0.18)
+ *     Präfix 0x02 | 32-Byte-Key | 24-Byte-Nonce | software-constant-time
+ *
+ *   Stufe 1 — XSalsa20-Poly1305   (secretbox, libsodium ≥ 1.0.0, letzter Ausweg)
+ *     Präfix 0x01 | 32-Byte-Key | 24-Byte-Nonce
+ *
+ *   Legacy  — XSalsa20-Poly1305   (kein Präfix-Byte, Daten vor der Versionierung)
+ *
+ * Da alle Stufen 32-Byte-Keys verwenden, sind bestehende Schlüssel
+ * direkt wiederverwendbar — keine Key-Migration notwendig.
  *
  * Schlüssel-Parameter:
- *   - Ohne $rawKey: globaler App-Schlüssel aus der TOML-Konfiguration (Fallback).
+ *   - Ohne $rawKey: globaler App-Schlüssel aus der TOML-Konfiguration.
  *   - Mit $rawKey:  expliziter 32-Byte-Rohschlüssel (z. B. per-User-Session-Key).
  *
  * Key-Ableitung (Login):
@@ -22,6 +34,11 @@ namespace App\Security;
  */
 class EncryptionService
 {
+    /** Ciphertext-Versions-Präfix-Bytes — aufsteigend = neuerer Cipher */
+    private const V3_AEGIS256   = "\x03"; // AEGIS-256 (libsodium ≥ 1.0.19)
+    private const V2_XCHACHA20  = "\x02"; // XChaCha20-Poly1305 IETF (libsodium ≥ 1.0.12)
+    private const V1_SECRETBOX  = "\x01"; // XSalsa20-Poly1305 versioned (legacy)
+
     /** Rohschlüssel (32 Byte) des globalen App-Encryption-Keys */
     private readonly string $appRawKey;
 
@@ -48,43 +65,120 @@ class EncryptionService
     // -------------------------------------------------------------------------
 
     /**
-     * Verschlüsselt $data authentifiziert mit XSalsa20-Poly1305.
+     * Verschlüsselt $data authentifiziert.
+     *
+     * Wählt zur Laufzeit den besten verfügbaren Cipher:
+     *   AEGIS-256 (libsodium ≥ 1.0.19) → XChaCha20-Poly1305 (libsodium ≥ 1.0.12) → secretbox.
+     * Das Ergebnis trägt ein 1-Byte-Versions-Präfix für transparente Multi-Cipher-Entschlüsselung.
      *
      * @param string      $data    Klartext
      * @param string|null $rawKey  Optionaler 32-Byte-Rohschlüssel; null = App-Schlüssel
-     * @return string  Base64-kodierter Ciphertext (Nonce || Ciphertext)
+     * @param string      $ad      Additional Authenticated Data (mitauthentifiziert, nicht verschlüsselt)
+     * @return string  Base64-kodierter Ciphertext (Version[1] || Nonce || Ciphertext)
      */
-    public function encrypt(string $data, ?string $rawKey = null): string
+    public function encrypt(string $data, ?string $rawKey = null, string $ad = ''): string
     {
-        $key    = $rawKey ?? $this->appRawKey;
-        $nonce  = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
+        $key = $rawKey ?? $this->appRawKey;
+
+        if (defined('SODIUM_CRYPTO_AEAD_AEGIS256_KEYBYTES')) {
+            // Stufe 3: AEGIS-256 — libsodium ≥ 1.0.19, AES-NI, RFC 9826
+            $nonce  = random_bytes(SODIUM_CRYPTO_AEAD_AEGIS256_NPUBBYTES); // 32 Byte
+            $cipher = sodium_crypto_aead_aegis256_encrypt($data, $ad, $nonce, $key);
+            sodium_memzero($data);
+            return base64_encode(self::V3_AEGIS256 . $nonce . $cipher);
+        }
+
+        if (defined('SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_KEYBYTES')) {
+            // Stufe 2: XChaCha20-Poly1305 — libsodium ≥ 1.0.12 (z. B. Debian 12)
+            $nonce  = random_bytes(SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES); // 24 Byte
+            $cipher = sodium_crypto_aead_xchacha20poly1305_ietf_encrypt($data, $ad, $nonce, $key);
+            sodium_memzero($data);
+            return base64_encode(self::V2_XCHACHA20 . $nonce . $cipher);
+        }
+
+        // Stufe 1: XSalsa20-Poly1305 (secretbox) — letzter Ausweg
+        $nonce  = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES); // 24 Byte
         $cipher = sodium_crypto_secretbox($data, $nonce, $key);
         sodium_memzero($data);
-        return base64_encode($nonce . $cipher);
+        return base64_encode(self::V1_SECRETBOX . $nonce . $cipher);
     }
 
     /**
      * Entschlüsselt und verifiziert einen mit encrypt() erzeugten Wert.
      *
-     * @param string      $encoded  Base64-kodierter Ciphertext (Nonce || Ciphertext)
+     * Unterstützt alle vier Ciphertext-Formate (rückwärtskompatibel):
+     *   0x03 = AEGIS-256              (libsodium ≥ 1.0.19)
+     *   0x02 = XChaCha20-Poly1305    (libsodium ≥ 1.0.12)
+     *   0x01 = XSalsa20-Poly1305 versioned
+     *   kein Präfix = XSalsa20-Poly1305 unversioned (sehr alte Daten)
+     *
+     * @param string      $encoded  Base64-kodierter Ciphertext
      * @param string|null $rawKey   Optionaler 32-Byte-Rohschlüssel; null = App-Schlüssel
-     * @throws \RuntimeException bei manipulierten Daten oder falschem Schlüssel
+     * @param string      $ad       AAD (muss identisch mit dem beim Verschlüsseln verwendeten sein)
+     * @throws \RuntimeException bei manipulierten Daten, falschem Schlüssel oder fehlendem Cipher
      */
-    public function decrypt(string $encoded, ?string $rawKey = null): string
+    public function decrypt(string $encoded, ?string $rawKey = null, string $ad = ''): string
     {
         $key     = $rawKey ?? $this->appRawKey;
         $decoded = base64_decode($encoded, true);
 
-        if ($decoded === false || strlen($decoded) <= SODIUM_CRYPTO_SECRETBOX_NONCEBYTES) {
+        if ($decoded === false || strlen($decoded) < 2) {
             throw new \RuntimeException('Decryption failed: invalid ciphertext.');
         }
 
-        $nonce  = substr($decoded, 0, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
-        $cipher = substr($decoded, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
-        $plain  = sodium_crypto_secretbox_open($cipher, $nonce, $key);
+        $version = $decoded[0];
 
-        if ($plain === false) {
-            throw new \RuntimeException('Decryption failed: authentication tag mismatch.');
+        if ($version === self::V3_AEGIS256) {
+            // AEGIS-256 (libsodium ≥ 1.0.19)
+            if (!defined('SODIUM_CRYPTO_AEAD_AEGIS256_KEYBYTES')) {
+                throw new \RuntimeException('AEGIS-256 nicht verfügbar — libsodium ≥ 1.0.19 benötigt.');
+            }
+            $nonceLen = SODIUM_CRYPTO_AEAD_AEGIS256_NPUBBYTES; // 32
+            if (strlen($decoded) <= 1 + $nonceLen) {
+                throw new \RuntimeException('Decryption failed: AEGIS-256-Ciphertext zu kurz.');
+            }
+            $nonce  = substr($decoded, 1, $nonceLen);
+            $cipher = substr($decoded, 1 + $nonceLen);
+            $plain  = sodium_crypto_aead_aegis256_decrypt($cipher, $ad, $nonce, $key);
+            if ($plain === false) {
+                throw new \RuntimeException('Decryption failed: authentication tag mismatch (AEGIS-256).');
+            }
+        } elseif ($version === self::V2_XCHACHA20) {
+            // XChaCha20-Poly1305 IETF (libsodium ≥ 1.0.12)
+            $nonceLen = SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES; // 24
+            if (strlen($decoded) <= 1 + $nonceLen) {
+                throw new \RuntimeException('Decryption failed: XChaCha20-Ciphertext zu kurz.');
+            }
+            $nonce  = substr($decoded, 1, $nonceLen);
+            $cipher = substr($decoded, 1 + $nonceLen);
+            $plain  = sodium_crypto_aead_xchacha20poly1305_ietf_decrypt($cipher, $ad, $nonce, $key);
+            if ($plain === false) {
+                throw new \RuntimeException('Decryption failed: authentication tag mismatch (XChaCha20).');
+            }
+        } elseif ($version === self::V1_SECRETBOX) {
+            // XSalsa20-Poly1305 versioned (legacy mit Präfix)
+            $nonceLen = SODIUM_CRYPTO_SECRETBOX_NONCEBYTES; // 24
+            if (strlen($decoded) <= 1 + $nonceLen) {
+                throw new \RuntimeException('Decryption failed: invalid ciphertext.');
+            }
+            $nonce  = substr($decoded, 1, $nonceLen);
+            $cipher = substr($decoded, 1 + $nonceLen);
+            $plain  = sodium_crypto_secretbox_open($cipher, $nonce, $key);
+            if ($plain === false) {
+                throw new \RuntimeException('Decryption failed: authentication tag mismatch (secretbox).');
+            }
+        } else {
+            // Legacy: unversioned XSalsa20-Poly1305 (Daten ohne Versionspräfix)
+            $nonceLen = SODIUM_CRYPTO_SECRETBOX_NONCEBYTES; // 24
+            if (strlen($decoded) <= $nonceLen) {
+                throw new \RuntimeException('Decryption failed: invalid ciphertext.');
+            }
+            $nonce  = substr($decoded, 0, $nonceLen);
+            $cipher = substr($decoded, $nonceLen);
+            $plain  = sodium_crypto_secretbox_open($cipher, $nonce, $key);
+            if ($plain === false) {
+                throw new \RuntimeException('Decryption failed: authentication tag mismatch.');
+            }
         }
 
         $result = $plain;
@@ -170,11 +264,17 @@ class EncryptionService
 
     /**
      * Erzeugt für install.php / CLI einen neuen App-Encryption-Key (base64-kodiert).
-     * Dieser Schlüssel wird einmalig generiert und in die Konfiguration eingetragen.
+     * Alle Cipher-Stufen nutzen 32-Byte-Keys — der generierte Schlüssel ist universell.
      */
     public static function generateKey(): string
     {
-        return base64_encode(sodium_crypto_secretbox_keygen());
+        if (defined('SODIUM_CRYPTO_AEAD_AEGIS256_KEYBYTES')) {
+            return base64_encode(sodium_crypto_aead_aegis256_keygen()); // 32 Byte
+        }
+        if (defined('SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_KEYBYTES')) {
+            return base64_encode(sodium_crypto_aead_xchacha20poly1305_ietf_keygen()); // 32 Byte
+        }
+        return base64_encode(sodium_crypto_secretbox_keygen()); // 32 Byte
     }
 }
 
