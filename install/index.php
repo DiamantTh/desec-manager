@@ -570,6 +570,27 @@ function getRequirements(): array
         'critical' => false,
     ];
 
+    // Verfügbarer Verschlüsselungs-Cipher für User-Keys (libsodium-Tier)
+    if (extension_loaded('sodium')) {
+        if (defined('SODIUM_CRYPTO_AEAD_AEGIS256_KEYBYTES')) {
+            $cipherLabel  = 'AEGIS-256 (libsodium ≥ 1.0.19, RFC 9826, AES-NI)';
+        } elseif (defined('SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_KEYBYTES')) {
+            $cipherLabel  = 'XChaCha20-Poly1305 IETF (libsodium ≥ 1.0.12)';
+        } else {
+            $cipherLabel  = 'XSalsa20-Poly1305 secretbox (Basis-Fallback)';
+        }
+        $cipherDetail = 'Aktiver Cipher: ' . $cipherLabel
+            . ' — libsodium ' . (defined('SODIUM_LIBRARY_VERSION') ? SODIUM_LIBRARY_VERSION : '?');
+    } else {
+        $cipherDetail = 'sodium-Erweiterung fehlt — Verschlüsselung nicht möglich';
+    }
+    $c['cipher'] = [
+        'ok'       => extension_loaded('sodium'),
+        'label'    => 'Verschlüsselung (User-Keys)',
+        'detail'   => $cipherDetail,
+        'critical' => false,
+    ];
+
     return $c;
 }
 
@@ -609,11 +630,12 @@ function renderAccessDenied(): void
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="color-scheme" content="light">
     <title>Installer gesperrt — DeSEC Manager</title>
     <link rel="stylesheet" href="../assets/css/bulma.min.css">
     <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg">
     <style>
-        :root { --primary: #00d1b2; --primary-dark: #00c4a7; }
+        :root { --primary: #00d1b2; --primary-dark: #00c4a7; color-scheme: light; }
         body { background: linear-gradient(135deg,#e0f9f6 0%,#e3f0ff 100%); min-height:100vh; }
         .token-card { max-width:640px; margin:3rem auto; }
         pre code { font-size:.875rem; word-break:break-all; white-space:pre-wrap; }
@@ -680,10 +702,15 @@ function renderLocked(): void
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="color-scheme" content="light">
     <title>Installer gesperrt — DeSEC Manager</title>
     <link rel="stylesheet" href="../assets/css/bulma.min.css">
+    <style>
+        :root { color-scheme: light; }
+        body { background: #f5f5f5; }
+    </style>
 </head>
-<body style="background:#f5f5f5">
+<body>
 <section class="section">
     <div class="container" style="max-width:640px">
         <div class="notification is-danger">
@@ -726,10 +753,11 @@ $displayStep = $isSuccess ? 4 : $step;   // 4 = Erfolgs-Anzeige
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="color-scheme" content="light">
     <title>DeSEC Manager — Installation</title>
     <link rel="stylesheet" href="../assets/css/bulma.min.css">
     <style>
-        :root { --primary: #00d1b2; --primary-dark: #00c4a7; --success: #48c774; }
+        :root { --primary: #00d1b2; --primary-dark: #00c4a7; --success: #48c774; color-scheme: light; }
         body { background: #f5f5f5; }
         .wizard-card { max-width: 820px; margin: 2rem auto; }
         .progress-bar { display: flex; gap: .5rem; margin-bottom: 2rem; }
