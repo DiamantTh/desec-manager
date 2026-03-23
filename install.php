@@ -1,22 +1,25 @@
 <?php
 /**
- * deSEC Manager – Installer
+ * deSEC Manager – Installer (Legacy-Einstiegspunkt)
  *
- * Erkennt automatisch CLI- vs. Web-Modus:
- *   - Im Browser: Mehrstufiger Web-Wizard (Schritte 1–5)
- *   - Auf der CLI: Interaktives Konsolenprogramm (install-cli.php)
+ * Der Installer wurde in den Ordner install/ verschoben.
+ * Diese Datei leitet automatisch weiter.
  *
- * SICHERHEITSHINWEIS: Diese Datei nach der Installation löschen oder per
- * Webserver-Konfiguration sperren!
+ *   - CLI-Modus: install-cli.php wird direkt eingebunden
+ *   - Web-Modus: Weiterleitung zu install/index.php
  */
 
 declare(strict_types=1);
 
-// ─── Modus erkennen ──────────────────────────────────────────────────────────
+// ─── CLI ─────────────────────────────────────────────────────────────────────
 if (PHP_SAPI === 'cli') {
     require __DIR__ . '/install-cli.php';
     exit;
 }
+
+// ─── Web: Weiterleitung zum neuen Installer-Ordner ───────────────────────────
+header('Location: install/index.php', true, 301);
+exit;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 //  WEB-WIZARD
