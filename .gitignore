@@ -4,4 +4,5 @@ vendor/
 .idea/
 .vscode/
 install/.lock
+install/.install_token
 config/config.php

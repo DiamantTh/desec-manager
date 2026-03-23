@@ -16,6 +16,7 @@ declare(strict_types=1);
 // ── Pfade ────────────────────────────────────────────────────────────────────
 define('PROJECT_ROOT', dirname(__DIR__));
 define('LOCK_FILE',    __DIR__ . '/.lock');
+define('TOKEN_FILE',   __DIR__ . '/.install_token');
 define('VENDOR_OK',    file_exists(PROJECT_ROOT . '/vendor/autoload.php'));
 
 // ── Bereits installiert? (Lock-Datei) ────────────────────────────────────────
@@ -28,9 +29,36 @@ session_start();
 
 // ── Neustart ─────────────────────────────────────────────────────────────────
 if (isset($_GET['restart'])) {
+    $_SESSION = [];
     session_destroy();
     header('Location: index.php');
     exit;
+}
+
+// ── Install-Token-Schutz ─────────────────────────────────────────────────────
+// Beim ersten Aufruf einen zufälligen Token generieren und in einer Datei
+// speichern, die nur vom Server-Betreiber gelesen werden kann.
+if (!file_exists(TOKEN_FILE)) {
+    $written = file_put_contents(TOKEN_FILE, bin2hex(random_bytes(32)));
+    if ($written === false) {
+        http_response_code(500);
+        die('Installer-Token konnte nicht erstellt werden. Bitte Schreibrecht für ' . htmlspecialchars(__DIR__, ENT_QUOTES, 'UTF-8') . ' prüfen.');
+    }
+    chmod(TOKEN_FILE, 0600);
+}
+
+if (empty($_SESSION['install_auth'])) {
+    $savedToken = file_exists(TOKEN_FILE) ? trim((string) file_get_contents(TOKEN_FILE)) : '';
+    if ($savedToken === '') {
+        http_response_code(500);
+        die('Installer-Token konnte nicht gelesen werden. Bitte Dateirechte prüfen: ' . htmlspecialchars(TOKEN_FILE, ENT_QUOTES, 'UTF-8'));
+    }
+    $providedToken = (string) ($_GET['token'] ?? '');
+    if (!hash_equals($savedToken, $providedToken)) {
+        renderAccessDenied();
+        exit;
+    }
+    $_SESSION['install_auth'] = true;
 }
 
 // ── CSRF ─────────────────────────────────────────────────────────────────────
@@ -502,8 +530,41 @@ function e(string $s): string
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  Spezial-Seiten: Bereits installiert / Gesperrt
+//  Spezial-Seiten: Zugang verweigert / Bereits installiert / Gesperrt
 // ─────────────────────────────────────────────────────────────────────────────
+function renderAccessDenied(): void
+{
+    http_response_code(403);
+    $tokenFile = TOKEN_FILE;
+    ?><!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Installer gesperrt — DeSEC Manager</title>
+    <link rel="stylesheet" href="../assets/css/bulma.min.css">
+</head>
+<body style="background:#f5f5f5">
+<section class="section">
+    <div class="container" style="max-width:640px">
+        <div class="notification is-warning">
+            <strong>🔒 Installer-Zugang gesperrt.</strong><br>
+            Der Installer ist durch einen zufälligen Token geschützt.<br><br>
+            Lesen Sie den Token auf dem Server aus und fügen Sie ihn als URL-Parameter an:
+        </div>
+        <div class="box">
+            <p class="mb-2"><strong>1. Token auslesen (auf dem Server):</strong></p>
+            <pre style="background:#f1f5f9;padding:.75rem;border-radius:6px"><code>cat <?= htmlspecialchars($tokenFile, ENT_QUOTES, 'UTF-8') ?></code></pre>
+            <p class="mt-3 mb-2"><strong>2. Installer mit Token aufrufen:</strong></p>
+            <pre style="background:#f1f5f9;padding:.75rem;border-radius:6px"><code>https://&lt;ihre-domain&gt;/install/index.php?token=&lt;token&gt;</code></pre>
+        </div>
+    </div>
+</section>
+</body>
+</html>
+    <?php
+}
+
 function renderLocked(): void
 {
     http_response_code(403);
@@ -576,6 +637,7 @@ $displayStep = $isSuccess ? 4 : $step;   // 4 = Erfolgs-Anzeige
         code { background: #f1f5f9; padding: .1em .3em; border-radius: 4px; font-size: .875em; }
         pre  { background: #f8fafc; border-radius: 6px; padding: .75rem 1rem; font-size: .85rem; }
         .warn-left { border-left: 4px solid #ff9800; padding-left: 1rem; }
+        .tag-required { display: block; width: fit-content; margin-top: .25rem; }
         #mysql_fields, #sqlite_fields, #root_fields { transition: none; }
     </style>
 </head>
@@ -626,7 +688,7 @@ $displayStep = $isSuccess ? 4 : $step;   // 4 = Erfolgs-Anzeige
                 <td>
                     <?= e($req['label']) ?>
                     <?php if ($req['critical']): ?>
-                    <span class="tag is-light is-size-7 ml-1">Erforderlich</span>
+                    <span class="tag is-info is-light is-size-7 tag-required">Erforderlich</span>
                     <?php endif; ?>
                 </td>
                 <td>
