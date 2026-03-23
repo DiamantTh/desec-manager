@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" role="img" aria-label="DeSEC Manager Logo">
+  <defs>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1565c0;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#0d47a1;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="glowGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#42a5f5;stop-opacity:0.35"/>
+      <stop offset="100%" style="stop-color:#1565c0;stop-opacity:0"/>
+    </linearGradient>
+    <filter id="softShadow" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#0d47a1" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Shield body -->
+  <path d="M60 6 L100 22 L100 58 C100 82 82 100 60 114 C38 100 20 82 20 58 L20 22 Z"
+        fill="url(#shieldGrad)" filter="url(#softShadow)"/>
+
+  <!-- Inner shield highlight -->
+  <path d="M60 14 L93 28 L93 57 C93 77 77 93 60 106 C43 93 27 77 27 57 L27 28 Z"
+        fill="url(#glowGrad)"/>
+
+  <!-- Inner shield border -->
+  <path d="M60 14 L93 28 L93 57 C93 77 77 93 60 106 C43 93 27 77 27 57 L27 28 Z"
+        fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.2"/>
+
+  <!-- DNS Node ring — center -->
+  <circle cx="60" cy="60" r="11" fill="#ffffff" opacity="0.97"/>
+  <circle cx="60" cy="60" r="7.5" fill="#1565c0"/>
+  <circle cx="60" cy="60" r="3.5" fill="#4caf50"/>
+
+  <!-- DNS Satellite nodes -->
+  <!-- Top node -->
+  <circle cx="60" cy="36" r="5.5" fill="#ffffff" opacity="0.95"/>
+  <circle cx="60" cy="36" r="3" fill="#42a5f5"/>
+  <!-- Bottom-left node -->
+  <circle cx="39" cy="74" r="5.5" fill="#ffffff" opacity="0.95"/>
+  <circle cx="39" cy="74" r="3" fill="#42a5f5"/>
+  <!-- Bottom-right node -->
+  <circle cx="81" cy="74" r="5.5" fill="#ffffff" opacity="0.95"/>
+  <circle cx="81" cy="74" r="3" fill="#42a5f5"/>
+
+  <!-- Connection lines (center to satellites) -->
+  <line x1="60" y1="49" x2="60" y2="41" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="51" y1="67" x2="43" y2="71" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="69" y1="67" x2="77" y2="71" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round"/>
+
+  <!-- Top green accent arc -->
+  <path d="M60 6 Q72 10 80 17" stroke="#4caf50" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.85"/>
+
+  <!-- Right green accent -->
+  <path d="M100 36 Q102 47 100 58" stroke="#4caf50" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.7"/>
+</svg>

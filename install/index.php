@@ -53,7 +53,7 @@ if (empty($_SESSION['install_auth'])) {
         http_response_code(500);
         die('Installer-Token konnte nicht gelesen werden. Bitte Dateirechte prüfen: ' . htmlspecialchars(TOKEN_FILE, ENT_QUOTES, 'UTF-8'));
     }
-    $providedToken = (string) ($_GET['token'] ?? '');
+    $providedToken = (string) ($_GET['token'] ?? $_POST['install_token'] ?? '');
     if (!hash_equals($savedToken, $providedToken)) {
         renderAccessDenied();
         exit;
@@ -536,6 +536,7 @@ function renderAccessDenied(): void
 {
     http_response_code(403);
     $tokenFile = TOKEN_FILE;
+    $wrongToken = isset($_POST['install_token']) && $_POST['install_token'] !== '';
     ?><!DOCTYPE html>
 <html lang="de">
 <head>
@@ -543,20 +544,58 @@ function renderAccessDenied(): void
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Installer gesperrt — DeSEC Manager</title>
     <link rel="stylesheet" href="../assets/css/bulma.min.css">
+    <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg">
+    <style>
+        body { background: linear-gradient(135deg,#e8f5e9 0%,#e3f0ff 100%); min-height:100vh; }
+        .token-card { max-width:640px; margin:3rem auto; }
+        pre code { font-size:.875rem; word-break:break-all; white-space:pre-wrap; }
+    </style>
 </head>
-<body style="background:#f5f5f5">
+<body>
 <section class="section">
-    <div class="container" style="max-width:640px">
-        <div class="notification is-warning">
-            <strong>🔒 Installer-Zugang gesperrt.</strong><br>
-            Der Installer ist durch einen zufälligen Token geschützt.<br><br>
-            Lesen Sie den Token auf dem Server aus und fügen Sie ihn als URL-Parameter an:
+    <div class="token-card">
+        <div class="has-text-centered mb-5">
+            <img src="../assets/img/logo.svg" alt="DeSEC Manager" width="64" height="64">
+            <h1 class="title is-4 mt-2" style="color:#1b5e20">DeSEC Manager – Installer</h1>
         </div>
+
+        <?php if ($wrongToken): ?>
+        <div class="notification is-danger is-light mb-4" role="alert">
+            <strong>❌ Ungültiger Token.</strong> Bitte prüfen Sie die Eingabe.
+        </div>
+        <?php endif; ?>
+
+        <div class="notification" style="background:#fff8e1;border-left:4px solid #f9a825;color:#4e3900">
+            <strong>🔒 Installer durch Token geschützt.</strong><br>
+            Geben Sie den Installer-Token ein, der beim Start automatisch erzeugt wurde.
+        </div>
+
         <div class="box">
-            <p class="mb-2"><strong>1. Token auslesen (auf dem Server):</strong></p>
-            <pre style="background:#f1f5f9;padding:.75rem;border-radius:6px"><code>cat <?= htmlspecialchars($tokenFile, ENT_QUOTES, 'UTF-8') ?></code></pre>
-            <p class="mt-3 mb-2"><strong>2. Installer mit Token aufrufen:</strong></p>
-            <pre style="background:#f1f5f9;padding:.75rem;border-radius:6px"><code>https://&lt;ihre-domain&gt;/install/index.php?token=&lt;token&gt;</code></pre>
+            <form method="post" action="index.php" autocomplete="off">
+                <div class="field">
+                    <label class="label" for="install_token">Installer-Token</label>
+                    <div class="control">
+                        <input class="input<?= $wrongToken ? ' is-danger' : '' ?>"
+                               type="password"
+                               id="install_token"
+                               name="install_token"
+                               placeholder="Token hier einfügen …"
+                               aria-label="Installer-Token eingeben"
+                               aria-describedby="token-hint"
+                               required>
+                    </div>
+                </div>
+                <button type="submit" class="button is-primary is-fullwidth mt-3"
+                        style="background:#2e7d32;border-color:#2e7d32">
+                    🔓 Freischalten
+                </button>
+            </form>
+
+            <hr>
+            <p class="is-size-7 has-text-grey-dark" id="token-hint">
+                <strong>Token auf dem Server abrufen:</strong>
+            </p>
+            <pre style="background:#f1f8f1;border-radius:6px;padding:.75rem 1rem;margin-top:.5rem"><code>cat <?= htmlspecialchars($tokenFile, ENT_QUOTES, 'UTF-8') ?></code></pre>
         </div>
     </div>
 </section>
