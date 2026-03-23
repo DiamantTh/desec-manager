@@ -4,26 +4,29 @@ declare(strict_types=1);
 
 namespace App\Handler;
 
+use App\Session\SessionContext;
 use App\Service\ThemeManager;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * AbstractHandler — common base for all PSR-15 handlers in deSEC Manager.
+ * AbstractHandler — gemeinsame Basis für alle PSR-15-Handler im deSEC Manager.
  *
  * Provides:
- *   - render()        → Load PHP template from ThemeManager → HtmlResponse
+ *   - render()        → PHP-Template via ThemeManager laden → HtmlResponse
  *   - redirect()      → RedirectResponse
- *   - flash()         → Set flash message in session
- *   - consumeFlash()  → Read flash message + remove from session
- *   - userId()        → Currently logged in user (int, 0 if not logged in)
- *   - isAdmin()       → Admin flag from session
+ *   - flash()         → Flash-Nachricht in Session schreiben
+ *   - consumeFlash()  → Flash-Nachricht lesen + aus Session entfernen
+ *   - userId()        → Aktuell eingeloggter Benutzer (int, 0 wenn nicht eingeloggt)
+ *   - isAdmin()       → Admin-Flag aus der Session
  */
 abstract class AbstractHandler
 {
-    public function __construct(protected readonly ThemeManager $theme)
-    {
+    public function __construct(
+        protected readonly ThemeManager $theme,
+        protected readonly SessionContext $sessionContext,
+    ) {
     }
 
     // -------------------------------------------------------------------------
@@ -94,7 +97,7 @@ abstract class AbstractHandler
 
     protected function flash(string $type, string $message): void
     {
-        $_SESSION['_flash'] = ['type' => $type, 'message' => $message];
+        $this->sessionContext->set('_flash', ['type' => $type, 'message' => $message]);
     }
 
     /**
@@ -102,12 +105,12 @@ abstract class AbstractHandler
      */
     protected function consumeFlash(): ?array
     {
-        if (!isset($_SESSION['_flash'])) {
+        /** @var array{type: string, message: string}|null $flash */
+        $flash = $this->sessionContext->get('_flash');
+        if ($flash === null) {
             return null;
         }
-        /** @var array{type: string, message: string} $flash */
-        $flash = $_SESSION['_flash'];
-        unset($_SESSION['_flash']);
+        $this->sessionContext->unset('_flash');
         return $flash;
     }
 
@@ -117,12 +120,12 @@ abstract class AbstractHandler
 
     protected function userId(): int
     {
-        return (int) ($_SESSION['user_id'] ?? 0);
+        return (int) $this->sessionContext->get('user_id', 0);
     }
 
     protected function isAdmin(): bool
     {
-        return !empty($_SESSION['is_admin']);
+        return (bool) $this->sessionContext->get('is_admin', false);
     }
 
     // -------------------------------------------------------------------------

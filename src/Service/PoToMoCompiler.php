@@ -39,6 +39,7 @@ class PoToMoCompiler
                 }
                 if ($line === '' || str_starts_with($line, '#')) {
                     if ($line === '' && $msgid !== null) {
+                        // @phpstan-ignore notIdentical.alwaysTrue
                         if ($msgid !== null && $msgstr !== null && $msgid !== '') {
                             $entries[$msgid] = $msgstr;
                         }

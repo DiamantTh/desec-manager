@@ -9,6 +9,7 @@ use App\Repository\WebAuthnCredentialRepository;
 use App\Security\UserKeyManager;
 use App\Security\WebAuthnService;
 use App\Service\ThemeManager;
+use App\Session\SessionContext;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -34,12 +35,13 @@ class WebAuthnApiHandler extends AbstractHandler implements RequestHandlerInterf
 {
     public function __construct(
         ThemeManager $theme,
+        SessionContext $sessionContext,
         private readonly WebAuthnService $webAuthn,
         private readonly WebAuthnCredentialRepository $credentials,
         private readonly UserRepository $users,
         private readonly UserKeyManager $userKeyManager,
     ) {
-        parent::__construct($theme);
+        parent::__construct($theme, $sessionContext);
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
@@ -164,16 +166,15 @@ class WebAuthnApiHandler extends AbstractHandler implements RequestHandlerInterf
             $this->credentials->updateSignCount($credentialId, $source->counter);
 
             // If MFA is pending → complete the login
-            if (isset($_SESSION['mfa_pending'])) {
+            if ($this->sessionContext->has('mfa_pending')) {
                 $user = $this->users->findById($userId);
                 if ($user !== null) {
-                    if (session_status() === PHP_SESSION_ACTIVE) {
-                        session_regenerate_id(true);
-                    }
-                    unset($_SESSION['mfa_pending'], $_SESSION['mfa_username']);
-                    $_SESSION['user_id']  = $userId;
-                    $_SESSION['username'] = (string) ($user['username'] ?? '');
-                    $_SESSION['is_admin'] = (bool)  ($user['is_admin']  ?? false);
+                    $this->sessionContext->regenerate();
+                    $this->sessionContext->unset('mfa_pending');
+                    $this->sessionContext->unset('mfa_username');
+                    $this->sessionContext->set('user_id',  $userId);
+                    $this->sessionContext->set('username', (string) ($user['username'] ?? ''));
+                    $this->sessionContext->set('is_admin', (bool)  ($user['is_admin']  ?? false));
                     $this->userKeyManager->promoteToSession();
                     $this->users->updateLastLogin($userId);
                 }
@@ -235,11 +236,14 @@ class WebAuthnApiHandler extends AbstractHandler implements RequestHandlerInterf
      */
     private function resolveUserId(): int
     {
-        if (!empty($_SESSION['user_id'])) {
-            return (int) $_SESSION['user_id'];
+        $userId = (int) $this->sessionContext->get('user_id', 0);
+        if ($userId !== 0) {
+            return $userId;
         }
-        if (isset($_SESSION['mfa_pending']['user_id'])) {
-            return (int) $_SESSION['mfa_pending']['user_id'];
+        /** @var array{user_id?: int}|null $pending */
+        $pending = $this->sessionContext->get('mfa_pending');
+        if (is_array($pending) && isset($pending['user_id'])) {
+            return (int) $pending['user_id'];
         }
         return 0;
     }

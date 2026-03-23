@@ -2,6 +2,19 @@
 declare(strict_types=1);
 namespace App\Service;
 
+/**
+ * Translator — globale Übersetzungs-Fassade für die `__()` Funktion.
+ *
+ * Primär-Backend: laminas/laminas-i18n (Translator-Instanz, konfiguriert in
+ * config/container.php und initialisiert von SessionContextMiddleware).
+ *
+ * Legacy-Fallback: hand-gefertigter .mo-Binary-Parser (bleibt für CLI-Tools und
+ * Kontexte, in denen SessionContextMiddleware nicht läuft, z. B. install.php).
+ *
+ * Verwendung:
+ *   SessionContextMiddleware ruft Translator::setLaminasTranslator($t) auf,
+ *   danach leitet translate() alle Aufrufe an die Laminas-Instanz weiter.
+ */
 class Translator
 {
     public const DOMAIN = 'desec-manager';
@@ -23,13 +36,43 @@ class Translator
     ];
 
     private static string $currentLocale = 'en_US';
-    private static array $translations = [];
-    private static string $localeDir = '';
 
+    /** @var array<string, string> Legacy in-memory translations (CLI fallback) */
+    private static array $translations = [];
+
+    private static ?\Laminas\I18n\Translator\Translator $laminas = null;
+
+    // -------------------------------------------------------------------------
+    // Laminas-Backend (PSR-15 Web-Kontext)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Setzt die laminas-i18n Translator-Instanz.
+     * Wird von SessionContextMiddleware pro Request aufgerufen.
+     */
+    public static function setLaminasTranslator(\Laminas\I18n\Translator\Translator $translator): void
+    {
+        self::$laminas       = $translator;
+        self::$currentLocale = $translator->getLocale();
+    }
+
+    // -------------------------------------------------------------------------
+    // Legacy-/CLI-Initialisierung (.mo-Datei direkt einlesen)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Initialisiert die Übersetzungen direkt aus einem locale-Verzeichnis.
+     * Wird von CLI-Tools wie install.php verwendet, die kein PSR-15-Pipeline haben.
+     * Im normalen Web-Request ist dies ein No-op (SessionContextMiddleware übernimmt).
+     */
     public static function init(string $localeDir): void
     {
-        self::$localeDir = $localeDir;
-        $locale = self::detectLocale();
+        // Im Web-Kontext: SessionContextMiddleware hat bereits setLaminasTranslator() aufgerufen.
+        if (self::$laminas !== null) {
+            return;
+        }
+
+        $locale = self::detectLocaleLegacy($localeDir);
         self::$currentLocale = $locale;
 
         // Compile .mo if needed
@@ -39,18 +82,9 @@ class Translator
             PoToMoCompiler::compile($poFile, $moFile);
         }
 
-        // Load translations into memory
         if (file_exists($moFile)) {
             self::$translations = self::loadMoFile($moFile);
         }
-
-        // Also try to set system locale (may not work but doesn't hurt)
-        putenv('LANGUAGE=' . $locale);
-        putenv('LC_ALL=' . $locale . '.UTF-8');
-        setlocale(LC_MESSAGES, $locale . '.UTF-8', $locale, 'C.UTF-8', 'C');
-        bindtextdomain(self::DOMAIN, $localeDir);
-        bind_textdomain_codeset(self::DOMAIN, 'UTF-8');
-        textdomain(self::DOMAIN);
     }
 
     public static function getCurrentLocale(): string
@@ -58,36 +92,41 @@ class Translator
         return self::$currentLocale;
     }
 
+    // -------------------------------------------------------------------------
+    // Übersetzung
+    // -------------------------------------------------------------------------
+
     public static function translate(string $msgid): string
     {
-        // Try our in-memory translations first
+        // 1. Laminas-Backend (Web-Kontext, Normalfall)
+        if (self::$laminas !== null) {
+            $result = self::$laminas->translate($msgid, self::DOMAIN);
+            return ($result !== '' && $result !== $msgid) ? $result : $msgid;
+        }
+
+        // 2. Legacy in-memory (CLI-Kontext)
         if (isset(self::$translations[$msgid]) && self::$translations[$msgid] !== '') {
             return self::$translations[$msgid];
         }
-        
-        // Fall back to gettext (in case system locale works)
-        $result = gettext($msgid);
-        if ($result !== '' && $result !== $msgid) {
-            return $result;
-        }
-        
-        // Return original msgid as fallback
+
         return $msgid;
     }
 
-    private static function detectLocale(): string
+    // -------------------------------------------------------------------------
+    // Private Hilfsmethoden
+    // -------------------------------------------------------------------------
+
+    /**
+     * Locale-Erkennung für Legacy/CLI-Kontext (kein PSR-15 Request-Objekt verfügbar).
+     */
+    private static function detectLocaleLegacy(string $localeDir): string
     {
-        // 1. POST request to change locale
+        // POST param
         if (isset($_POST['_locale']) && isset(self::SUPPORTED_LOCALES[$_POST['_locale']])) {
-            $_SESSION['locale'] = $_POST['_locale'];
+            return (string) $_POST['_locale'];
         }
 
-        // 2. Session
-        if (!empty($_SESSION['locale']) && isset(self::SUPPORTED_LOCALES[$_SESSION['locale']])) {
-            return $_SESSION['locale'];
-        }
-
-        // 3. Accept-Language header
+        // Accept-Language header
         $header = $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '';
         if ($header !== '') {
             foreach (self::parseAcceptLanguage($header) as $lang) {
@@ -115,7 +154,9 @@ class Translator
     }
 
     /**
-     * Load .mo file and parse into translations array
+     * Liest eine .mo-Datei ein und liefert ein Translations-Array.
+     * Wird nur im Legacy/CLI-Kontext verwendet (wenn kein Laminas-Backend vorhanden).
+     *
      * @return array<string, string>
      */
     private static function loadMoFile(string $moFile): array
@@ -125,29 +166,21 @@ class Translator
             return [];
         }
 
-        // Read header
         $header = unpack('Vmagic/Vrevision/VN/VorigOffset/VtransOffset', substr($data, 0, 20));
-        
         if ($header['magic'] !== 0x950412de) {
-            return [];  // Invalid magic number
+            return [];
         }
 
-        $n = $header['N'];
-        $origOffset = $header['origOffset'];
+        $n           = $header['N'];
+        $origOffset  = $header['origOffset'];
         $transOffset = $header['transOffset'];
 
         $translations = [];
-
-        // Read original and translation string tables
         for ($i = 0; $i < $n; $i++) {
-            // Original string
-            $origEntry = unpack('Vlength/Voffset', substr($data, $origOffset + $i * 8, 8));
-            $origString = substr($data, $origEntry['offset'], $origEntry['length']);
-            
-            // Translation string
-            $transEntry = unpack('Vlength/Voffset', substr($data, $transOffset + $i * 8, 8));
+            $origEntry   = unpack('Vlength/Voffset', substr($data, $origOffset  + $i * 8, 8));
+            $transEntry  = unpack('Vlength/Voffset', substr($data, $transOffset + $i * 8, 8));
+            $origString  = substr($data, $origEntry['offset'],  $origEntry['length']);
             $transString = substr($data, $transEntry['offset'], $transEntry['length']);
-            
             if ($origString !== '') {
                 $translations[$origString] = $transString;
             }

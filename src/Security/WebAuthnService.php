@@ -30,6 +30,7 @@ use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\TrustPath\EmptyTrustPath;
 use App\Entity\WebAuthnCredential;
+use App\Session\SessionContext;
 
 /**
  * WebAuthnService — production-ready FIDO2/WebAuthn implementation via webauthn-lib v5.
@@ -66,7 +67,7 @@ class WebAuthnService
     /**
      * @param array<string, mixed> $config  Full TOML configuration array (keys 'app' and 'security')
      */
-    public function __construct(array $config)
+    public function __construct(array $config, private readonly SessionContext $sessionContext)
     {
         $appCfg    = $config['app']                   ?? [];
         $fidoCfg   = $config['security']['fido2']     ?? [];
@@ -112,8 +113,6 @@ class WebAuthnService
         string $userHandle,
         array $excludeCredentials = []
     ): array {
-        $this->ensureSession();
-
         $challenge = random_bytes($this->challengeBytes);
 
         $rp   = PublicKeyCredentialRpEntity::create($this->rpName, $this->rpId);
@@ -217,8 +216,6 @@ class WebAuthnService
      */
     public function generateAuthenticationOptions(array $storedCredentials = []): array
     {
-        $this->ensureSession();
-
         $challenge = random_bytes($this->challengeBytes);
 
         $allowCredentials = array_map(
@@ -366,26 +363,17 @@ class WebAuthnService
     }
 
     // =========================================================================
-    // Session-Hilfsmethoden
+    // Interne Session-Hilfsmethoden (via SessionContext)
     // =========================================================================
-
-    private function ensureSession(): void
-    {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-    }
 
     private function storeInSession(string $key, string $value): void
     {
-        $this->ensureSession();
-        $_SESSION[$key] = $value;
+        $this->sessionContext->set($key, $value);
     }
 
     private function loadFromSession(string $key): string
     {
-        $this->ensureSession();
-        $value = $_SESSION[$key] ?? null;
+        $value = $this->sessionContext->get($key);
         if (!is_string($value) || $value === '') {
             throw new \RuntimeException(
                 "Fehlende WebAuthn-Session-Daten ('{$key}'). " .
@@ -397,7 +385,6 @@ class WebAuthnService
 
     private function clearFromSession(string $key): void
     {
-        $this->ensureSession();
-        unset($_SESSION[$key]);
+        $this->sessionContext->unset($key);
     }
 }

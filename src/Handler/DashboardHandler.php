@@ -8,6 +8,7 @@ use App\Repository\ApiKeyRepository;
 use App\Repository\DomainRepository;
 use App\Service\SystemHealthService;
 use App\Service\ThemeManager;
+use App\Session\SessionContext;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -16,11 +17,12 @@ class DashboardHandler extends AbstractHandler implements RequestHandlerInterfac
 {
     public function __construct(
         ThemeManager $theme,
+        SessionContext $sessionContext,
         private readonly DomainRepository $domains,
         private readonly ApiKeyRepository $apiKeys,
         private readonly SystemHealthService $systemHealth,
     ) {
-        parent::__construct($theme);
+        parent::__construct($theme, $sessionContext);
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface

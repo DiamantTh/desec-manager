@@ -7,6 +7,7 @@ namespace App\Handler;
 use App\Repository\UserRepository;
 use App\Security\TotpService;
 use App\Service\ThemeManager;
+use App\Session\SessionContext;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -26,10 +27,11 @@ class TotpApiHandler extends AbstractHandler implements RequestHandlerInterface
 {
     public function __construct(
         ThemeManager $theme,
+        SessionContext $sessionContext,
         private readonly TotpService $totp,
         private readonly UserRepository $users,
     ) {
-        parent::__construct($theme);
+        parent::__construct($theme, $sessionContext);
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
@@ -64,7 +66,7 @@ class TotpApiHandler extends AbstractHandler implements RequestHandlerInterface
             $uri       = $this->totp->getProvisioningUri($secret, $label, $issuer);
 
             // Store the secret temporarily in session until confirmed
-            $_SESSION['totp_setup_secret'] = $secret;
+            $this->sessionContext->set('totp_setup_secret', $secret);
 
             return new JsonResponse([
                 'secret'           => $secret,
@@ -87,8 +89,8 @@ class TotpApiHandler extends AbstractHandler implements RequestHandlerInterface
         $secret = $this->bodyString($body, 'secret');
 
         // Secret aus Session als Fallback (falls kein secret im Body)
-        if ($secret === '' && isset($_SESSION['totp_setup_secret'])) {
-            $secret = (string) $_SESSION['totp_setup_secret'];
+        if ($secret === '') {
+            $secret = (string) ($this->sessionContext->get('totp_setup_secret') ?? '');
         }
 
         if ($code === '' || $secret === '') {
@@ -101,7 +103,7 @@ class TotpApiHandler extends AbstractHandler implements RequestHandlerInterface
 
         try {
             $this->users->enableTotp($userId, $secret);
-            unset($_SESSION['totp_setup_secret']);
+            $this->sessionContext->unset('totp_setup_secret');
             return new JsonResponse(['success' => true]);
         } catch (\Throwable $e) {
             return $this->jsonError($e->getMessage());

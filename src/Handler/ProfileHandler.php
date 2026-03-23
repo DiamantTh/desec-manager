@@ -9,6 +9,7 @@ use App\Repository\WebAuthnCredentialRepository;
 use App\Security\PasswordHasher;
 use App\Security\UserKeyManager;
 use App\Service\ThemeManager;
+use App\Session\SessionContext;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -23,12 +24,13 @@ class ProfileHandler extends AbstractHandler implements RequestHandlerInterface
 {
     public function __construct(
         ThemeManager $theme,
+        SessionContext $sessionContext,
         private readonly UserRepository $users,
         private readonly WebAuthnCredentialRepository $webAuthnCredentials,
         private readonly PasswordHasher $passwordHasher,
         private readonly UserKeyManager $userKeyManager,
     ) {
-        parent::__construct($theme);
+        parent::__construct($theme, $sessionContext);
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface

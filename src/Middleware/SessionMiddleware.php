@@ -10,13 +10,19 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * SessionMiddleware — starts the PHP session with secure cookie flags.
+ * SessionMiddleware — konfiguriert PHP-Session-Cookie-Flags.
  *
- * Configuration from security.toml [security.session]:
- *   secure   = true       → HTTPS only
- *   httponly = true       → no JS access
- *   samesite = "Strict"   → CSRF protection
- *   lifetime = 3600       → session lifetime
+ * Läuft VOR Mezzio\Session\SessionMiddleware und setzt die Cookie-Parameter,
+ * bevor die mezzio/mezzio-session-ext-Schicht die Session startet (session_start).
+ *
+ * Konfiguration aus security.toml [security.session]:
+ *   secure   = true       → Nur HTTPS
+ *   httponly = true       → Kein JS-Zugriff
+ *   samesite = "Strict"   → CSRF-Schutz
+ *   lifetime = 3600       → Session-Lebensdauer
+ *
+ * HINWEIS: session_start() wird NICHT hier aufgerufen — das übernimmt
+ * Mezzio\Session\Ext\PhpSessionPersistence nach dieser Middleware.
  */
 class SessionMiddleware implements MiddlewareInterface
 {
@@ -27,17 +33,19 @@ class SessionMiddleware implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        /** @var array<string, mixed> $sessionCfg */
+        $sessionCfg = $this->config['security']['session'] ?? [];
+
+        $rawSamesite = strtolower((string)($sessionCfg['samesite'] ?? 'strict'));
+        $samesite    = match ($rawSamesite) {
+            'lax'  => 'Lax',
+            'none' => 'None',
+            default => 'Strict',
+        };
+
+        // Cookie-Flags setzen BEVOR mezzio-session-ext session_start() aufruft.
+        // session_start() selbst wird von Mezzio\Session\Ext\PhpSessionPersistence übernommen.
         if (session_status() === PHP_SESSION_NONE) {
-            /** @var array<string, mixed> $sessionCfg */
-            $sessionCfg = $this->config['security']['session'] ?? [];
-
-            $rawSamesite = strtolower((string)($sessionCfg['samesite'] ?? 'strict'));
-            $samesite    = match ($rawSamesite) {
-                'lax'  => 'Lax',
-                'none' => 'None',
-                default => 'Strict',
-            };
-
             session_set_cookie_params([
                 'lifetime' => (int)($sessionCfg['lifetime']  ?? 3600),
                 'path'     => '/',
@@ -46,11 +54,6 @@ class SessionMiddleware implements MiddlewareInterface
                 'httponly' => (bool)($sessionCfg['httponly']  ?? true),
                 'samesite' => $samesite,
             ]);
-
-            session_start();
-            
-            // Initialize translator after session start
-            \App\Service\Translator::init(dirname(__DIR__, 2) . '/locale');
         }
 
         return $handler->handle($request);

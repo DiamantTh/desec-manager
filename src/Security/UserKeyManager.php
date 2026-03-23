@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Security;
 
+use App\Session\SessionContext;
+
 /**
  * UserKeyManager — verwaltet den per-User-Encryption-Key im Session-Kontext.
  *
@@ -32,8 +34,10 @@ class UserKeyManager
     private const SESSION_KEY         = 'enc_key';
     private const SESSION_PENDING_KEY = 'pending_enc_key';
 
-    public function __construct(private readonly EncryptionService $crypto)
-    {
+    public function __construct(
+        private readonly EncryptionService $crypto,
+        private readonly SessionContext $sessionContext,
+    ) {
     }
 
     // -------------------------------------------------------------------------
@@ -84,7 +88,7 @@ class UserKeyManager
 
         sodium_memzero($wrappingKey);
 
-        $_SESSION[self::SESSION_PENDING_KEY] = base64_encode($rawUserKey);
+        $this->sessionContext->set(self::SESSION_PENDING_KEY, base64_encode($rawUserKey));
 
         sodium_memzero($rawUserKey);
     }
@@ -95,9 +99,10 @@ class UserKeyManager
      */
     public function promoteToSession(): void
     {
-        if (isset($_SESSION[self::SESSION_PENDING_KEY])) {
-            $_SESSION[self::SESSION_KEY] = $_SESSION[self::SESSION_PENDING_KEY];
-            unset($_SESSION[self::SESSION_PENDING_KEY]);
+        $pending = $this->sessionContext->get(self::SESSION_PENDING_KEY);
+        if ($pending !== null) {
+            $this->sessionContext->set(self::SESSION_KEY, $pending);
+            $this->sessionContext->unset(self::SESSION_PENDING_KEY);
         }
     }
 
@@ -111,10 +116,11 @@ class UserKeyManager
      */
     public function getRawSessionKey(): ?string
     {
-        if (!isset($_SESSION[self::SESSION_KEY])) {
+        $encoded = $this->sessionContext->get(self::SESSION_KEY);
+        if ($encoded === null) {
             return null;
         }
-        $raw = base64_decode((string) $_SESSION[self::SESSION_KEY], true);
+        $raw = base64_decode((string) $encoded, true);
         return ($raw !== false && strlen($raw) === SODIUM_CRYPTO_SECRETBOX_KEYBYTES)
             ? $raw
             : null;

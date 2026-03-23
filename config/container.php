@@ -25,6 +25,8 @@ use App\Handler\TotpApiHandler;
 use App\Handler\WebAuthnApiHandler;
 use App\Middleware\AuthMiddleware;
 use App\Middleware\SecurityHeadersMiddleware;
+use App\Middleware\SentryMiddleware;
+use App\Middleware\SessionContextMiddleware;
 use App\Middleware\SessionMiddleware;
 use App\Repository\ApiKeyRepository;
 use App\Repository\DomainRepository;
@@ -39,6 +41,7 @@ use App\Security\WebAuthnService;
 use App\Service\DeSECProxyService;
 use App\Service\DNSService;
 use App\Service\ThemeManager;
+use App\Session\SessionContext;
 use DI\ContainerBuilder;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
@@ -247,7 +250,7 @@ $builder->addDefinitions([
     WebAuthnService::class => DI\factory(function (ContainerInterface $c): WebAuthnService {
         /** @var array<string, mixed> $cfg */
         $cfg = $c->get('config');
-        return new WebAuthnService($cfg);
+        return new WebAuthnService($cfg, $c->get(SessionContext::class));
     }),
 
     TotpService::class => DI\factory(function (ContainerInterface $c): TotpService {
@@ -282,7 +285,43 @@ $builder->addDefinitions([
         return new SessionMiddleware($c->get('config'));
     }),
 
-    AuthMiddleware::class => DI\create(AuthMiddleware::class),
+    // SessionContext: Request-Scoped Session-Wrapper (Singleton im Container)
+    SessionContext::class => DI\create(SessionContext::class),
+
+    // mezzio/mezzio-session: PhpSessionPersistence + SessionMiddleware
+    \Mezzio\Session\Ext\PhpSessionPersistence::class => DI\factory(function (): \Mezzio\Session\Ext\PhpSessionPersistence {
+        return new \Mezzio\Session\Ext\PhpSessionPersistence();
+    }),
+
+    \Mezzio\Session\SessionMiddleware::class => DI\factory(function (ContainerInterface $c): \Mezzio\Session\SessionMiddleware {
+        return new \Mezzio\Session\SessionMiddleware(
+            $c->get(\Mezzio\Session\Ext\PhpSessionPersistence::class)
+        );
+    }),
+
+    // laminas/laminas-i18n: Translator-Instanz für SessionContextMiddleware
+    \Laminas\I18n\Translator\Translator::class => DI\factory(function (): \Laminas\I18n\Translator\Translator {
+        $localeDir  = dirname(__DIR__) . '/locale';
+        $translator = new \Laminas\I18n\Translator\Translator();
+        $translator->addTranslationFilePattern(
+            'gettext',
+            $localeDir,
+            '%s/LC_MESSAGES/' . \App\Service\Translator::DOMAIN . '.mo',
+            \App\Service\Translator::DOMAIN,
+        );
+        $translator->setLocale('en_US');
+        return $translator;
+    }),
+
+    // SessionContextMiddleware: autowired (braucht SessionContext + Laminas\Translator)
+    SessionContextMiddleware::class => DI\autowire(),
+
+    // SentryMiddleware: nur aktiv wenn sentry.dsn in der Konfiguration gesetzt
+    SentryMiddleware::class => DI\factory(function (ContainerInterface $c): SentryMiddleware {
+        return new SentryMiddleware($c->get('config'));
+    }),
+
+    AuthMiddleware::class => DI\autowire(),
 
     // -------------------------------------------------------------------------
     // PSR-15-Handler
@@ -292,6 +331,7 @@ $builder->addDefinitions([
     AuthHandler::class => DI\factory(function (ContainerInterface $c): AuthHandler {
         return new AuthHandler(
             $c->get(ThemeManager::class),
+            $c->get(SessionContext::class),
             $c->get(UserRepository::class),
             $c->get(WebAuthnCredentialRepository::class),
             $c->get(TotpService::class),

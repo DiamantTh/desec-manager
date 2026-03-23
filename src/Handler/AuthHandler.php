@@ -10,6 +10,7 @@ use App\Security\PasswordHasher;
 use App\Security\TotpService;
 use App\Security\UserKeyManager;
 use App\Service\ThemeManager;
+use App\Session\SessionContext;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -35,6 +36,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
     /** @param array<string, mixed> $config */
     public function __construct(
         ThemeManager $theme,
+        SessionContext $sessionContext,
         private readonly UserRepository $users,
         private readonly WebAuthnCredentialRepository $webAuthnCredentials,
         private readonly TotpService $totp,
@@ -42,7 +44,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
         private readonly UserKeyManager $userKeyManager,
         private readonly array $config,
     ) {
-        parent::__construct($theme);
+        parent::__construct($theme, $sessionContext);
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
@@ -67,7 +69,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
 
     private function showLogin(): ResponseInterface
     {
-        if (!empty($_SESSION['user_id'])) {
+        if ($this->sessionContext->has('user_id')) {
             return $this->redirect('/dashboard');
         }
 
@@ -79,7 +81,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
 
     private function handleLogin(ServerRequestInterface $request): ResponseInterface
     {
-        if (!empty($_SESSION['user_id'])) {
+        if ($this->sessionContext->has('user_id')) {
             return $this->redirect('/dashboard');
         }
 
@@ -118,14 +120,14 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
         $hasTOTP     = !empty($user['totp_enabled']);
 
         if ($hasWebAuthn) {
-            $_SESSION['mfa_pending']  = ['user_id' => $userId, 'type' => 'webauthn'];
-            $_SESSION['mfa_username'] = $username;
+            $this->sessionContext->set('mfa_pending', ['user_id' => $userId, 'type' => 'webauthn']);
+            $this->sessionContext->set('mfa_username', $username);
             return $this->redirect('/auth/mfa/webauthn');
         }
 
         if ($hasTOTP) {
-            $_SESSION['mfa_pending']  = ['user_id' => $userId, 'type' => 'totp'];
-            $_SESSION['mfa_username'] = $username;
+            $this->sessionContext->set('mfa_pending', ['user_id' => $userId, 'type' => 'totp']);
+            $this->sessionContext->set('mfa_username', $username);
             return $this->redirect('/auth/mfa/totp');
         }
 
@@ -148,10 +150,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
 
     private function handleLogout(): ResponseInterface
     {
-        if (session_status() === PHP_SESSION_ACTIVE) {
-            $_SESSION = [];
-            session_destroy();
-        }
+        $this->sessionContext->clear();
         return $this->redirect('/auth/login');
     }
 
@@ -178,7 +177,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
         }
 
         /** @var array{user_id: int, type: string} $pending */
-        $pending = $_SESSION['mfa_pending'];
+        $pending = $this->sessionContext->get('mfa_pending');
         $userId  = (int) $pending['user_id'];
 
         $body = $request->getParsedBody();
@@ -232,15 +231,14 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
 
     private function completeLogin(int $userId, string $username, bool $isAdmin): void
     {
-        if (session_status() === PHP_SESSION_ACTIVE) {
-            session_regenerate_id(true);
-        }
+        $this->sessionContext->regenerate();
 
-        unset($_SESSION['mfa_pending'], $_SESSION['mfa_username']);
+        $this->sessionContext->unset('mfa_pending');
+        $this->sessionContext->unset('mfa_username');
 
-        $_SESSION['user_id']  = $userId;
-        $_SESSION['username'] = $username;
-        $_SESSION['is_admin'] = $isAdmin;
+        $this->sessionContext->set('user_id',  $userId);
+        $this->sessionContext->set('username', $username);
+        $this->sessionContext->set('is_admin', $isAdmin);
 
         $this->userKeyManager->promoteToSession();
         $this->users->updateLastLogin($userId);
@@ -251,9 +249,9 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
      */
     private function hasMfaPending(string $type): bool
     {
-        return isset($_SESSION['mfa_pending'])
-            && is_array($_SESSION['mfa_pending'])
-            && isset($_SESSION['mfa_pending']['type'], $_SESSION['mfa_pending']['user_id'])
-            && $_SESSION['mfa_pending']['type'] === $type;
+        $pending = $this->sessionContext->get('mfa_pending');
+        return is_array($pending)
+            && isset($pending['type'], $pending['user_id'])
+            && $pending['type'] === $type;
     }
 }

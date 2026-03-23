@@ -8,6 +8,7 @@ use App\Repository\UserRepository;
 use App\Security\PasswordHasher;
 use App\Security\UserKeyManager;
 use App\Service\ThemeManager;
+use App\Session\SessionContext;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -17,11 +18,12 @@ class AdminHandler extends AbstractHandler implements RequestHandlerInterface
 {
     public function __construct(
         ThemeManager $theme,
+        SessionContext $sessionContext,
         private readonly UserRepository $users,
         private readonly PasswordHasher $passwordHasher,
         private readonly UserKeyManager $userKeyManager,
     ) {
-        parent::__construct($theme);
+        parent::__construct($theme, $sessionContext);
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
