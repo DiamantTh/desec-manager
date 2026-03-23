@@ -6,11 +6,10 @@ $error ??= null;
     <div class="column is-one-third-desktop is-half-tablet">
         <div class="box" id="webauthn-mfa-box">
             <h1 class="title is-4 has-text-centered mb-4">
-                Sicherheitsschlüssel verwenden
+                <?= __('Use Security Key') ?>
             </h1>
             <p class="has-text-centered has-text-grey mb-5">
-                Stecke deinen Sicherheitsschlüssel ein und klicke auf
-                <strong>„Anmelden"</strong>.
+                <?= __('Insert your security key and click Sign in.') ?>
             </p>
 
             <div id="webauthn-error" class="notification is-danger is-light is-hidden"></div>
@@ -24,13 +23,13 @@ $error ??= null;
             <div class="has-text-centered">
                 <button id="btn-webauthn" class="button is-primary is-medium">
                     <span class="icon"><i class="fas fa-key"></i></span>
-                    <span>Mit Sicherheitsschlüssel anmelden</span>
+                    <span><?= __('Sign in with security key') ?></span>
                 </button>
             </div>
 
             <div class="has-text-centered mt-4">
                 <a href="/auth/login" class="is-size-7 has-text-grey">
-                    Zurück zum Login
+                    <?= __('Back to login') ?>
                 </a>
             </div>
         </div>
@@ -46,7 +45,7 @@ $error ??= null;
         errBox.textContent = msg;
         errBox.classList.remove('is-hidden');
         btn.disabled = false;
-        btn.querySelector('span:last-child').textContent = 'Erneut versuchen';
+        btn.querySelector('span:last-child').textContent = '<?= __('Retry') ?>';
     }
 
     async function fetchJson(url) {
@@ -85,7 +84,7 @@ $error ??= null;
     btn.addEventListener('click', async function () {
         btn.disabled = true;
         errBox.classList.add('is-hidden');
-        btn.querySelector('span:last-child').textContent = 'Warte auf Schlüssel…';
+        btn.querySelector('span:last-child').textContent = '<?= __('Waiting for key…') ?>';
 
         try {
             const options = await fetchJson('/webauthn/auth-options');

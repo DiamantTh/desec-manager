@@ -9,7 +9,7 @@
         <div class="card">
             <header class="card-header">
                 <p class="card-header-title">
-                    API Keys
+                    <?= __('API Keys') ?>
                 </p>
             </header>
             <div class="card-content">
@@ -17,10 +17,10 @@
                     <table class="table is-fullwidth is-striped">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Status</th>
-                                <th>Erstellt</th>
-                                <th class="has-text-right">Aktionen</th>
+                                <th><?= __('Name') ?></th>
+                                <th><?= __('Status') ?></th>
+                                <th><?= __('Created') ?></th>
+                                <th class="has-text-right"><?= __('Actions') ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -29,7 +29,7 @@
                                     <td><?= htmlspecialchars($key['name'], ENT_QUOTES, 'UTF-8') ?></td>
                                     <td>
                                         <span class="tag <?= !empty($key['is_active']) ? 'is-success' : 'is-light' ?>">
-                                            <?= !empty($key['is_active']) ? 'aktiv' : 'deaktiviert' ?>
+                                            <?= !empty($key['is_active']) ? __('Active') : __('Inactive') ?>
                                         </span>
                                     </td>
                                     <td><?= htmlspecialchars($key['created_at'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
@@ -39,7 +39,7 @@
                                                 <input type="hidden" name="action" value="deactivate">
                                                 <input type="hidden" name="key_id" value="<?= (int) $key['id'] ?>">
                                                 <button type="submit" class="button is-warning is-small">
-                                                    Deaktivieren
+                                                    <?= __('Deactivate') ?>
                                                 </button>
                                             </form>
                                         <?php endif; ?>
@@ -49,7 +49,7 @@
                         </tbody>
                     </table>
                 <?php else: ?>
-                    <p class="has-text-grey">Noch keine API Keys vorhanden.</p>
+                    <p class="has-text-grey"><?= __('No API keys found.') ?></p>
                 <?php endif; ?>
             </div>
         </div>
@@ -57,13 +57,13 @@
     <div class="column">
         <div class="card">
             <header class="card-header">
-                <p class="card-header-title">Neuen API Key hinterlegen</p>
+                <p class="card-header-title"><?= __('Add new API key') ?></p>
             </header>
             <div class="card-content">
                 <form method="post">
                     <input type="hidden" name="action" value="create">
                     <div class="field">
-                        <label class="label" for="name">Bezeichnung</label>
+                        <label class="label" for="name"><?= __('Label') ?></label>
                         <div class="control">
                             <input id="name" name="name" class="input" required>
                         </div>
@@ -77,7 +77,7 @@
                     <div class="field">
                         <div class="control">
                             <button type="submit" class="button is-primary is-fullwidth">
-                                Speichern
+                                <?= __('Save') ?>
                             </button>
                         </div>
                     </div>

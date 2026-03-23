@@ -6,10 +6,10 @@ $error ??= null;
     <div class="column is-one-third-desktop is-half-tablet">
         <div class="box">
             <h1 class="title is-4 has-text-centered mb-4">
-                Zwei-Faktor-Authentifizierung
+                <?= __('Two-Factor Authentication') ?>
             </h1>
             <p class="has-text-centered has-text-grey mb-5">
-                Bitte gib den aktuellen Code aus deiner Authenticator-App ein.
+                <?= __('Please enter the current code from your authenticator app.') ?>
             </p>
 
             <?php if ($error): ?>
@@ -20,7 +20,7 @@ $error ??= null;
 
             <form method="post" autocomplete="off">
                 <div class="field">
-                    <label class="label" for="totp_code">Authentifizierungscode</label>
+                    <label class="label" for="totp_code"><?= __('Authentication code') ?></label>
                     <div class="control">
                         <input
                             id="totp_code"
@@ -41,10 +41,10 @@ $error ??= null;
 
                 <div class="field is-grouped is-justify-content-flex-end mt-4">
                     <div class="control">
-                        <a href="/auth/login" class="button is-light">Abbrechen</a>
+                        <a href="/auth/login" class="button is-light"><?= __('Cancel') ?></a>
                     </div>
                     <div class="control">
-                        <button type="submit" class="button is-primary">Bestätigen</button>
+                        <button type="submit" class="button is-primary"><?= __('Confirm') ?></button>
                     </div>
                 </div>
             </form>

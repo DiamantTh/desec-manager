@@ -19,28 +19,28 @@ $messageType  ??= 'is-success';
 <?php endif; ?>
 
 <?php if (!$user): ?>
-    <div class="notification is-danger">Benutzerdaten konnten nicht geladen werden.</div>
+    <div class="notification is-danger"><?= __('User data could not be loaded.') ?></div>
 <?php else: ?>
 
     <!-- ===================================================================
          Profil-Informationen
          =================================================================== -->
     <div class="box">
-        <h2 class="title is-4">Profil</h2>
+        <h2 class="title is-4"><?= __('Profile') ?></h2>
         <div class="columns">
             <div class="column is-half">
-                <p class="has-text-weight-semibold">Benutzername</p>
+                <p class="has-text-weight-semibold"><?= __('Username') ?></p>
                 <p><?= htmlspecialchars($user['username'], ENT_QUOTES, 'UTF-8') ?></p>
 
-                <p class="has-text-weight-semibold mt-4">E-Mail</p>
+                <p class="has-text-weight-semibold mt-4"><?= __('Email') ?></p>
                 <p><?= htmlspecialchars($user['email'] ?? '–', ENT_QUOTES, 'UTF-8') ?></p>
             </div>
             <div class="column is-half">
-                <p class="has-text-weight-semibold">Erstellt am</p>
+                <p class="has-text-weight-semibold"><?= __('Created at') ?></p>
                 <p><?= htmlspecialchars($user['created_at'] ?? '', ENT_QUOTES, 'UTF-8') ?></p>
 
-                <p class="has-text-weight-semibold mt-4">Letzter Login</p>
-                <p><?= htmlspecialchars($user['last_login'] ?? 'Noch nie', ENT_QUOTES, 'UTF-8') ?></p>
+                <p class="has-text-weight-semibold mt-4"><?= __('Last Login') ?></p>
+                <p><?= htmlspecialchars($user['last_login'] ?? __('Never'), ENT_QUOTES, 'UTF-8') ?></p>
             </div>
         </div>
     </div>
@@ -49,31 +49,31 @@ $messageType  ??= 'is-success';
          Passwort ändern
          =================================================================== -->
     <div class="box">
-        <h2 class="title is-5">Passwort ändern</h2>
+        <h2 class="title is-5"><?= __('Change password') ?></h2>
         <form method="post" autocomplete="off">
             <input type="hidden" name="action" value="change_password">
             <div class="field">
-                <label class="label" for="current_password">Aktuelles Passwort</label>
+                <label class="label" for="current_password"><?= __('Current password') ?></label>
                 <div class="control">
                     <input id="current_password" name="current_password" type="password" class="input" required>
                 </div>
             </div>
             <div class="field">
-                <label class="label" for="new_password">Neues Passwort</label>
+                <label class="label" for="new_password"><?= __('New password') ?></label>
                 <div class="control">
                     <input id="new_password" name="new_password" type="password" class="input" required minlength="12">
                 </div>
                 <p class="help">Mindestens 12 Zeichen.</p>
             </div>
             <div class="field">
-                <label class="label" for="new_password_confirm">Neues Passwort bestätigen</label>
+                <label class="label" for="new_password_confirm"><?= __('Confirm new password') ?></label>
                 <div class="control">
                     <input id="new_password_confirm" name="new_password_confirm" type="password" class="input" required minlength="12">
                 </div>
             </div>
             <div class="field is-grouped is-justify-content-flex-end">
                 <div class="control">
-                    <button type="submit" class="button is-primary">Passwort ändern</button>
+                    <button type="submit" class="button is-primary"><?= __('Change password') ?></button>
                 </div>
             </div>
         </form>
@@ -87,17 +87,17 @@ $messageType  ??= 'is-success';
 
         <?php if ($totpEnabled): ?>
             <div class="notification is-success is-light">
-                TOTP ist aktiv. Dein Konto ist mit einer Authenticator-App geschützt.
+                TOTP <?= __('is active') ?>. <?= __('Your account is protected with an authenticator app.') ?>
             </div>
             <form method="post" id="totp-disable-form">
                 <input type="hidden" name="action" value="disable_totp">
                 <button type="submit" class="button is-danger is-outlined"
-                        onclick="return confirm('TOTP wirklich deaktivieren?')">
-                    TOTP deaktivieren
+                        onclick="return confirm('<?= __('Really disable TOTP?') ?>')">
+                    <?= __('Disable TOTP') ?>
                 </button>
             </form>
         <?php else: ?>
-            <p class="mb-4">Schütze dein Konto mit einer Authenticator-App (Google Authenticator, Bitwarden, etc.).</p>
+            <p class="mb-4"><?= __('Protect your account with an authenticator app (Google Authenticator, Bitwarden, etc.).') ?></p>
 
             <!-- Schritt-für-Schritt-TOTP-Setup (wird per JS befüllt) -->
             <div id="totp-setup-area" class="is-hidden">
@@ -105,12 +105,12 @@ $messageType  ??= 'is-success';
                     <canvas id="totp-qr-canvas"></canvas>
                 </div>
                 <p class="has-text-centered is-size-7 has-text-grey mb-2">
-                    Alternativ manuell eingeben:
+                    <?= __('Or enter manually:') ?>
                 </p>
                 <p class="has-text-centered has-text-weight-semibold mb-4" id="totp-secret-text" style="font-family:monospace; letter-spacing:0.1em;"></p>
 
                 <div class="field">
-                    <label class="label" for="totp-verify-code">Code aus der App eingeben</label>
+                    <label class="label" for="totp-verify-code"><?= __('Enter code from app') ?></label>
                     <div class="control">
                         <input id="totp-verify-code" type="text" class="input" inputmode="numeric"
                                pattern="[0-9]{6,8}" maxlength="8" placeholder="123456" autocomplete="one-time-code">
@@ -118,17 +118,17 @@ $messageType  ??= 'is-success';
                 </div>
                 <div class="field is-grouped">
                     <div class="control">
-                        <button id="btn-totp-enable" class="button is-primary">Aktivieren</button>
+                        <button id="btn-totp-enable" class="button is-primary"><?= __('Activate') ?></button>
                     </div>
                     <div class="control">
-                        <button id="btn-totp-cancel" class="button is-light">Abbrechen</button>
+                        <button id="btn-totp-cancel" class="button is-light"><?= __('Cancel') ?></button>
                     </div>
                 </div>
                 <div id="totp-enable-error" class="notification is-danger is-light mt-2 is-hidden"></div>
             </div>
 
             <button id="btn-totp-setup" class="button is-info is-outlined">
-                TOTP einrichten
+                <?= __('Set up TOTP') ?>
             </button>
         <?php endif; ?>
     </div>
@@ -137,15 +137,15 @@ $messageType  ??= 'is-success';
          Zwei-Faktor-Authentifizierung — WebAuthn / FIDO2
          =================================================================== -->
     <div class="box">
-        <h2 class="title is-5">Sicherheitsschlüssel (FIDO2 / Passkeys)</h2>
+        <h2 class="title is-5"><?= __('Security Keys (FIDO2 / Passkeys)') ?></h2>
 
         <?php if (count($webAuthnKeys) > 0): ?>
             <table class="table is-fullwidth is-striped is-hoverable mb-4">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Registriert</th>
-                        <th>Zuletzt verwendet</th>
+                        <th><?= __('Name') ?></th>
+                        <th><?= __('Registered') ?></th>
+                        <th><?= __('Last used') ?></th>
                         <th></th>
                     </tr>
                 </thead>
@@ -158,17 +158,17 @@ $messageType  ??= 'is-success';
                                 </span>
                             </td>
                             <td><?= htmlspecialchars($key->createdAt, ENT_QUOTES, 'UTF-8') ?></td>
-                            <td><?= htmlspecialchars($key->lastUsedAt ?? 'Noch nie', ENT_QUOTES, 'UTF-8') ?></td>
+                            <td><?= htmlspecialchars($key->lastUsedAt ?? __('Never'), ENT_QUOTES, 'UTF-8') ?></td>
                             <td>
                                 <div class="buttons is-right">
                                     <button class="button is-small is-info is-outlined btn-key-rename"
                                             data-id="<?= htmlspecialchars($key->credentialId, ENT_QUOTES, 'UTF-8') ?>"
                                             data-name="<?= htmlspecialchars($key->name, ENT_QUOTES, 'UTF-8') ?>">
-                                        Umbenennen
+                                        <?= __('Rename') ?>
                                     </button>
                                     <button class="button is-small is-danger is-outlined btn-key-delete"
                                             data-id="<?= htmlspecialchars($key->credentialId, ENT_QUOTES, 'UTF-8') ?>">
-                                        Löschen
+                                        <?= __('Delete') ?>
                                     </button>
                                 </div>
                             </td>
@@ -177,13 +177,13 @@ $messageType  ??= 'is-success';
                 </tbody>
             </table>
         <?php else: ?>
-            <p class="has-text-grey mb-4">Noch kein Sicherheitsschlüssel registriert.</p>
+            <p class="has-text-grey mb-4"><?= __('No security key registered yet.') ?></p>
         <?php endif; ?>
 
         <!-- Neuen Key registrieren -->
         <div id="webauthn-register-error" class="notification is-danger is-light mb-3 is-hidden"></div>
         <button id="btn-webauthn-register" class="button is-info is-outlined">
-            Sicherheitsschlüssel hinzufügen
+            <?= __('Add security key') ?>
         </button>
     </div>
 
@@ -250,7 +250,7 @@ $messageType  ??= 'is-success';
                     canvas.style.display = 'none';
                     const link = document.createElement('a');
                     link.href  = data.provisioning_uri;
-                    link.textContent = 'OTP-URI öffnen';
+                    link.textContent = '<?= __('Open OTP URI') ?>';
                     canvas.parentNode.insertBefore(link, canvas);
                 }
 
@@ -310,7 +310,7 @@ $messageType  ??= 'is-success';
     if (btnReg) {
         btnReg.addEventListener('click', async function () {
             regErr.classList.add('is-hidden');
-            const keyName = prompt('Name für diesen Schlüssel (z.B. "YubiKey 5"):');
+            const keyName = prompt('<?= __('Name for this key (e.g. "YubiKey 5"):') ?>');
             if (!keyName) return;
 
             try {
@@ -350,7 +350,7 @@ $messageType  ??= 'is-success';
     document.querySelectorAll('.btn-key-rename').forEach(function (btn) {
         btn.addEventListener('click', async function () {
             const id   = btn.dataset.id;
-            const name = prompt('Neuer Name:', btn.dataset.name ?? '');
+            const name = prompt('<?= __('New name:') ?>', btn.dataset.name ?? '');
             if (!name || name === btn.dataset.name) return;
             try {
                 await apiPost('/webauthn/rename', { credentialId: id, name });
@@ -364,7 +364,7 @@ $messageType  ??= 'is-success';
     // Löschen
     document.querySelectorAll('.btn-key-delete').forEach(function (btn) {
         btn.addEventListener('click', async function () {
-            if (!confirm('Sicherheitsschlüssel wirklich entfernen?')) return;
+            if (!confirm('<?= __('Really remove security key?') ?>')) return;
             const id = btn.dataset.id;
             try {
                 await apiPost('/webauthn/delete', { credentialId: id });

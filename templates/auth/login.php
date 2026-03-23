@@ -14,14 +14,14 @@
 
             <form method="post" autocomplete="off">
                 <div class="field">
-                    <label class="label" for="username">Benutzername</label>
+                    <label class="label" for="username"><?= __('Username') ?></label>
                     <div class="control">
                         <input id="username" name="username" type="text" class="input" required autofocus>
                     </div>
                 </div>
 
                 <div class="field">
-                    <label class="label" for="password">Passwort</label>
+                    <label class="label" for="password"><?= __('Password') ?></label>
                     <div class="control">
                         <input id="password" name="password" type="password" class="input" required>
                     </div>
@@ -30,14 +30,14 @@
                 <div class="field is-grouped is-justify-content-flex-end">
                     <div class="control">
                         <button type="submit" class="button is-primary">
-                            Anmelden
+                            <?= __('Sign in') ?>
                         </button>
                     </div>
                 </div>
             </form>
         </div>
         <p class="has-text-centered is-size-7 has-text-grey mt-2">
-            Standard-Zugangsdaten werden während der Installation erstellt.
+            <?= __('Default credentials are created during installation.') ?>
         </p>
     </div>
 </div>

@@ -6,16 +6,16 @@
 
 <?php if (!$domains): ?>
     <div class="notification is-info">
-        <strong>Keine Domains verfügbar.</strong>
-        <p>Legen Sie zuerst eine Domain an, bevor Sie DNS-Einträge verwalten.</p>
+        <strong><?= __('No domains available.') ?></strong>
+        <p><?= __('Please add a domain before managing DNS records.') ?></p>
     </div>
     <?php return; ?>
 <?php endif; ?>
 
 <?php if (!$apiKeys): ?>
     <div class="notification is-warning">
-        <strong>Keine API-Keys hinterlegt.</strong>
-        <p>Speichern Sie mindestens einen deSEC API-Key, um DNS-Einträge bearbeiten zu können.</p>
+        <strong><?= __('No API keys configured.') ?></strong>
+        <p><?= __('Please save at least one deSEC API key to manage DNS records.') ?></p>
     </div>
     <?php return; ?>
 <?php endif; ?>
@@ -61,7 +61,7 @@
                 <label class="label">&nbsp;</label>
                 <div class="control">
                     <button type="submit" class="button is-primary is-fullwidth">
-                        Aktualisieren
+                        <?= __('Update') ?>
                     </button>
                 </div>
             </div>
@@ -71,7 +71,7 @@
 
 <?php if (!$selectedDomain || !$selectedKeyId): ?>
     <div class="notification is-info">
-        <p>Bitte wählen Sie eine Domain und einen API-Key aus.</p>
+        <p><?= __('Please select a domain and an API key.') ?></p>
     </div>
     <?php return; ?>
 <?php endif; ?>
@@ -81,7 +81,7 @@
         <div class="card">
             <header class="card-header">
                 <p class="card-header-title">
-                    RRsets für <?= htmlspecialchars($selectedDomain, ENT_QUOTES, 'UTF-8') ?>
+                    <?= sprintf(__('RRsets for %s'), htmlspecialchars($selectedDomain, ENT_QUOTES, 'UTF-8')) ?>
                 </p>
             </header>
             <div class="card-content">
@@ -89,11 +89,11 @@
                     <table class="table is-striped is-fullwidth" id="records-list" data-selected-domain="<?= htmlspecialchars($selectedDomain, ENT_QUOTES, 'UTF-8') ?>" data-selected-key="<?= (int) $selectedKeyId ?>">
                         <thead>
                             <tr>
-                                <th>Subname</th>
-                                <th>Typ</th>
+                                <th><?= __('Subname') ?></th>
+                                <th><?= __('Type') ?></th>
                                 <th>TTL</th>
-                                <th>Records</th>
-                                <th class="has-text-right">Aktionen</th>
+                                <th><?= __('Records') ?></th>
+                                <th class="has-text-right"><?= __('Actions') ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -112,7 +112,7 @@
                                     <td class="has-text-right">
                                         <div class="buttons is-right">
                                             <button type="button" class="button is-small js-inline-toggle">
-                                                Bearbeiten
+                                                <?= __('Edit') ?>
                                             </button>
                                             <form method="post" class="is-inline-block js-delete-form">
                                                 <input type="hidden" name="action" value="delete">
@@ -121,7 +121,7 @@
                                                 <input type="hidden" name="type" value="<?= htmlspecialchars($rrset['type'], ENT_QUOTES, 'UTF-8') ?>">
                                                 <input type="hidden" name="subname" value="<?= htmlspecialchars($rrset['subname'], ENT_QUOTES, 'UTF-8') ?>">
                                                 <button type="submit" class="button is-danger is-small">
-                                                    Löschen
+                                                    <?= __('Delete') ?>
                                                 </button>
                                             </form>
                                         </div>
@@ -132,7 +132,7 @@
                                             <input type="hidden" name="type" value="<?= htmlspecialchars($rrset['type'], ENT_QUOTES, 'UTF-8') ?>">
                                             <input type="hidden" name="subname" value="<?= htmlspecialchars($rrset['subname'], ENT_QUOTES, 'UTF-8') ?>">
                                             <div class="field">
-                                                <label class="label is-small">Records (ein Eintrag pro Zeile)</label>
+                                                <label class="label is-small"><?= __('Records (one entry per line)') ?></label>
                                                 <div class="control">
                                                     <textarea class="textarea" name="records" rows="3" required><?= htmlspecialchars($recordsText, ENT_QUOTES, 'UTF-8') ?></textarea>
                                                 </div>
@@ -146,11 +146,11 @@
                                             <div class="field is-grouped is-justify-content-flex-end">
                                                 <div class="control">
                                                     <button type="submit" class="button is-primary is-small">
-                                                        Speichern
+                                                        <?= __('Save') ?>
                                                     </button>
                                                 </div>
                                                 <div class="control">
-                                                    <button type="button" class="button is-light is-small js-inline-cancel">Abbrechen</button>
+                                                    <button type="button" class="button is-light is-small js-inline-cancel"><?= __('Cancel') ?></button>
                                                 </div>
                                             </div>
                                         </form>
@@ -160,7 +160,7 @@
                         </tbody>
                     </table>
                 <?php else: ?>
-                    <p class="has-text-grey">Keine RRsets gefunden.</p>
+                    <p class="has-text-grey"><?= __('No RRsets found.') ?></p>
                 <?php endif; ?>
             </div>
         </div>
@@ -168,7 +168,7 @@
     <div class="column">
         <div class="card">
             <header class="card-header">
-                <p class="card-header-title">Neues RRset</p>
+                <p class="card-header-title"><?= __('New RRset') ?></p>
             </header>
             <div class="card-content">
                 <form method="post" id="add-record-form">
@@ -176,13 +176,13 @@
                     <input type="hidden" name="domain" value="<?= htmlspecialchars($selectedDomain, ENT_QUOTES, 'UTF-8') ?>">
                     <input type="hidden" name="api_key_id" value="<?= (int) $selectedKeyId ?>">
                     <div class="field">
-                        <label class="label" for="new-subname">Subname</label>
+                        <label class="label" for="new-subname"><?= __('Subname') ?></label>
                         <div class="control">
-                            <input class="input" id="new-subname" name="subname" placeholder="@ für Root">
+                            <input class="input" id="new-subname" name="subname" placeholder="<?= __('@ for root') ?>">
                         </div>
                     </div>
                     <div class="field">
-                        <label class="label" for="new-type">Typ</label>
+                        <label class="label" for="new-type"><?= __('Type') ?></label>
                         <div class="control">
                             <div class="select is-fullwidth">
                                 <select id="new-type" name="type" required>
@@ -201,9 +201,9 @@
                         </div>
                     </div>
                     <div class="field">
-                        <label class="label" for="new-records">Records</label>
+                        <label class="label" for="new-records"><?= __('Records') ?></label>
                         <div class="control">
-                            <textarea class="textarea" id="new-records" name="records" rows="4" placeholder="Ein Eintrag pro Zeile" required></textarea>
+                            <textarea class="textarea" id="new-records" name="records" rows="4" placeholder="<?= __('One entry per line') ?>" required></textarea>
                         </div>
                     </div>
                     <div class="field">
@@ -214,10 +214,10 @@
                     </div>
                     <div class="field">
                         <button type="submit" class="button is-primary is-fullwidth">
-                            RRset speichern
+                            <?= __('Save RRset') ?>
                         </button>
                     </div>
-                    <p class="help">Bei bestehenden RRsets werden vorhandene Einträge ersetzt.</p>
+                    <p class="help"><?= __('Existing RRsets will be replaced.') ?></p>
                 </form>
             </div>
         </div>

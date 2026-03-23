@@ -10,7 +10,7 @@
         <div class="card">
             <header class="card-header">
                 <p class="card-header-title">
-                    Domains
+                    <?= __('Domains') ?>
                 </p>
             </header>
             <div class="card-content">
@@ -19,8 +19,8 @@
                         <thead>
                             <tr>
                                 <th>Domain</th>
-                                <th>Erstellt</th>
-                                <th class="has-text-right">Aktionen</th>
+                                <th><?= __('Created') ?></th>
+                                <th class="has-text-right"><?= __('Actions') ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -48,13 +48,13 @@
                                                     </div>
                                                     <div class="control">
                                                         <button type="submit" class="button is-danger is-small">
-                                                            Löschen
+                                                            <?= __('Delete') ?>
                                                         </button>
                                                     </div>
                                                 </div>
                                             </form>
                                         <?php else: ?>
-                                            <span class="tag is-light">Keine API-Keys</span>
+                                            <span class="tag is-light"><?= __('No API keys') ?></span>
                                         <?php endif; ?>
                                     </td>
                                 </tr>
@@ -62,7 +62,7 @@
                         </tbody>
                     </table>
                 <?php else: ?>
-                    <p class="has-text-grey">Noch keine Domains hinterlegt.</p>
+                    <p class="has-text-grey"><?= __('No domains registered yet.') ?></p>
                 <?php endif; ?>
             </div>
         </div>
@@ -70,7 +70,7 @@
     <div class="column">
         <div class="card mb-5">
             <header class="card-header">
-                <p class="card-header-title">Domain hinzufügen</p>
+                <p class="card-header-title"><?= __('Add domain') ?></p>
             </header>
             <div class="card-content">
                 <?php if ($apiKeys): ?>
@@ -87,7 +87,7 @@
                             <div class="control">
                                 <div class="select is-fullwidth">
                                     <select id="api_key_id" name="api_key_id" required>
-                                        <option value="">Bitte wählen</option>
+                                        <option value=""><?= __('Please select') ?></option>
                                         <?php foreach ($apiKeys as $key): ?>
                                             <option value="<?= (int) $key['id'] ?>">
                                                 <?= htmlspecialchars($key['name'], ENT_QUOTES, 'UTF-8') ?>
@@ -100,19 +100,19 @@
                         <div class="field">
                             <div class="control">
                                 <button type="submit" class="button is-primary is-fullwidth">
-                                    Domain hinzufügen
+                                    <?= __('Add domain') ?>
                                 </button>
                             </div>
                         </div>
                     </form>
                 <?php else: ?>
-                    <p class="has-text-grey">Es werden zuerst API Keys benötigt.</p>
+                    <p class="has-text-grey"><?= __('API keys are required first.') ?></p>
                 <?php endif; ?>
             </div>
         </div>
         <div class="card">
             <header class="card-header">
-                <p class="card-header-title">Mit deSEC synchronisieren</p>
+                <p class="card-header-title"><?= __('Sync with deSEC') ?></p>
             </header>
             <div class="card-content">
                 <?php if ($apiKeys): ?>
@@ -122,7 +122,7 @@
                             <label class="label" for="sync-api-key">API Key</label>
                             <div class="select is-fullwidth">
                                 <select id="sync-api-key" name="api_key_id" required>
-                                    <option value="">Bitte wählen</option>
+                                    <option value=""><?= __('Please select') ?></option>
                                     <?php foreach ($apiKeys as $key): ?>
                                         <option value="<?= (int) $key['id'] ?>">
                                             <?= htmlspecialchars($key['name'], ENT_QUOTES, 'UTF-8') ?>
@@ -133,13 +133,13 @@
                         </div>
                         <div class="field">
                             <button type="submit" class="button is-link is-fullwidth">
-                                Synchronisieren
+                                <?= __('Synchronize') ?>
                             </button>
                         </div>
-                        <p class="help">Holt Domains vom deSEC-Account und legt fehlende Einträge lokal an.</p>
+                        <p class="help"><?= __('Fetches domains from the deSEC account and creates missing entries locally.') ?></p>
                     </form>
                 <?php else: ?>
-                    <p class="has-text-grey">Es werden API Keys benötigt.</p>
+                    <p class="has-text-grey"><?= __('API keys are required.') ?></p>
                 <?php endif; ?>
             </div>
         </div>
