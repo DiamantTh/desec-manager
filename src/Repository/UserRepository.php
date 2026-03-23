@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use Doctrine\DBAL\Connection;
+use Psr\Clock\ClockInterface;
 
 class UserRepository
 {
-    public function __construct(private readonly Connection $connection)
-    {
+    public function __construct(
+        private readonly Connection $connection,
+        private readonly ClockInterface $clock,
+    ) {
     }
     
     /**
@@ -38,7 +41,7 @@ class UserRepository
             'email' => $userData['email'],
             'is_admin' => $userData['is_admin'] ?? false,
             'is_active' => $userData['is_active'] ?? true,
-            'created_at' => date('Y-m-d H:i:s')
+            'created_at' => $this->clock->now()->format('Y-m-d H:i:s')
         ]);
         
         return (int)$this->connection->lastInsertId();
@@ -47,7 +50,7 @@ class UserRepository
     public function updateLastLogin(int $userId): void 
     {
         $this->connection->update('users', 
-            ['last_login' => date('Y-m-d H:i:s')],
+            ['last_login' => $this->clock->now()->format('Y-m-d H:i:s')],
             ['id' => $userId]
         );
     }

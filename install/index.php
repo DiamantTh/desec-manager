@@ -469,8 +469,8 @@ function getRequirements(): array
 {
     $c = [];
 
-    $phpOk = version_compare(PHP_VERSION, '8.3.0') >= 0;
-    $c['php'] = ['ok' => $phpOk, 'label' => 'PHP ≥ 8.3', 'detail' => 'Installiert: ' . PHP_VERSION, 'critical' => true];
+    $phpOk = version_compare(PHP_VERSION, '8.4.0') >= 0;
+    $c['php'] = ['ok' => $phpOk, 'label' => 'PHP ≥ 8.4', 'detail' => 'Installiert: ' . PHP_VERSION, 'critical' => true];
 
     foreach (['pdo', 'sodium', 'openssl', 'json', 'mbstring'] as $ext) {
         $ok = extension_loaded($ext);

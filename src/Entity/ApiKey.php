@@ -22,13 +22,13 @@ class ApiKey
     private User $user;
     private string $name;
     private string $apiKey;
-    private \DateTime $createdAt;
-    private ?\DateTime $lastUsed = null;
+    private \DateTimeImmutable $createdAt;
+    private ?\DateTimeImmutable $lastUsed = null;
     private bool $isActive = true;
 
     public function __construct()
     {
-        $this->createdAt = new \DateTime();
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -75,17 +75,17 @@ class ApiKey
         return $this;
     }
 
-    public function getCreatedAt(): \DateTime
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function getLastUsed(): ?\DateTime
+    public function getLastUsed(): ?\DateTimeImmutable
     {
         return $this->lastUsed;
     }
 
-    public function setLastUsed(?\DateTime $lastUsed): self
+    public function setLastUsed(?\DateTimeImmutable $lastUsed): self
     {
         $this->lastUsed = $lastUsed;
         return $this;

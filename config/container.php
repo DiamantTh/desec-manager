@@ -62,6 +62,8 @@ use Mezzio\Router\RouterInterface;
 use Monolog\Handler\StreamHandler;
 use Monolog\Level;
 use Monolog\Logger;
+use App\Clock\SystemClock;
+use Psr\Clock\ClockInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -101,6 +103,11 @@ $builder->addDefinitions([
     // PSR-18 HTTP Client (GuzzleHttp als Implementierung)
     // -------------------------------------------------------------------------
     ClientInterface::class => DI\create(\GuzzleHttp\Client::class),
+
+    // -------------------------------------------------------------------------
+    // PSR-20 Clock (SystemClock — testbare Zeitstempel statt date()/new DateTimeImmutable())
+    // -------------------------------------------------------------------------
+    ClockInterface::class => DI\create(SystemClock::class),
 
     // -------------------------------------------------------------------------
     // Router (FastRoute via mezzio-fastroute)

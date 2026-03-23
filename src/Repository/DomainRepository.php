@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use Doctrine\DBAL\Connection;
+use Psr\Clock\ClockInterface;
 
 class DomainRepository
 {
-    public function __construct(private readonly Connection $connection)
-    {
+    public function __construct(
+        private readonly Connection $connection,
+        private readonly ClockInterface $clock,
+    ) {
     }
     
     /**
@@ -36,7 +39,7 @@ class DomainRepository
         $this->connection->insert('domains', [
             'user_id' => $domainData['user_id'],
             'domain_name' => $domainData['domain_name'],
-            'created_at' => $domainData['created_at'] ?? date('Y-m-d H:i:s')
+            'created_at' => $domainData['created_at'] ?? $this->clock->now()->format('Y-m-d H:i:s')
         ]);
     }
 

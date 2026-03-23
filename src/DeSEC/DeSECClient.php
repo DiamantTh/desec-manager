@@ -235,12 +235,19 @@ class DeSECClient
      */
     private function extractNextCursor(array $linkHeaders): ?string
     {
-        foreach ($linkHeaders as $header) {
-            if (preg_match('/<[^>]+[?&]cursor=([^>&\s]*)>[^;]*;\s*rel="next"/', $header, $matches)) {
-                return urldecode($matches[1]);
-            }
+        $pattern = '/<[^>]+[?&]cursor=([^>&\s]*)>[^;]*;\s*rel="next"/';
+
+        $header = array_find(
+            $linkHeaders,
+            fn(string $h): bool => (bool) preg_match($pattern, $h),
+        );
+
+        if ($header === null) {
+            return null;
         }
-        return null;
+
+        preg_match($pattern, $header, $matches);
+        return urldecode($matches[1]);
     }
 
     /**

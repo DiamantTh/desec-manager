@@ -8,6 +8,7 @@ use App\Entity\DecryptedApiKey;
 use App\Security\EncryptionService;
 use App\Security\UserKeyManager;
 use Doctrine\DBAL\Connection;
+use Psr\Clock\ClockInterface;
 
 class ApiKeyRepository
 {
@@ -15,6 +16,7 @@ class ApiKeyRepository
         private readonly Connection $connection,
         private readonly EncryptionService $encryption,
         private readonly UserKeyManager $userKeyManager,
+        private readonly ClockInterface $clock,
     ) {
     }
 
@@ -85,7 +87,7 @@ class ApiKeyRepository
             'user_id' => $keyData['user_id'],
             'name' => $keyData['name'],
             'api_key' => $encryptedKey,
-            'created_at' => date('Y-m-d H:i:s'),
+            'created_at' => $this->clock->now()->format('Y-m-d H:i:s'),
             'is_active' => $keyData['is_active'] ?? true,
         ]);
 
@@ -96,7 +98,7 @@ class ApiKeyRepository
     {
         $this->connection->update(
             'api_keys',
-            ['last_used' => date('Y-m-d H:i:s')],
+            ['last_used' => $this->clock->now()->format('Y-m-d H:i:s')],
             ['id' => $keyId]
         );
     }

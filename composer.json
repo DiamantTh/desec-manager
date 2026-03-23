@@ -3,7 +3,7 @@
     "description": "deSEC DNS Manager",
     "type": "project",
     "require": {
-        "php": ">=8.3",
+        "php": ">=8.4",
         "doctrine/dbal": "^3.7",
         "guzzlehttp/guzzle": "^7.8",
         "laminas/laminas-diactoros": "^3.5",
@@ -12,6 +12,7 @@
         "mezzio/mezzio-twigrenderer": "^2.14",
         "monolog/monolog": "^3.0",
         "php-di/php-di": "^7.1",
+        "psr/clock": "^1.0",
         "spomky-labs/otphp": "^11.4",
         "symfony/mailer": "^7.0",
         "twig/twig": "^3.0",

@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Entity\WebAuthnCredential;
 use Doctrine\DBAL\Connection;
+use Psr\Clock\ClockInterface;
 
 /**
  * Repository for FIDO2/WebAuthn credentials.
@@ -15,8 +16,10 @@ use Doctrine\DBAL\Connection;
  */
 class WebAuthnCredentialRepository
 {
-    public function __construct(private readonly Connection $connection)
-    {
+    public function __construct(
+        private readonly Connection $connection,
+        private readonly ClockInterface $clock,
+    ) {
     }
 
     /**
@@ -73,7 +76,7 @@ class WebAuthnCredentialRepository
     {
         $this->connection->update(
             'webauthn_credentials',
-            ['sign_count' => $signCount, 'last_used' => date('Y-m-d H:i:s')],
+            ['sign_count' => $signCount, 'last_used' => $this->clock->now()->format('Y-m-d H:i:s')],
             ['credential_id' => $credentialId]
         );
     }
