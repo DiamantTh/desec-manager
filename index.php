@@ -76,6 +76,27 @@ function renderPreInstallPage(string $reason): void
         .dsec-footer a { color: #81c784; }
         .dsec-footer .footer-title { color: #ffffff; font-weight: 700; margin-bottom: .4rem; }
         .dsec-footer .tag.is-success { background: #2e7d32; color: #fff; }
+        /* Bulma v5 überschreibt bei prefers-color-scheme:dark die scheme-Variablen.
+         * Da dieses Interface ein reines Light-Theme hat, setzen wir sie im selben
+         * Media-Query zurück – unser <style> kommt nach bulma.min.css und gewinnt. */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bulma-scheme-brightness: light;
+                --bulma-scheme-main-l: 100%;
+                --bulma-scheme-main-bis-l: 98%;
+                --bulma-scheme-main-ter-l: 96%;
+                --bulma-background-l: 96%;
+                --bulma-border-weak-l: 93%;
+                --bulma-border-l: 86%;
+                --bulma-text-weak-l: 48%;
+                --bulma-text-strong-l: 21%;
+                --bulma-text-title-l: 14%;
+                --bulma-scheme-invert-ter-l: 14%;
+                --bulma-scheme-invert-bis-l: 7%;
+                --bulma-scheme-invert-l: 4%;
+                --bulma-text-l: 29%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -149,9 +170,7 @@ function renderPreInstallPage(string $reason): void
                     </p>
                 </div>
                 <div class="column is-narrow has-text-right-tablet">
-                    <span class="tag is-success is-small">Open Source</span>
-                    <span class="tag is-dark is-small ml-1">PHP 8.1+</span>
-                    <p class="mt-2 is-size-7" style="color:#81c784">
+                    <p class="is-size-7" style="color:#81c784">
                         DNS powered by <a href="https://desec.io" target="_blank" rel="noopener">deSEC.io</a>
                     </p>
                 </div>
