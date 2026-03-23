@@ -1,19 +1,11 @@
 # DeSEC Manager — Root .htaccess
 # Webserver: Apache 2.4+ mit mod_rewrite, mod_headers (optional)
 
-# Verzeichnislistings und Signaturen deaktivieren
+# Verzeichnislisting deaktivieren
 Options -Indexes -MultiViews
-ServerSignature Off
 
-# ── Schutz sensibler Verzeichnisse ───────────────────────────────────────────
-# Direktzugriff auf PHP-Code, Konfiguration, vendor/, Locale, SQL-Skripte etc.
-# wird mit HTTP 403 abgewiesen — auch wenn mod_rewrite deaktiviert ist.
-
-<IfModule mod_authz_core.c>
-    <DirectoryMatch "^(.+/)?(src|config|vendor|locale|app|tests|sql|var)(/|$)">
-        Require all denied
-    </DirectoryMatch>
-</IfModule>
+# Schutz sensibler Verzeichnisse erfolgt über die jeweiligen .htaccess-Dateien
+# in src/, config/, vendor/, locale/, app/, tests/, sql/, var/
 
 # .env, composer.json, phpstan.neon etc. nie ausliefern
 <FilesMatch "^(\.env|composer\.(json|lock)|phpstan\.neon|\.gitignore|\.gitattributes|README\.md|FRAMEWORKS\.md|PHP84_COMPATIBILITY\.md)$">
