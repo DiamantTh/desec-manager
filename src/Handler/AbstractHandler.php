@@ -10,15 +10,15 @@ use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * AbstractHandler — gemeinsame Basis für alle PSR-15-Handler des DeSEC Managers.
+ * AbstractHandler — common base for all PSR-15 handlers in deSEC Manager.
  *
- * Stellt bereit:
- *   - render()        → PHP-Template aus ThemeManager laden → HtmlResponse
+ * Provides:
+ *   - render()        → Load PHP template from ThemeManager → HtmlResponse
  *   - redirect()      → RedirectResponse
- *   - flash()         → Flash-Nachricht in Session setzen
- *   - consumeFlash()  → Flash-Nachricht lesen + aus Session löschen
- *   - userId()        → aktuell eingeloggter User (int, 0 wenn nicht eingeloggt)
- *   - isAdmin()       → Admin-Flag aus Session
+ *   - flash()         → Set flash message in session
+ *   - consumeFlash()  → Read flash message + remove from session
+ *   - userId()        → Currently logged in user (int, 0 if not logged in)
+ *   - isAdmin()       → Admin flag from session
  */
 abstract class AbstractHandler
 {
@@ -27,20 +27,20 @@ abstract class AbstractHandler
     }
 
     // -------------------------------------------------------------------------
-    // Template-Rendering
+    // Template rendering
     // -------------------------------------------------------------------------
 
     /**
-     * Rendert ein PHP-Template über ThemeManager (3-stufige Fallback-Auflösung).
+     * Renders a PHP template via ThemeManager (3-level fallback resolution).
      *
-     * @param array<string, mixed> $data  Template-Variablen
+     * @param array<string, mixed> $data  Template variables
      */
     protected function render(string $template, array $data = []): ResponseInterface
     {
         $path = $this->theme->resolveTemplate($template);
         if (!file_exists($path)) {
             return new HtmlResponse(
-                '<h1>500 – Template nicht gefunden</h1><p>' . htmlspecialchars($template) . '</p>',
+                '<h1>500 – ' . htmlspecialchars(__('Template not found')) . '</h1><p>' . htmlspecialchars($template) . '</p>',
                 500
             );
         }

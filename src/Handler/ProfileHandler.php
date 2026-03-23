@@ -48,7 +48,7 @@ class ProfileHandler extends AbstractHandler implements RequestHandlerInterface
             try {
                 if ($action === 'change_password') {
                     $this->handleChangePassword($body, $userId, (string) ($user['password_hash'] ?? ''));
-                    $message = 'Passwort wurde geändert.';
+                    $message = __('Password changed successfully.');
                 }
             } catch (\Throwable $e) {
                 $message     = $e->getMessage();
@@ -83,16 +83,16 @@ class ProfileHandler extends AbstractHandler implements RequestHandlerInterface
         $confirm  = $this->bodyString($body, 'confirm_password');
 
         if ($current === '' || $new === '' || $confirm === '') {
-            throw new \InvalidArgumentException('Bitte alle Felder ausfüllen.');
+            throw new \InvalidArgumentException(__('Please fill in all fields.'));
         }
         if (!$this->passwordHasher->verify($current, $currentHash)) {
-            throw new \InvalidArgumentException('Aktuelles Passwort ist falsch.');
+            throw new \InvalidArgumentException(__('Current password is incorrect.'));
         }
         if ($new !== $confirm) {
-            throw new \InvalidArgumentException('Neues Passwort und Wiederholung stimmen nicht überein.');
+            throw new \InvalidArgumentException(__('New password and confirmation do not match.'));
         }
         if (strlen($new) < 12) {
-            throw new \InvalidArgumentException('Das neue Passwort muss mindestens 12 Zeichen lang sein.');
+            throw new \InvalidArgumentException(__('The new password must be at least 12 characters long.'));
         }
 
         $this->users->updatePassword($userId, $this->passwordHasher->hash($new));

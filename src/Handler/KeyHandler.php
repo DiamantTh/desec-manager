@@ -35,7 +35,7 @@ class KeyHandler extends AbstractHandler implements RequestHandlerInterface
                     $apiKey = $this->bodyString($body, 'api_key');
 
                     if ($name === '' || $apiKey === '') {
-                        throw new \InvalidArgumentException('Name und API-Key werden benötigt.');
+                        throw new \InvalidArgumentException(__('Name and API key are required.'));
                     }
 
                     $this->apiKeys->create([

@@ -1,0 +1,373 @@
+# German translation for deSEC Manager
+# Copyright (C) 2025
+# This file is distributed under the same license as the deSEC Manager package.
+msgid ""
+msgstr ""
+"Project-Id-Version: deSEC Manager 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-01 00:00+0000\n"
+"PO-Revision-Date: 2025-01-01 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: German\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Please enter your username and password."
+msgstr "Bitte Benutzernamen und Passwort eingeben."
+
+msgid "Invalid credentials."
+msgstr "Ungültige Zugangsdaten."
+
+msgid "This account has been deactivated."
+msgstr "Dieses Konto wurde deaktiviert."
+
+msgid "Please enter the code."
+msgstr "Bitte Code eingeben."
+
+msgid "Invalid code. Please try again."
+msgstr "Ungültiger Code. Bitte erneut versuchen."
+
+msgid "Username"
+msgstr "Benutzername"
+
+msgid "Password"
+msgstr "Passwort"
+
+msgid "Sign in"
+msgstr "Anmelden"
+
+msgid "Default credentials are created during installation."
+msgstr "Standard-Zugangsdaten werden während der Installation erstellt."
+
+msgid "Two-Factor Authentication"
+msgstr "Zwei-Faktor-Authentifizierung"
+
+msgid "Please enter the current code from your authenticator app."
+msgstr "Bitte gib den aktuellen Code aus deiner Authenticator-App ein."
+
+msgid "Authentication code"
+msgstr "Authentifizierungscode"
+
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgid "Confirm"
+msgstr "Bestätigen"
+
+msgid "Use Security Key"
+msgstr "Sicherheitsschlüssel verwenden"
+
+msgid "Insert your security key and click Sign in."
+msgstr "Stecke deinen Sicherheitsschlüssel ein und klicke auf „Anmelden\"."
+
+msgid "Sign in with security key"
+msgstr "Mit Sicherheitsschlüssel anmelden"
+
+msgid "Back to login"
+msgstr "Zurück zum Login"
+
+msgid "Waiting for key…"
+msgstr "Warte auf Schlüssel…"
+
+msgid "Retry"
+msgstr "Erneut versuchen"
+
+msgid "Authentication cancelled or timed out."
+msgstr "Authentifizierung abgebrochen oder Timeout."
+
+msgid "An unknown error occurred."
+msgstr "Ein unbekannter Fehler ist aufgetreten."
+
+msgid "Unknown error"
+msgstr "Unbekannter Fehler"
+
+msgid "User data could not be loaded."
+msgstr "Benutzerdaten konnten nicht geladen werden."
+
+msgid "Profile"
+msgstr "Profil"
+
+msgid "Email"
+msgstr "E-Mail"
+
+msgid "Created at"
+msgstr "Erstellt am"
+
+msgid "Last login"
+msgstr "Letzter Login"
+
+msgid "Never"
+msgstr "Noch nie"
+
+msgid "Password changed successfully."
+msgstr "Passwort wurde geändert."
+
+msgid "Please fill in all fields."
+msgstr "Bitte alle Felder ausfüllen."
+
+msgid "Current password is incorrect."
+msgstr "Aktuelles Passwort ist falsch."
+
+msgid "New password and confirmation do not match."
+msgstr "Neues Passwort und Wiederholung stimmen nicht überein."
+
+msgid "The new password must be at least 12 characters long."
+msgstr "Das neue Passwort muss mindestens 12 Zeichen lang sein."
+
+msgid "Change password"
+msgstr "Passwort ändern"
+
+msgid "Current password"
+msgstr "Aktuelles Passwort"
+
+msgid "New password"
+msgstr "Neues Passwort"
+
+msgid "Confirm new password"
+msgstr "Neues Passwort bestätigen"
+
+msgid "Save"
+msgstr "Speichern"
+
+msgid "Recent Domains"
+msgstr "Letzte Domains"
+
+msgid "Recent API Keys"
+msgstr "Letzte API Keys"
+
+msgid "No domains registered yet."
+msgstr "Noch keine Domains hinterlegt."
+
+msgid "No API keys added yet."
+msgstr "Noch keine API Keys hinterlegt."
+
+msgid "Active"
+msgstr "aktiv"
+
+msgid "Inactive"
+msgstr "deaktiviert"
+
+msgid "Created"
+msgstr "Erstellt"
+
+msgid "%s is active"
+msgstr "%s ist aktiv"
+
+msgid "(JIT enabled)"
+msgstr "(JIT eingeschaltet)"
+
+msgid "Domains"
+msgstr "Domains"
+
+msgid "Actions"
+msgstr "Aktionen"
+
+msgid "Delete"
+msgstr "Löschen"
+
+msgid "No API keys"
+msgstr "Keine API-Keys"
+
+msgid "Add domain"
+msgstr "Domain hinzufügen"
+
+msgid "Please select"
+msgstr "Bitte wählen"
+
+msgid "API Key"
+msgstr "API Key"
+
+msgid "Sync with deSEC"
+msgstr "Mit deSEC synchronisieren"
+
+msgid "Synchronize"
+msgstr "Synchronisieren"
+
+msgid "Fetches domains from the deSEC account and creates missing local entries."
+msgstr "Holt Domains vom deSEC-Account und legt fehlende Einträge lokal an."
+
+msgid "API keys are required first."
+msgstr "Es werden zuerst API Keys benötigt."
+
+msgid "API keys are required."
+msgstr "Es werden API Keys benötigt."
+
+msgid "Please select a domain and API key."
+msgstr "Bitte Domain und API-Key auswählen."
+
+msgid "Invalid domain name."
+msgstr "Ungültiger Domainname."
+
+msgid "Domain added successfully."
+msgstr "Domain wurde hinzugefügt."
+
+msgid "Domain and API key are required."
+msgstr "Domain und API-Key werden benötigt."
+
+msgid "Domain removed successfully."
+msgstr "Domain wurde entfernt."
+
+msgid "Please select an API key."
+msgstr "Bitte einen API-Key auswählen."
+
+msgid "Sync completed (%d added, %d removed)."
+msgstr "Sync abgeschlossen (%d hinzugefügt, %d entfernt)."
+
+msgid "API Keys"
+msgstr "API Keys"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "No API keys found."
+msgstr "Noch keine API Keys vorhanden."
+
+msgid "Add new API key"
+msgstr "Neuen API Key hinterlegen"
+
+msgid "Label"
+msgstr "Bezeichnung"
+
+msgid "Deactivate"
+msgstr "Deaktivieren"
+
+msgid "Name and API key are required."
+msgstr "Name und API-Key werden benötigt."
+
+msgid "No domains available."
+msgstr "Keine Domains verfügbar."
+
+msgid "Please add a domain before managing DNS records."
+msgstr "Legen Sie zuerst eine Domain an, bevor Sie DNS-Einträge verwalten."
+
+msgid "No API keys configured."
+msgstr "Keine API-Keys hinterlegt."
+
+msgid "Please save at least one deSEC API key to manage DNS records."
+msgstr "Speichern Sie mindestens einen deSEC API-Key, um DNS-Einträge bearbeiten zu können."
+
+msgid "Update"
+msgstr "Aktualisieren"
+
+msgid "RRsets for %s"
+msgstr "RRsets für %s"
+
+msgid "Subname"
+msgstr "Subname"
+
+msgid "Type"
+msgstr "Typ"
+
+msgid "Records"
+msgstr "Records"
+
+msgid "Edit"
+msgstr "Bearbeiten"
+
+msgid "Records (one entry per line)"
+msgstr "Records (ein Eintrag pro Zeile)"
+
+msgid "TTL"
+msgstr "TTL"
+
+msgid "No RRsets found."
+msgstr "Keine RRsets gefunden."
+
+msgid "New RRset"
+msgstr "Neues RRset"
+
+msgid "@ for root"
+msgstr "@ für Root"
+
+msgid "One entry per line"
+msgstr "Ein Eintrag pro Zeile"
+
+msgid "Save RRset"
+msgstr "RRset speichern"
+
+msgid "Existing RRsets will be replaced."
+msgstr "Bei bestehenden RRsets werden vorhandene Einträge ersetzt."
+
+msgid "Record type not supported."
+msgstr "Record-Typ wird nicht unterstützt."
+
+msgid "At least one record must be specified."
+msgstr "Es muss mindestens ein Record angegeben werden."
+
+msgid "Record type missing."
+msgstr "Record-Typ fehlt."
+
+msgid "Administrators"
+msgstr "Administratoren"
+
+msgid "Last Login"
+msgstr "Letzter Login"
+
+msgid "No administrators found."
+msgstr "Noch keine Administratoren vorhanden."
+
+msgid "Add administrator"
+msgstr "Administrator hinzufügen"
+
+msgid "The password will be hashed immediately with Argon2id."
+msgstr "Das Passwort wird sofort mit Argon2id gehasht."
+
+msgid "Create administrator"
+msgstr "Administrator anlegen"
+
+msgid "Administrator created successfully."
+msgstr "Administrator wurde angelegt."
+
+msgid "User has been deactivated."
+msgstr "Benutzer wurde deaktiviert."
+
+msgid "User has been deleted."
+msgstr "Benutzer wurde gelöscht."
+
+msgid "Invalid email address."
+msgstr "Ungültige E-Mail-Adresse."
+
+msgid "Username already taken."
+msgstr "Benutzername bereits vergeben."
+
+msgid "Not authenticated."
+msgstr "Nicht authentifiziert."
+
+msgid "User not found."
+msgstr "Benutzer nicht gefunden."
+
+msgid "No authenticator response."
+msgstr "Keine Authenticator-Antwort."
+
+msgid "No pending login process."
+msgstr "Kein ausstehender Login-Prozess."
+
+msgid "Invalid credential JSON."
+msgstr "Ungültiges Credential-JSON."
+
+msgid "Unknown credential."
+msgstr "Unbekanntes Credential."
+
+msgid "Dashboard"
+msgstr "Dashboard"
+
+msgid "Admin"
+msgstr "Admin"
+
+msgid "Sign out"
+msgstr "Abmelden"
+
+msgid "User"
+msgstr "Benutzer"
+
+msgid "Language"
+msgstr "Sprache"
+
+msgid "Template not found"
+msgstr "Template nicht gefunden"

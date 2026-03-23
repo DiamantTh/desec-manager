@@ -1,0 +1,374 @@
+# Spanish translation for deSEC Manager
+# Copyright (C) 2025
+# This file is distributed under the same license as the deSEC Manager package.
+msgid ""
+msgstr ""
+"Project-Id-Version: deSEC Manager 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-01 00:00+0000\n"
+"PO-Revision-Date: 2025-01-01 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: Spanish\n"
+"Language: es_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Please enter your username and password."
+msgstr ""
+
+msgid "Invalid credentials."
+msgstr ""
+
+msgid "This account has been deactivated."
+msgstr ""
+
+msgid "Please enter the code."
+msgstr ""
+
+msgid "Invalid code. Please try again."
+msgstr ""
+
+msgid "Username"
+msgstr ""
+
+msgid "Password"
+msgstr ""
+
+msgid "Sign in"
+msgstr ""
+
+msgid "Default credentials are created during installation."
+msgstr ""
+
+msgid "Two-Factor Authentication"
+msgstr ""
+
+msgid "Please enter the current code from your authenticator app."
+msgstr ""
+
+msgid "Authentication code"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Confirm"
+msgstr ""
+
+msgid "Use Security Key"
+msgstr ""
+
+msgid "Insert your security key and click Sign in."
+msgstr ""
+
+msgid "Sign in with security key"
+msgstr ""
+
+msgid "Back to login"
+msgstr ""
+
+msgid "Waiting for key…"
+msgstr ""
+
+msgid "Retry"
+msgstr ""
+
+msgid "Authentication cancelled or timed out."
+msgstr ""
+
+msgid "An unknown error occurred."
+msgstr ""
+
+msgid "Unknown error"
+msgstr ""
+
+msgid "User data could not be loaded."
+msgstr ""
+
+msgid "Profile"
+msgstr ""
+
+msgid "Email"
+msgstr ""
+
+msgid "Created at"
+msgstr ""
+
+msgid "Last login"
+msgstr ""
+
+msgid "Never"
+msgstr ""
+
+msgid "Password changed successfully."
+msgstr ""
+
+msgid "Please fill in all fields."
+msgstr ""
+
+msgid "Current password is incorrect."
+msgstr ""
+
+msgid "New password and confirmation do not match."
+msgstr ""
+
+msgid "The new password must be at least 12 characters long."
+msgstr ""
+
+msgid "Change password"
+msgstr ""
+
+msgid "Current password"
+msgstr ""
+
+msgid "New password"
+msgstr ""
+
+msgid "Confirm new password"
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "Recent Domains"
+msgstr ""
+
+msgid "Recent API Keys"
+msgstr ""
+
+msgid "No domains registered yet."
+msgstr ""
+
+msgid "No API keys added yet."
+msgstr ""
+
+msgid "Active"
+msgstr ""
+
+msgid "Inactive"
+msgstr ""
+
+msgid "Created"
+msgstr ""
+
+msgid "%s is active"
+msgstr ""
+
+msgid "(JIT enabled)"
+msgstr ""
+
+msgid "Domains"
+msgstr ""
+
+msgid "Actions"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid "No API keys"
+msgstr ""
+
+msgid "Add domain"
+msgstr ""
+
+msgid "Please select"
+msgstr ""
+
+msgid "API Key"
+msgstr ""
+
+msgid "Sync with deSEC"
+msgstr ""
+
+msgid "Synchronize"
+msgstr ""
+
+msgid "Fetches domains from the deSEC account and creates missing local entries."
+msgstr ""
+
+msgid "API keys are required first."
+msgstr ""
+
+msgid "API keys are required."
+msgstr ""
+
+msgid "Please select a domain and API key."
+msgstr ""
+
+msgid "Invalid domain name."
+msgstr ""
+
+msgid "Domain added successfully."
+msgstr ""
+
+msgid "Domain and API key are required."
+msgstr ""
+
+msgid "Domain removed successfully."
+msgstr ""
+
+msgid "Please select an API key."
+msgstr ""
+
+msgid "Sync completed (%d added, %d removed)."
+msgstr ""
+
+msgid "API Keys"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "No API keys found."
+msgstr ""
+
+msgid "Add new API key"
+msgstr ""
+
+msgid "Label"
+msgstr ""
+
+msgid "Deactivate"
+msgstr ""
+
+msgid "Name and API key are required."
+msgstr ""
+
+msgid "No domains available."
+msgstr ""
+
+msgid "Please add a domain before managing DNS records."
+msgstr ""
+
+msgid "No API keys configured."
+msgstr ""
+
+msgid "Please save at least one deSEC API key to manage DNS records."
+msgstr ""
+
+msgid "Update"
+msgstr ""
+
+msgid "RRsets for %s"
+msgstr ""
+
+msgid "Subname"
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid "Records"
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "Records (one entry per line)"
+msgstr ""
+
+msgid "TTL"
+msgstr ""
+
+msgid "No RRsets found."
+msgstr ""
+
+msgid "New RRset"
+msgstr ""
+
+msgid "@ for root"
+msgstr ""
+
+msgid "One entry per line"
+msgstr ""
+
+msgid "Save RRset"
+msgstr ""
+
+msgid "Existing RRsets will be replaced."
+msgstr ""
+
+msgid "Record type not supported."
+msgstr ""
+
+msgid "At least one record must be specified."
+msgstr ""
+
+msgid "Record type missing."
+msgstr ""
+
+msgid "Administrators"
+msgstr ""
+
+msgid "Last Login"
+msgstr ""
+
+msgid "No administrators found."
+msgstr ""
+
+msgid "Add administrator"
+msgstr ""
+
+msgid "The password will be hashed immediately with Argon2id."
+msgstr ""
+
+msgid "Create administrator"
+msgstr ""
+
+msgid "Administrator created successfully."
+msgstr ""
+
+msgid "User has been deactivated."
+msgstr ""
+
+msgid "User has been deleted."
+msgstr ""
+
+msgid "Invalid email address."
+msgstr ""
+
+msgid "Username already taken."
+msgstr ""
+
+msgid "Not authenticated."
+msgstr ""
+
+msgid "User not found."
+msgstr ""
+
+msgid "No authenticator response."
+msgstr ""
+
+msgid "No pending login process."
+msgstr ""
+
+msgid "Invalid credential JSON."
+msgstr ""
+
+msgid "Unknown credential."
+msgstr ""
+
+msgid "Dashboard"
+msgstr ""
+
+msgid "Admin"
+msgstr ""
+
+msgid "Sign out"
+msgstr ""
+
+msgid "User"
+msgstr ""
+
+msgid "Language"
+msgstr ""
+
+msgid "Template not found"
+msgstr ""
+

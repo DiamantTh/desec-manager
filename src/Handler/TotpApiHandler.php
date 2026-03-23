@@ -54,7 +54,7 @@ class TotpApiHandler extends AbstractHandler implements RequestHandlerInterface
         $userId = $this->userId();
         $user   = $this->users->findById($userId);
         if ($user === null) {
-            return $this->jsonError('Benutzer nicht gefunden.', 404);
+            return $this->jsonError(__('User not found.'), 404);
         }
 
         try {
@@ -96,7 +96,7 @@ class TotpApiHandler extends AbstractHandler implements RequestHandlerInterface
         }
 
         if (!$this->totp->verify($code, $secret)) {
-            return $this->jsonError('Ungültiger Code. Bitte erneut versuchen.');
+            return $this->jsonError(__('Invalid code. Please try again.'));
         }
 
         try {

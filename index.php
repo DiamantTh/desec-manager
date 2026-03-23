@@ -22,7 +22,10 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 session_start();
 
-// ── Keine Konfiguration → Willkommens-/Install-Seite ────────────────────────
+// Initialize translator after session start
+\App\Service\Translator::init(__DIR__ . '/locale');
+
+// No configuration → Welcome/install page
 $configPath = __DIR__ . '/config/config.php';
 
 if (!file_exists($configPath)) {
@@ -212,17 +215,17 @@ if ($theme->supportsDarkMode()) {
     <div id="mainNavbar" class="navbar-menu">
         <div class="navbar-start">
             <a class="navbar-item <?= $route === 'dashboard' ? 'is-active' : '' ?>"
-               href="?route=dashboard">Dashboard</a>
+               href="?route=dashboard"><?= __('Dashboard') ?></a>
 
             <a class="navbar-item <?= $route === 'domains' ? 'is-active' : '' ?>"
-               href="?route=domains">Domains</a>
+               href="?route=domains"><?= __('Domains') ?></a>
 
             <a class="navbar-item <?= $route === 'keys' ? 'is-active' : '' ?>"
-               href="?route=keys">API Keys</a>
+               href="?route=keys"><?= __('API Keys') ?></a>
 
             <?php if (!empty($_SESSION['is_admin'])): ?>
             <a class="navbar-item <?= $route === 'admin' ? 'is-active' : '' ?>"
-               href="?route=admin">Admin</a>
+               href="?route=admin"><?= __('Admin') ?></a>
             <?php endif; ?>
         </div>
 
@@ -236,13 +239,30 @@ if ($theme->supportsDarkMode()) {
             <?php endif; ?>
 
             <div class="navbar-item has-dropdown is-hoverable">
+                <a class="navbar-link"><?= __('Language') ?></a>
+                <div class="navbar-dropdown is-right">
+                    <?php foreach (\App\Service\Translator::SUPPORTED_LOCALES as $code => $name): ?>
+                    <form method="post" style="display:inline">
+                        <input type="hidden" name="_locale" value="<?= htmlspecialchars($code, ENT_QUOTES, 'UTF-8') ?>">
+                        <button type="submit" class="navbar-item" style="border:none;background:none;cursor:pointer;width:100%;text-align:left;padding:0.375rem 1rem">
+                            <?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>
+                            <?php if (\App\Service\Translator::getCurrentLocale() === $code): ?>
+                            <span class="tag is-primary is-small ml-1">✓</span>
+                            <?php endif; ?>
+                        </button>
+                    </form>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+
+            <div class="navbar-item has-dropdown is-hoverable">
                 <a class="navbar-link">
-                    <?= htmlspecialchars($_SESSION['username'] ?? 'Benutzer', ENT_QUOTES, 'UTF-8') ?>
+                    <?= htmlspecialchars($_SESSION['username'] ?? __('User'), ENT_QUOTES, 'UTF-8') ?>
                 </a>
                 <div class="navbar-dropdown is-right">
-                    <a class="navbar-item" href="?route=profile">Profil</a>
+                    <a class="navbar-item" href="?route=profile"><?= __('Profile') ?></a>
                     <hr class="navbar-divider">
-                    <a class="navbar-item" href="?route=auth&action=logout">Abmelden</a>
+                    <a class="navbar-item" href="?route=auth&action=logout"><?= __('Sign out') ?></a>
                 </div>
             </div>
         </div>

@@ -1,0 +1,374 @@
+# French translation for deSEC Manager
+# Copyright (C) 2025
+# This file is distributed under the same license as the deSEC Manager package.
+msgid ""
+msgstr ""
+"Project-Id-Version: deSEC Manager 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-01 00:00+0000\n"
+"PO-Revision-Date: 2025-01-01 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: French\n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Please enter your username and password."
+msgstr "Veuillez saisir votre nom d'utilisateur et votre mot de passe."
+
+msgid "Invalid credentials."
+msgstr "Identifiants invalides."
+
+msgid "This account has been deactivated."
+msgstr "Ce compte a été désactivé."
+
+msgid "Please enter the code."
+msgstr "Veuillez entrer le code."
+
+msgid "Invalid code. Please try again."
+msgstr "Code invalide. Veuillez réessayer."
+
+msgid "Username"
+msgstr "Nom d'utilisateur"
+
+msgid "Password"
+msgstr "Mot de passe"
+
+msgid "Sign in"
+msgstr "Se connecter"
+
+msgid "Default credentials are created during installation."
+msgstr "Les identifiants par défaut sont créés lors de l'installation."
+
+msgid "Two-Factor Authentication"
+msgstr "Authentification à deux facteurs"
+
+msgid "Please enter the current code from your authenticator app."
+msgstr "Veuillez entrer le code actuel de votre application d'authentification."
+
+msgid "Authentication code"
+msgstr "Code d'authentification"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "Confirm"
+msgstr "Confirmer"
+
+msgid "Use Security Key"
+msgstr "Utiliser la clé de sécurité"
+
+msgid "Insert your security key and click Sign in."
+msgstr "Insérez votre clé de sécurité et cliquez sur Se connecter."
+
+msgid "Sign in with security key"
+msgstr "Se connecter avec la clé de sécurité"
+
+msgid "Back to login"
+msgstr "Retour à la connexion"
+
+msgid "Waiting for key…"
+msgstr "En attente de la clé…"
+
+msgid "Retry"
+msgstr "Réessayer"
+
+msgid "Authentication cancelled or timed out."
+msgstr "Authentification annulée ou expirée."
+
+msgid "An unknown error occurred."
+msgstr "Une erreur inconnue s'est produite."
+
+msgid "Unknown error"
+msgstr "Erreur inconnue"
+
+msgid "User data could not be loaded."
+msgstr "Les données utilisateur n'ont pas pu être chargées."
+
+msgid "Profile"
+msgstr "Profil"
+
+msgid "Email"
+msgstr "E-mail"
+
+msgid "Created at"
+msgstr "Créé le"
+
+msgid "Last login"
+msgstr "Dernière connexion"
+
+msgid "Never"
+msgstr "Jamais"
+
+msgid "Password changed successfully."
+msgstr "Mot de passe modifié avec succès."
+
+msgid "Please fill in all fields."
+msgstr "Veuillez remplir tous les champs."
+
+msgid "Current password is incorrect."
+msgstr "Le mot de passe actuel est incorrect."
+
+msgid "New password and confirmation do not match."
+msgstr "Le nouveau mot de passe et la confirmation ne correspondent pas."
+
+msgid "The new password must be at least 12 characters long."
+msgstr "Le nouveau mot de passe doit contenir au moins 12 caractères."
+
+msgid "Change password"
+msgstr "Changer le mot de passe"
+
+msgid "Current password"
+msgstr "Mot de passe actuel"
+
+msgid "New password"
+msgstr "Nouveau mot de passe"
+
+msgid "Confirm new password"
+msgstr "Confirmer le nouveau mot de passe"
+
+msgid "Save"
+msgstr "Enregistrer"
+
+msgid "Recent Domains"
+msgstr "Domaines récents"
+
+msgid "Recent API Keys"
+msgstr "Clés API récentes"
+
+msgid "No domains registered yet."
+msgstr "Aucun domaine enregistré pour le moment."
+
+msgid "No API keys added yet."
+msgstr "Aucune clé API ajoutée pour le moment."
+
+msgid "Active"
+msgstr "Actif"
+
+msgid "Inactive"
+msgstr "Inactif"
+
+msgid "Created"
+msgstr "Créé"
+
+msgid "%s is active"
+msgstr "%s est actif"
+
+msgid "(JIT enabled)"
+msgstr "(JIT activé)"
+
+msgid "Domains"
+msgstr "Domaines"
+
+msgid "Actions"
+msgstr "Actions"
+
+msgid "Delete"
+msgstr "Supprimer"
+
+msgid "No API keys"
+msgstr "Aucune clé API"
+
+msgid "Add domain"
+msgstr "Ajouter un domaine"
+
+msgid "Please select"
+msgstr "Veuillez sélectionner"
+
+msgid "API Key"
+msgstr "Clé API"
+
+msgid "Sync with deSEC"
+msgstr "Synchroniser avec deSEC"
+
+msgid "Synchronize"
+msgstr "Synchroniser"
+
+msgid "Fetches domains from the deSEC account and creates missing local entries."
+msgstr "Récupère les domaines du compte deSEC et crée les entrées locales manquantes."
+
+msgid "API keys are required first."
+msgstr "Les clés API sont requises en premier."
+
+msgid "API keys are required."
+msgstr "Les clés API sont requises."
+
+msgid "Please select a domain and API key."
+msgstr "Veuillez sélectionner un domaine et une clé API."
+
+msgid "Invalid domain name."
+msgstr "Nom de domaine invalide."
+
+msgid "Domain added successfully."
+msgstr "Domaine ajouté avec succès."
+
+msgid "Domain and API key are required."
+msgstr "Le domaine et la clé API sont requis."
+
+msgid "Domain removed successfully."
+msgstr "Domaine supprimé avec succès."
+
+msgid "Please select an API key."
+msgstr "Veuillez sélectionner une clé API."
+
+msgid "Sync completed (%d added, %d removed)."
+msgstr "Synchronisation terminée (%d ajouté(s), %d supprimé(s))."
+
+msgid "API Keys"
+msgstr "Clés API"
+
+msgid "Name"
+msgstr "Nom"
+
+msgid "Status"
+msgstr "Statut"
+
+msgid "No API keys found."
+msgstr "Aucune clé API trouvée."
+
+msgid "Add new API key"
+msgstr "Ajouter une nouvelle clé API"
+
+msgid "Label"
+msgstr "Libellé"
+
+msgid "Deactivate"
+msgstr "Désactiver"
+
+msgid "Name and API key are required."
+msgstr "Le nom et la clé API sont requis."
+
+msgid "No domains available."
+msgstr "Aucun domaine disponible."
+
+msgid "Please add a domain before managing DNS records."
+msgstr "Veuillez ajouter un domaine avant de gérer les enregistrements DNS."
+
+msgid "No API keys configured."
+msgstr "Aucune clé API configurée."
+
+msgid "Please save at least one deSEC API key to manage DNS records."
+msgstr "Veuillez enregistrer au moins une clé API deSEC pour gérer les enregistrements DNS."
+
+msgid "Update"
+msgstr "Mettre à jour"
+
+msgid "RRsets for %s"
+msgstr "Enregistrements RR pour %s"
+
+msgid "Subname"
+msgstr "Sous-nom"
+
+msgid "Type"
+msgstr "Type"
+
+msgid "Records"
+msgstr "Enregistrements"
+
+msgid "Edit"
+msgstr "Modifier"
+
+msgid "Records (one entry per line)"
+msgstr "Enregistrements (une entrée par ligne)"
+
+msgid "TTL"
+msgstr "TTL"
+
+msgid "No RRsets found."
+msgstr "Aucun enregistrement RR trouvé."
+
+msgid "New RRset"
+msgstr "Nouvel enregistrement RR"
+
+msgid "@ for root"
+msgstr "@ pour racine"
+
+msgid "One entry per line"
+msgstr "Une entrée par ligne"
+
+msgid "Save RRset"
+msgstr "Enregistrer l'enregistrement RR"
+
+msgid "Existing RRsets will be replaced."
+msgstr "Les enregistrements RR existants seront remplacés."
+
+msgid "Record type not supported."
+msgstr "Type d'enregistrement non pris en charge."
+
+msgid "At least one record must be specified."
+msgstr "Au moins un enregistrement doit être spécifié."
+
+msgid "Record type missing."
+msgstr "Type d'enregistrement manquant."
+
+msgid "Administrators"
+msgstr "Administrateurs"
+
+msgid "Last Login"
+msgstr "Dernière connexion"
+
+msgid "No administrators found."
+msgstr "Aucun administrateur trouvé."
+
+msgid "Add administrator"
+msgstr "Ajouter un administrateur"
+
+msgid "The password will be hashed immediately with Argon2id."
+msgstr "Le mot de passe sera haché immédiatement avec Argon2id."
+
+msgid "Create administrator"
+msgstr "Créer un administrateur"
+
+msgid "Administrator created successfully."
+msgstr "Administrateur créé avec succès."
+
+msgid "User has been deactivated."
+msgstr "L'utilisateur a été désactivé."
+
+msgid "User has been deleted."
+msgstr "L'utilisateur a été supprimé."
+
+msgid "Invalid email address."
+msgstr "Adresse e-mail invalide."
+
+msgid "Username already taken."
+msgstr "Nom d'utilisateur déjà pris."
+
+msgid "Not authenticated."
+msgstr "Non authentifié."
+
+msgid "User not found."
+msgstr "Utilisateur introuvable."
+
+msgid "No authenticator response."
+msgstr "Aucune réponse de l'authentificateur."
+
+msgid "No pending login process."
+msgstr "Aucun processus de connexion en attente."
+
+msgid "Invalid credential JSON."
+msgstr "JSON d'identification invalide."
+
+msgid "Unknown credential."
+msgstr "Identifiant inconnu."
+
+msgid "Dashboard"
+msgstr "Tableau de bord"
+
+msgid "Admin"
+msgstr "Admin"
+
+msgid "Sign out"
+msgstr "Se déconnecter"
+
+msgid "User"
+msgstr "Utilisateur"
+
+msgid "Language"
+msgstr "Langue"
+
+msgid "Template not found"
+msgstr "Modèle introuvable"
+
