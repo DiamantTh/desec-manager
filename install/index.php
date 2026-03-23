@@ -59,6 +59,10 @@ if (empty($_SESSION['install_auth'])) {
         exit;
     }
     $_SESSION['install_auth'] = true;
+    // PRG: sofort auf GET umleiten, damit der folgende CSRF-Check
+    // nicht mit einem Request ohne _csrf-Feld ausgeführt wird.
+    header('Location: index.php');
+    exit;
 }
 
 // ── CSRF ─────────────────────────────────────────────────────────────────────
@@ -89,7 +93,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     };
 
     if (empty($errors)) {
-        $step = $_SESSION['install_step'];   // processStepN() setzt dies selbst
+        // PRG: nach erfolgreichem Schritt auf GET umleiten,
+        // damit F5 / Zurück-Button kein doppeltes POST auslöst.
+        header('Location: index.php');
+        exit;
     }
 }
 
@@ -462,8 +469,8 @@ function getRequirements(): array
 {
     $c = [];
 
-    $phpOk = version_compare(PHP_VERSION, '8.1.0') >= 0;
-    $c['php'] = ['ok' => $phpOk, 'label' => 'PHP ≥ 8.1', 'detail' => 'Installiert: ' . PHP_VERSION, 'critical' => true];
+    $phpOk = version_compare(PHP_VERSION, '8.3.0') >= 0;
+    $c['php'] = ['ok' => $phpOk, 'label' => 'PHP ≥ 8.3', 'detail' => 'Installiert: ' . PHP_VERSION, 'critical' => true];
 
     foreach (['pdo', 'sodium', 'openssl', 'json', 'mbstring'] as $ext) {
         $ok = extension_loaded($ext);

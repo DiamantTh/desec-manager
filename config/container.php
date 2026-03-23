@@ -63,6 +63,7 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Level;
 use Monolog\Logger;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
@@ -95,6 +96,11 @@ $builder->addDefinitions([
     StreamFactoryInterface::class        => DI\create(StreamFactory::class),
     UploadedFileFactoryInterface::class  => DI\create(UploadedFileFactory::class),
     UriFactoryInterface::class           => DI\create(UriFactory::class),
+
+    // -------------------------------------------------------------------------
+    // PSR-18 HTTP Client (GuzzleHttp als Implementierung)
+    // -------------------------------------------------------------------------
+    ClientInterface::class => DI\create(\GuzzleHttp\Client::class),
 
     // -------------------------------------------------------------------------
     // Router (FastRoute via mezzio-fastroute)
