@@ -1,7 +1,7 @@
 {
-  "name": "Default (Hellblau + Grün)",
-  "description": "Eigenes deSEC-Manager-Theme mit Hellblau+Grün-Palette. Unterstützt automatisches und manuelles Light/Dark-Switching.",
-  "version": "1.0.0",
+  "name": "Default (Dunkelblau + Grün)",
+  "description": "Eigenes deSEC-Manager-Theme mit Dunkelblau+Grün-Palette. Unterstützt manuell schaltbaren Light/Dark-Modus (kein OS-Follow).",
+  "version": "1.1.0",
   "framework": "bulma-1.0",
   "external_css": [
     "assets/css/bulma.min.css"

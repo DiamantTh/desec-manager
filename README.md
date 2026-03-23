@@ -1,59 +1,132 @@
 # deSEC Manager
 
-> DE: Weboberfläche zur Verwaltung von deSEC-Domains, DNS-Records und API-Schlüsseln.
->
-> EN: Web interface for managing deSEC domains, DNS records, and API keys.
+Web interface for managing [deSEC](https://desec.io) domains, DNS records, and API keys.
 
-## Features / Funktionen
-- Domain- und Zonenverwaltung mit Anbindung an die deSEC-API / Domain & zone management via the deSEC API
-- Verwaltung von DNS-Records inklusive SOA-, A/AAAA-, CNAME-, TXT- und MX-Einträgen / Manage DNS records including SOA, A/AAAA, CNAME, TXT, and MX
-- Rollenbasierte Benutzerverwaltung mit WebAuthn-Unterstützung / Role-based user management with WebAuthn support
-- Generierung und Rotation von API-Schlüsseln / Generate and rotate API keys
-- Systemstatus- und Health-Checks für Integrationen / System status and health checks for integrations
+> Deutsche Version: [README.de.md](README.de.md)
 
-## Requirements / Voraussetzungen
-- PHP >= 8.1 mit Erweiterungen `pdo_mysql`, `sodium`, `openssl` / PHP >= 8.1 with `pdo_mysql`, `sodium`, `openssl`
-- Composer zum Installieren der Abhängigkeiten / Composer for dependency installation
-- MySQL/MariaDB-Datenbank / MySQL or MariaDB database
-- Webserver (Apache, Nginx o.ä.) mit PHP-FPM oder mod_php / Web server (Apache, Nginx, etc.) with PHP-FPM or mod_php
+---
 
-## Installation / Setup
-1. `composer install`
-2. Optional: Konfigurationsvorlagen prüfen (`config/config.php.dist`, `.yaml.dist`, `.toml.dist`, `.ini.dist`) / Review configuration templates
-3. `php install.php` ausführen und den Weisungen folgen / Run `php install.php` and follow the prompts
-4. Webserver auf das Projektverzeichnis mit `index.php` als Einstieg zeigen / Point your web server to the project root where `index.php` lives
-5. Nach erfolgreicher Installation `install.php` entfernen oder sperren / Remove or protect `install.php` after setup
+## Features
 
-## Configuration / Konfiguration
-- Die generierte `config/config.php` enthält alle Einstellungen; zusätzliche Formate dienen als Referenz / The generated `config/config.php` holds runtime settings, other formats act as references.
-- Sicherheits-Defaults (Argon2id) können in `config/config.php` überschrieben werden / Argon2id defaults can be overridden in `config/config.php`.
-- API-Schlüssel werden verschlüsselt gespeichert; Schlüsselmaterial in `config/config.php` schützen / API keys are stored encrypted; protect the secret material recorded in `config/config.php`.
+- Domain and zone management via the deSEC API
+- Full DNS record management (A/AAAA, CNAME, MX, TXT, SRV, CAA, …)
+- Role-based user management (admin / regular user)
+- Multi-factor authentication: FIDO2/WebAuthn (passkeys) and TOTP
+- Per-user API key management with encryption at rest
+- Per-user theme and language preferences
+- Light / Dark mode toggle (user-controlled, no OS follow)
+- System status and health-check endpoint (`/status`)
+- Supports SQLite, MySQL/MariaDB, and PostgreSQL
 
-## Development / Entwicklung
-- PHPs Built-in Server: `php -S localhost:8080 -t public/` (nur für Entwicklung) / PHP built-in server (development only).
-- Tests sind derzeit nicht automatisiert; Beiträge willkommen / No automated tests yet; contributions welcome.
-- Coding-Style: PSR-12 für PHP, ESLint/Prettier für JS falls vorhanden / Suggested style: PSR-12 for PHP, ESLint/Prettier for JS if available.
+---
 
-## Security / Sicherheit
-- Admin-Konten sollten WebAuthn aktivieren / Enable WebAuthn for admin accounts.
-- Nach dem Setup Standardpasswörter ändern und HTTPS erzwingen / Change default credentials and enforce HTTPS.
-- Regelmäßige Sicherheitsupdates für PHP und Composer-Abhängigkeiten einplanen / Plan regular security updates for PHP and Composer dependencies.
+## Requirements
 
-## License / Lizenz
-- Projektlizenz: bitte mit Projektverantwortlichen klären / Project license: consult the maintainers.
-- Abhängigkeiten und ihre Lizenzen siehe Composer-Lock (Kurzfassung unten). / Dependency licenses listed in composer.lock (summary below).
+| Requirement | Version |
+|---|---|
+| PHP | ≥ 8.4 |
+| PHP extensions | `pdo_sqlite` or `pdo_mysql` or `pdo_pgsql`, `sodium`, `openssl`, `mbstring` |
+| Composer | ≥ 2.x |
+| Web server | Apache 2.4+ or Nginx (see `docs/server-config/`) |
+| Database | SQLite 3, MySQL/MariaDB, or PostgreSQL |
 
-## Dependency Licenses / Abhängigkeitslizenzen
-- doctrine/dbal 3.10.2 — MIT
-- doctrine/deprecations 1.1.5 — MIT
-- doctrine/event-manager 2.0.1 — MIT
-- guzzlehttp/guzzle 7.10.0 — MIT
-- guzzlehttp/promises 2.3.0 — MIT
-- guzzlehttp/psr7 2.8.0 — MIT
-- psr/cache 3.0.0 — MIT
-- psr/http-client 1.0.3 — MIT
-- psr/http-factory 1.1.0 — MIT
-- psr/http-message 2.0 — MIT
-- psr/log 3.0.2 — MIT
-- ralouphie/getallheaders 3.0.3 — MIT
-- symfony/deprecation-contracts v3.6.0 — MIT
+---
+
+## Installation
+
+1. **Clone** the repository and install dependencies:
+   ```bash
+   git clone https://github.com/your-org/desec-manager.git
+   cd desec-manager
+   composer install --no-dev --optimize-autoloader
+   ```
+
+2. **Web installer** — open `https://your-domain/install/` in a browser and follow the steps:
+   - Choose database type (SQLite / MySQL / PostgreSQL)
+   - Enter database credentials
+   - Create the first admin account
+   - The installer writes `config/config.php` and creates all tables
+
+3. **Web server** — point the document root to the project root (where `index.php` lives).  
+   Sample configs for Apache and Nginx are in `docs/server-config/`.
+
+4. **Secure the installer** — after setup, restrict or delete the `install/` directory:
+   ```bash
+   # Restrict via web-server config, or simply remove:
+   rm -rf install/
+   ```
+
+### Existing installations — DB migration
+
+If you are upgrading from a version that pre-dates the TOTP and user-preference columns, run the matching migration script for your database:
+
+| Database | Script |
+|---|---|
+| MySQL/MariaDB | `sql/mysql/migrate_user_settings.sql` |
+| SQLite | `sql/sqlite/migrate_user_settings.sql` |
+| PostgreSQL | `sql/postgresql/migrate_user_settings.sql` |
+
+---
+
+## Configuration
+
+The installer generates `config/config.php`.  
+Template files (`config/config.php.dist`, `.yaml.dist`, `.toml.dist`, `.ini.dist`) show all available options.
+
+Key settings:
+
+| Section | Key | Description |
+|---|---|---|
+| `app` | `name` | Application title shown in the UI |
+| `theme` | `name` | Default theme (`default`, `bulma`) |
+| `database` | `driver` | `pdo_sqlite`, `pdo_mysql`, or `pdo_pgsql` |
+| `security` | `argon2_memory_cost` | Argon2id memory cost (KiB) |
+
+---
+
+## Themes
+
+Two themes are included:
+
+| Theme | Description |
+|---|---|
+| `default` | Custom theme — dark blue + green palette, Light/Dark toggle |
+| `bulma` | Plain Bulma 1.x look without custom colours |
+
+Users can change their theme (and language) in their profile settings.  
+Dark mode is **exclusively user-controlled** — it never follows the OS setting.
+
+Custom themes can be placed under `themes/<name>/` with a `theme.json` descriptor.
+
+---
+
+## Development
+
+Run the built-in PHP server (development only):
+
+```bash
+php -S localhost:8080 index.php
+```
+
+Static analysis:
+
+```bash
+vendor/bin/phpstan analyse --level=8 src/
+```
+
+---
+
+## Security
+
+- Enable WebAuthn (FIDO2 / passkey) or TOTP for admin accounts.
+- Enforce HTTPS in production; `.htaccess` already sets `Strict-Transport-Security`.
+- Keep `config/config.php` unreadable from the web. The `.htaccess` in `config/` blocks direct access.
+- Keep PHP and Composer dependencies up to date.
+
+---
+
+## License
+
+Project license: see repository maintainers.  
+Third-party dependency licenses: [docs/dependencies.md](docs/dependencies.md).
+

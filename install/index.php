@@ -392,8 +392,14 @@ function processStep3(): array
             ['email',         'string',  ['length' => 255]],
             ['created_at',    'string',  ['length' => 32, 'notnull' => false]],
             ['last_login',    'string',  ['length' => 32, 'notnull' => false]],
-            ['is_active',     'boolean', ['default' => true]],
-            ['is_admin',      'boolean', ['default' => false]],
+            ['is_active',      'boolean', ['default' => true]],
+            ['is_admin',       'boolean', ['default' => false]],
+            ['totp_secret',    'text',    ['notnull' => false]],
+            ['totp_enabled',   'boolean', ['default' => false]],
+            ['totp_algorithm', 'string',  ['length' => 16, 'default' => 'sha256']],
+            ['totp_digits',    'integer', ['default' => 8]],
+            ['theme',          'string',  ['length' => 64, 'default' => 'default']],
+            ['locale',         'string',  ['length' => 16, 'default' => 'en']],
         ] as [$col, $type, $opts]) {
             $t->addColumn($col, $type, $opts);
         }

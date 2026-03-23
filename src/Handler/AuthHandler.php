@@ -132,7 +132,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
         }
 
         // No MFA → direct login
-        $this->completeLogin($userId, $username, (bool) ($user['is_admin'] ?? false));
+        $this->completeLogin($userId, $username, (bool) ($user['is_admin'] ?? false), (string) ($user['theme'] ?? ''), (string) ($user['locale'] ?? ''));
         return $this->redirect('/dashboard');
     }
 
@@ -198,7 +198,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
         }
 
         $username = (string) ($user['username'] ?? '');
-        $this->completeLogin($userId, $username, (bool) ($user['is_admin'] ?? false));
+        $this->completeLogin($userId, $username, (bool) ($user['is_admin'] ?? false), (string) ($user['theme'] ?? ''), (string) ($user['locale'] ?? ''));
         return $this->redirect('/dashboard');
     }
 
@@ -229,7 +229,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
     // Common helper methods
     // =========================================================================
 
-    private function completeLogin(int $userId, string $username, bool $isAdmin): void
+    private function completeLogin(int $userId, string $username, bool $isAdmin, string $theme = '', string $locale = ''): void
     {
         $this->sessionContext->regenerate();
 
@@ -239,6 +239,13 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
         $this->sessionContext->set('user_id',  $userId);
         $this->sessionContext->set('username', $username);
         $this->sessionContext->set('is_admin', $isAdmin);
+
+        if ($theme !== '') {
+            $this->sessionContext->set('user_theme', $theme);
+        }
+        if ($locale !== '') {
+            $this->sessionContext->set('locale', $locale);
+        }
 
         $this->userKeyManager->promoteToSession();
         $this->users->updateLastLogin($userId);

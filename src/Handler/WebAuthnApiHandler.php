@@ -175,6 +175,10 @@ class WebAuthnApiHandler extends AbstractHandler implements RequestHandlerInterf
                     $this->sessionContext->set('user_id',  $userId);
                     $this->sessionContext->set('username', (string) ($user['username'] ?? ''));
                     $this->sessionContext->set('is_admin', (bool)  ($user['is_admin']  ?? false));
+                    $userTheme = (string) ($user['theme']  ?? '');
+                    $userLocale = (string) ($user['locale'] ?? '');
+                    if ($userTheme !== '')  { $this->sessionContext->set('user_theme', $userTheme); }
+                    if ($userLocale !== '') { $this->sessionContext->set('locale', $userLocale); }
                     $this->userKeyManager->promoteToSession();
                     $this->users->updateLastLogin($userId);
                 }

@@ -5,11 +5,13 @@
  * @var bool $totpEnabled
  * @var ?string $message
  * @var string $messageType  'is-success'|'is-danger'
+ * @var string[] $availableThemes
  */
-$webAuthnKeys ??= [];
-$totpEnabled  ??= false;
-$message      ??= null;
-$messageType  ??= 'is-success';
+$webAuthnKeys    ??= [];
+$totpEnabled     ??= false;
+$message         ??= null;
+$messageType     ??= 'is-success';
+$availableThemes ??= ['default', 'bulma'];
 ?>
 
 <?php if ($message): ?>
@@ -185,6 +187,76 @@ $messageType  ??= 'is-success';
         <button id="btn-webauthn-register" class="button is-info is-outlined">
             <?= __('Add security key') ?>
         </button>
+    </div>
+
+    <!-- ===================================================================
+         Erscheinungsbild & Sprache
+         =================================================================== -->
+    <div class="box">
+        <h2 class="title is-5"><?= __('Appearance & Language') ?></h2>
+        <form method="post" autocomplete="off">
+            <input type="hidden" name="action" value="update_preferences">
+
+            <div class="columns">
+                <div class="column is-half">
+                    <div class="field">
+                        <label class="label" for="pref_theme"><?= __('Theme') ?></label>
+                        <div class="control">
+                            <div class="select is-fullwidth">
+                                <select id="pref_theme" name="theme">
+                                    <?php foreach ($availableThemes as $themeOption): ?>
+                                        <option value="<?= htmlspecialchars($themeOption, ENT_QUOTES, 'UTF-8') ?>"
+                                            <?= ($user['theme'] ?? 'default') === $themeOption ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars(ucfirst($themeOption), ENT_QUOTES, 'UTF-8') ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-half">
+                    <div class="field">
+                        <label class="label" for="pref_locale"><?= __('Language') ?></label>
+                        <div class="control">
+                            <div class="select is-fullwidth">
+                                <select id="pref_locale" name="locale">
+                                    <?php
+                                    $locales = [
+                                        'en'    => 'English',
+                                        'de'    => 'Deutsch',
+                                        'fr'    => 'Français',
+                                        'es'    => 'Español',
+                                        'it'    => 'Italiano',
+                                        'nl'    => 'Nederlands',
+                                        'pl'    => 'Polski',
+                                        'pt'    => 'Português',
+                                        'sv'    => 'Svenska',
+                                        'cs'    => 'Čeština',
+                                        'fi'    => 'Suomi',
+                                        'hu'    => 'Magyar',
+                                    ];
+                                    $curLocale = $user['locale'] ?? 'en';
+                                    foreach ($locales as $code => $label):
+                                    ?>
+                                        <option value="<?= htmlspecialchars($code, ENT_QUOTES, 'UTF-8') ?>"
+                                            <?= $curLocale === $code ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field is-grouped is-justify-content-flex-end">
+                <div class="control">
+                    <button type="submit" class="button is-primary"><?= __('Save preferences') ?></button>
+                </div>
+            </div>
+        </form>
     </div>
 
 <?php endif; ?>

@@ -1,9 +1,9 @@
 /*
  * ============================================================
  *  deSEC Manager — Default Theme
- *  Palette: Hellblau (Sky) + Grün (Emerald)
- *  Modus:   Light (Standard), Dark (via prefers-color-scheme
- *           oder data-theme="dark" am <html>-Element)
+ *  Palette: Dunkelblau + Grün
+ *  Modus:   Light (Standard), Dark (manuell via data-theme="dark"
+ *           am <html>-Element — kein OS-Follow)
  *  Basis:   Bulma 1.0.x (via CDN, wird durch theme.json geladen)
  * ============================================================
  */
@@ -13,24 +13,24 @@
    ──────────────────────────────────────────────────────────── */
 
 :root {
-  /* Hellblau — Primary */
-  --dsec-blue-100: #e0f0ff;
-  --dsec-blue-200: #b3d8ff;
-  --dsec-blue-300: #7fbeff;
-  --dsec-blue-400: #4fa3ff;
-  --dsec-blue-500: #2196f3; /* Haupt-Hellblau         */
-  --dsec-blue-600: #1976d2;
-  --dsec-blue-700: #1565c0;
-  --dsec-blue-800: #0d47a1;
+  /* Dunkelblau — Primary */
+  --dsec-blue-100: #e3f0ff;
+  --dsec-blue-200: #b3cff7;
+  --dsec-blue-300: #7aaee8;
+  --dsec-blue-400: #4285d0;
+  --dsec-blue-500: #1976d2; /* Haupt-Dunkelblau       */
+  --dsec-blue-600: #1565c0;
+  --dsec-blue-700: #0d47a1;
+  --dsec-blue-800: #0a2e6e;
 
   /* Grün — Accent/Success */
   --dsec-green-100: #e8f5e9;
   --dsec-green-200: #c8e6c9;
   --dsec-green-300: #a5d6a7;
-  --dsec-green-400: #66bb6a;
-  --dsec-green-500: #4caf50; /* Haupt-Grün             */
-  --dsec-green-600: #388e3c;
-  --dsec-green-700: #2e7d32;
+  --dsec-green-400: #4caf50;
+  --dsec-green-500: #388e3c; /* Haupt-Grün (dunkel)    */
+  --dsec-green-600: #2e7d32;
+  --dsec-green-700: #1b5e20;
 
   /* Neutral */
   --dsec-neutral-50:  #f8fafc;
@@ -50,8 +50,8 @@
   --dsec-text-muted:  var(--dsec-neutral-500);
   --dsec-text-nav:    #ffffff;
   --dsec-border:      var(--dsec-neutral-200);
-  --dsec-shadow:      0 2px 8px rgba(33, 150, 243, 0.10);
-  --dsec-shadow-hover:0 6px 20px rgba(33, 150, 243, 0.18);
+  --dsec-shadow:      0 2px 8px rgba(25, 118, 210, 0.12);
+  --dsec-shadow-hover:0 6px 20px rgba(25, 118, 210, 0.22);
 }
 
 /* ────────────────────────────────────────────────────────────
@@ -59,57 +59,32 @@
    ──────────────────────────────────────────────────────────── */
 
 :root {
-  /* Primary → Hellblau (#2196F3 ≈ hsl(207, 90%, 54%)) */
-  --bulma-primary-h:         207deg;
-  --bulma-primary-s:         90%;
-  --bulma-primary-l:         54%;
+  /* Primary → Dunkelblau (#1976D2 ≈ hsl(210, 79%, 46%)) */
+  --bulma-primary-h:         210deg;
+  --bulma-primary-s:         79%;
+  --bulma-primary-l:         46%;
   --bulma-primary-invert-l:  100%;
 
   /* Link → gleicher Blauton */
-  --bulma-link-h:            207deg;
-  --bulma-link-s:            90%;
-  --bulma-link-l:            54%;
+  --bulma-link-h:            210deg;
+  --bulma-link-s:            79%;
+  --bulma-link-l:            46%;
 
-  /* Success → Grün (#4CAF50 ≈ hsl(122, 39%, 49%)) */
-  --bulma-success-h:         122deg;
-  --bulma-success-s:         39%;
-  --bulma-success-l:         49%;
+  /* Success → Grün (#388E3C ≈ hsl(123, 43%, 39%)) */
+  --bulma-success-h:         123deg;
+  --bulma-success-s:         43%;
+  --bulma-success-l:         39%;
 
-  /* Info → helles Sky-Blau */
-  --bulma-info-h:            199deg;
-  --bulma-info-s:            98%;
-  --bulma-info-l:            48%;
+  /* Info → mittleres Sky-Blau */
+  --bulma-info-h:            205deg;
+  --bulma-info-s:            85%;
+  --bulma-info-l:            44%;
 }
 
 /* ────────────────────────────────────────────────────────────
-   3. Dark Mode — automatisch via prefers-color-scheme
-      UND manuell via [data-theme="dark"] am <html>
+   3. Dark Mode — ausschließlich manuell via [data-theme="dark"]
+      am <html>-Element. Kein OS-Follow via prefers-color-scheme.
    ──────────────────────────────────────────────────────────── */
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --dsec-bg:          #0e1628;
-    --dsec-bg-card:     #17233d;
-    --dsec-bg-nav:      #0e1628;
-    --dsec-bg-nav-item: #0a1020;
-    --dsec-text:        #e2e8f0;
-    --dsec-text-muted:  #94a3b8;
-    --dsec-text-nav:    #e2e8f0;
-    --dsec-border:      #1e3a5f;
-    --dsec-shadow:      0 2px 8px rgba(33, 150, 243, 0.18);
-
-    /* Bulma Dark-Mode-Schicht */
-    --bulma-body-background-color: #0e1628;
-    --bulma-card-background-color: #17233d;
-    --bulma-navbar-background-color: #0e1628;
-    --bulma-navbar-item-hover-background-color: #0a1020;
-    --bulma-box-background-color: #17233d;
-    --bulma-table-background-color: #17233d;
-    --bulma-input-background-color: #17233d;
-    --bulma-input-border-color: #1e3a5f;
-    --bulma-input-color: #e2e8f0;
-  }
-}
 
 [data-theme="dark"] {
   --dsec-bg:          #0e1628;
@@ -120,7 +95,7 @@
   --dsec-text-muted:  #94a3b8;
   --dsec-text-nav:    #e2e8f0;
   --dsec-border:      #1e3a5f;
-  --dsec-shadow:      0 2px 8px rgba(33, 150, 243, 0.18);
+  --dsec-shadow:      0 2px 8px rgba(25, 118, 210, 0.18);
 
   --bulma-body-background-color: #0e1628;
   --bulma-card-background-color: #17233d;
@@ -153,7 +128,7 @@ body {
 
 .navbar {
   background-color: var(--dsec-bg-nav) !important;
-  box-shadow: 0 2px 6px rgba(33, 150, 243, 0.20);
+  box-shadow: 0 2px 6px rgba(25, 118, 210, 0.22);
 }
 
 .navbar-brand .navbar-item,
@@ -172,7 +147,7 @@ body {
 
 .navbar-dropdown {
   background-color: var(--dsec-bg-nav) !important;
-  border-top: 3px solid var(--dsec-blue-400) !important;
+  border-top: 3px solid var(--dsec-blue-300) !important;
 }
 
 .navbar-dropdown .navbar-item {
@@ -207,11 +182,11 @@ body {
 }
 
 .card-header {
-  border-bottom: 2px solid var(--dsec-blue-500);
+  border-bottom: 2px solid var(--dsec-blue-600);
   background: linear-gradient(
     135deg,
     var(--dsec-blue-500) 0%,
-    var(--dsec-blue-600) 100%
+    var(--dsec-blue-700) 100%
   );
   border-radius: 9px 9px 0 0;
 }
@@ -270,7 +245,7 @@ body {
 .textarea:focus,
 .select select:focus {
   border-color: var(--dsec-blue-500);
-  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.18);
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.20);
 }
 
 .label {
@@ -298,11 +273,8 @@ body {
   background-color: var(--dsec-blue-100);
 }
 
-[data-theme="dark"] .table tbody tr:hover,
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .table tbody tr:hover {
-    background-color: rgba(33, 150, 243, 0.10);
-  }
+[data-theme="dark"] .table tbody tr:hover {
+  background-color: rgba(25, 118, 210, 0.10);
 }
 
 /* ────────────────────────────────────────────────────────────

@@ -53,6 +53,9 @@ class ProfileHandler extends AbstractHandler implements RequestHandlerInterface
                 if ($action === 'change_password') {
                     $this->handleChangePassword($body, $userId, (string) ($user['password_hash'] ?? ''));
                     $message = __('Password changed successfully.');
+                } elseif ($action === 'update_preferences') {
+                    $this->handleUpdatePreferences($body, $userId);
+                    $message = __('Preferences saved.');
                 }
             } catch (\Throwable $e) {
                 $message     = $e->getMessage();
@@ -71,6 +74,7 @@ class ProfileHandler extends AbstractHandler implements RequestHandlerInterface
             'totpEnabled'    => !empty($user['totp_enabled']),
             'message'        => $message,
             'messageType'    => $messageType,
+            'availableThemes' => $this->theme->getAvailableThemes(),
         ]);
     }
 
@@ -106,5 +110,31 @@ class ProfileHandler extends AbstractHandler implements RequestHandlerInterface
             $keyData = $this->userKeyManager->reWrapOnPasswordChange($new);
             $this->users->updateWrappedKey($userId, $keyData['salt'], $keyData['wrapped_key']);
         }
+    }
+
+    /**
+     * @param array<string, mixed>|object|null $body
+     */
+    private function handleUpdatePreferences(array|object|null $body, int $userId): void
+    {
+        $theme  = $this->bodyString($body, 'theme');
+        $locale = $this->bodyString($body, 'locale');
+
+        // Whitelist: nur bekannte themes zulassen
+        $available = $this->theme->getAvailableThemes();
+        if ($theme !== '' && !in_array($theme, $available, true)) {
+            throw new \InvalidArgumentException(__('Unknown theme selected.'));
+        }
+
+        // Locale: nur einfache Buchstaben/Unterstrich/Bindestrich zulassen
+        if ($locale !== '' && !preg_match('/^[a-z]{2}(?:[_-][A-Z]{2})?$/', $locale)) {
+            throw new \InvalidArgumentException(__('Invalid locale.'));
+        }
+
+        $this->users->updatePreferences($userId, $theme ?: 'default', $locale ?: 'en');
+
+        // Session direkt aktualisieren (wirkt ohne Re-Login)
+        if ($theme !== '')  { $this->sessionContext->set('user_theme', $theme); }
+        if ($locale !== '') { $this->sessionContext->set('locale', $locale); }
     }
 }

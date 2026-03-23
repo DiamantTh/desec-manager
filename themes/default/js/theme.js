@@ -1,6 +1,7 @@
 /**
  * deSEC Manager — Default Theme JS
- * Dark-Mode Toggle: setzt data-theme="dark"|"light" am <html>-Element
+ * Dark-Mode Toggle: setzt data-theme="dark"|"light" am <html>-Element.
+ * Das Theme wird ausschließlich manuell gesteuert (kein OS-Follow).
  * Preference wird in localStorage gespeichert.
  */
 (function () {
@@ -11,13 +12,14 @@
   const LIGHT       = 'light';
 
   /**
-   * Gibt die gespeicherte oder automatisch erkannte Präferenz zurück.
+   * Gibt die gespeicherte Präferenz zurück.
+   * Kein OS-Fallback — Standard ist immer Light Mode.
    * @returns {'dark'|'light'}
    */
   function getPreference() {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored === DARK || stored === LIGHT) return stored;
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? DARK : LIGHT;
+    return LIGHT;
   }
 
   /**
@@ -46,12 +48,5 @@
         applyTheme(current === DARK ? LIGHT : DARK);
       });
     }
-
-    // Auf Systemänderungen reagieren (wenn kein manueller Override gesetzt)
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
-      if (!localStorage.getItem(STORAGE_KEY)) {
-        applyTheme(e.matches ? DARK : LIGHT);
-      }
-    });
   });
 }());

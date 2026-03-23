@@ -35,6 +35,23 @@ class ThemeManager
         return $this->themeName;
     }
 
+    /**
+     * Überschreibt das Theme (z. B. für benutzerspezifische Voreinstellungen).
+     * Existiert das gewählte Theme-Verzeichnis nicht, bleibt das bisherige aktiv.
+     */
+    public function setThemeName(string $name): void
+    {
+        $name = preg_replace('/[^a-z0-9_-]/i', '', $name);
+        if ($name === '') {
+            return;
+        }
+        $candidate = $this->projectRoot . '/themes/' . $name;
+        if (is_dir($candidate)) {
+            $this->themeName   = $name;
+            $this->cachedMeta  = null;   // Cache invalidieren
+        }
+    }
+
     // ─── Interne Helpers ────────────────────────────────────────────────────
 
     /**

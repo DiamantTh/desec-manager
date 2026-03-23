@@ -27,6 +27,11 @@ abstract class AbstractHandler
         protected readonly ThemeManager $theme,
         protected readonly SessionContext $sessionContext,
     ) {
+        // Per-User-Theme aus Session: überschreibt globale Konfiguration.
+        $userTheme = (string) $this->sessionContext->get('user_theme', '');
+        if ($userTheme !== '') {
+            $this->theme->setThemeName($userTheme);
+        }
     }
 
     // -------------------------------------------------------------------------

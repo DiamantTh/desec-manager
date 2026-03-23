@@ -168,4 +168,16 @@ class UserRepository
             ['id' => $userId]
         );
     }
+
+    /**
+     * Speichert Theme- und Locale-Einstellungen des Benutzers.
+     */
+    public function updatePreferences(int $userId, string $theme, string $locale): void
+    {
+        $this->connection->update(
+            'users',
+            ['theme' => $theme, 'locale' => $locale],
+            ['id' => $userId]
+        );
+    }
 }
