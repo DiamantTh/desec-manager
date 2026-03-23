@@ -9,7 +9,7 @@ declare(strict_types=1);
  * PHP-DI ist direkt kompatibel — kein Slim-Bridge-Paket nötig.
  *
  * Verwendung in public/index.php:
- *   $container = require __DIR__ . '/../config/container.php';
+ *   $container = require __DIR__ . '/../app/container.php';
  */
 
 use App\Config\TomlLoader;

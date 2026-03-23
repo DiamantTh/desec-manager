@@ -31,9 +31,9 @@ chdir(dirname(__DIR__));
 // Composer-Autoloader
 require 'vendor/autoload.php';
 
-// PSR-11-Container aus config/container.php laden
+// PSR-11-Container aus app/container.php laden
 /** @var \Psr\Container\ContainerInterface $container */
-$container = require 'config/container.php';
+$container = require 'app/container.php';
 
 // Mezzio-Application aus Container holen
 /** @var \Mezzio\Application $app */
@@ -42,11 +42,11 @@ $app = $container->get(\Mezzio\Application::class);
 /** @var \Mezzio\MiddlewareFactory $factory */
 $factory = $container->get(\Mezzio\MiddlewareFactory::class);
 
-// Middleware-Pipeline konfigurieren (config/pipeline.php)
-(require 'config/pipeline.php')($app, $factory, $container);
+// Middleware-Pipeline konfigurieren (app/pipeline.php)
+(require 'app/pipeline.php')($app, $factory, $container);
 
-// Routen registrieren (config/routes.php)
-(require 'config/routes.php')($app, $factory, $container);
+// Routen registrieren (app/routes.php)
+(require 'app/routes.php')($app, $factory, $container);
 
 // Anfrage verarbeiten und Antwort senden
 $app->run();

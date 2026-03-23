@@ -18,7 +18,7 @@ declare(strict_types=1);
  *   7. DispatchMiddleware           — Handler aufrufen
  *   8. NotFoundHandler              — 404-Antwort
  *
- * Auth-Guard (AuthMiddleware) wird pro Route in config/routes.php eingebunden.
+ * Auth-Guard (AuthMiddleware) wird pro Route in app/routes.php eingebunden.
  */
 
 use Mezzio\Application;
