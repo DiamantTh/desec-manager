@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Entity;
 
 /**
- * WebAuthnCredential — Repräsentiert ein gespeichertes FIDO2-/WebAuthn-Credential.
+ * WebAuthnCredential — represents a stored FIDO2/WebAuthn credential.
  *
- * Wird als Datenstruktur für Doctrine DBAL verwendet (kein ORM).
+ * Used as a data structure for Doctrine DBAL (no ORM).
  *
  * Datenbank-Tabelle: webauthn_credentials
  * ┌──────────────────────┬──────────────────────────────────────────────┐
@@ -16,12 +16,12 @@ namespace App\Entity;
  * │ id                   │ INTEGER PK AUTO_INCREMENT                    │
  * │ user_id              │ INTEGER NOT NULL (FK → users.id)             │
  * │ credential_id        │ TEXT UNIQUE NOT NULL (Base64url-kodiert)      │
- * │ public_key_cbor      │ TEXT NOT NULL (CBOR-kodierter öffentl. Key)  │
+ * │ public_key_cbor      │ TEXT NOT NULL (CBOR-encoded public key)       │
  * │ sign_count           │ INTEGER DEFAULT 0 (Replay-Schutz)            │
  * │ aaguid               │ VARCHAR(36) NULL (Authenticator-Typ-UUID)    │
  * │ transports           │ TEXT NULL (JSON-Array: usb,nfc,ble,hybrid,…) │
  * │ uv_initialized       │ INTEGER DEFAULT 0 (UV beim Registrieren?)    │
- * │ backup_eligible      │ INTEGER DEFAULT 0 (Synced Passkey möglich?)  │
+ * │ backup_eligible      │ INTEGER DEFAULT 0 (synced passkey possible?)  │
  * │ backup_state         │ INTEGER DEFAULT 0 (Aktuell synchronisiert?)  │
  * │ attestation_type     │ VARCHAR(32) NOT NULL (none/basic/self/…)     │
  * │ attachment_type      │ VARCHAR(32) NULL (platform/cross-platform)   │
@@ -34,11 +34,11 @@ namespace App\Entity;
  * Feld-Glossar:
  *   aaguid          → Authenticator Attestation GUID: identifiziert Hersteller/Modell
  *                     (z. B. YubiKey 5 Series). Kann in FIDO MDS3 nachgeschlagen werden.
- *   transports      → Übertragungsmedien: ["usb","nfc","ble","internal","hybrid"].
- *                     Wird in allowCredentials.transports gesetzt → Browser wählt optimal.
+ *   transports      → transmission media: ["usb","nfc","ble","internal","hybrid"].
+ *                     Set in allowCredentials.transports → browser selects optimally.
  *   uv_initialized  → Ob beim Registrieren UV (PIN/Biometrie) bereits konfiguriert war.
  *   backup_eligible → BE-Flag: Credential kann cloud-synchronisiert werden (Passkey).
- *   backup_state    → BS-Flag: Credential ist aktuell tatsächlich synchronisiert.
+ *   backup_state    → BS flag: credential is currently actually synchronised.
  */
 class WebAuthnCredential
 {
@@ -168,7 +168,7 @@ class WebAuthnCredential
         return $this;
     }
 
-    /** Vom Nutzer vergebener Name (z. B. "YubiKey 5C", "iPhone Face ID") */
+    /** User-assigned name (e.g. "YubiKey 5C", "iPhone Face ID") */
     public function getName(): string { return $this->name; }
 
     public function setName(string $name): self
@@ -200,7 +200,7 @@ class WebAuthnCredential
     // ------------------------------------------------------------------
 
     /**
-     * Liefert ein für die Oberfläche geeignetes Anzeigelabel.
+     * Returns a display label suitable for the UI.
      * Zeigt Attachment-Typ, Transport-Medien und Sync-Status an.
      */
     public function getDisplayLabel(): string
@@ -221,7 +221,7 @@ class WebAuthnCredential
     }
 
     /**
-     * Serialisiert die Entity für Doctrine DBAL (INSERT / UPDATE).
+     * Serialises the entity for Doctrine DBAL (INSERT / UPDATE).
      *
      * @return array<string, mixed>
      */

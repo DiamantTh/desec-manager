@@ -13,12 +13,12 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * TotpApiHandler — JSON-API für TOTP-Setup und -Verwaltung.
+ * TotpApiHandler — JSON API for TOTP setup and management.
  *
  * Alle Endpunkte erfordern eine authentifizierte Session (AuthMiddleware).
  *
  * Routen (definiert in config/routes.php):
- *   GET  /totp/setup    → Neues Secret generieren + provisioning URI zurückgeben
+ *   GET  /totp/setup    → Generate new secret and return provisioning URI
  *   POST /totp/enable   → Code verifizieren + TOTP aktivieren
  *   POST /totp/disable  → TOTP deaktivieren
  */
@@ -54,7 +54,7 @@ class TotpApiHandler extends AbstractHandler implements RequestHandlerInterface
         $userId = $this->userId();
         $user   = $this->users->findById($userId);
         if ($user === null) {
-            return $this->jsonError('Benutzer nicht gefunden.', 404);
+            return $this->jsonError(__('User not found.'), 404);
         }
 
         try {
@@ -63,7 +63,7 @@ class TotpApiHandler extends AbstractHandler implements RequestHandlerInterface
             $issuer    = 'DeSEC Manager';
             $uri       = $this->totp->getProvisioningUri($secret, $label, $issuer);
 
-            // Secret temporär in der Session speichern bis es bestätigt wurde
+            // Store the secret temporarily in session until confirmed
             $_SESSION['totp_setup_secret'] = $secret;
 
             return new JsonResponse([
@@ -96,7 +96,7 @@ class TotpApiHandler extends AbstractHandler implements RequestHandlerInterface
         }
 
         if (!$this->totp->verify($code, $secret)) {
-            return $this->jsonError('Ungültiger Code. Bitte erneut versuchen.');
+            return $this->jsonError(__('Invalid code. Please try again.'));
         }
 
         try {

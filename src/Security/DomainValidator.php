@@ -1,74 +1,77 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Security;
 
-class DomainValidator 
+class DomainValidator
 {
     private const VALID_DEVELOPMENT_DOMAINS = [
         'localhost',
-        '.localhost'  // Erlaubt Subdomains von localhost
+        '.localhost'  // Allows subdomains of localhost
     ];
 
     /**
-     * Prüft ob eine Domain für WebAuthn geeignet ist
-     * 
+     * Checks whether a domain is suitable for WebAuthn.
+     *
      * @return array{valid: bool, reason: string}
      */
-    public static function validateForWebAuthn(string $domain): array 
+    public static function validateForWebAuthn(string $domain): array
     {
-        // Entwicklungsdomains
+        // Development domains
         foreach (self::VALID_DEVELOPMENT_DOMAINS as $devDomain) {
             if ($devDomain[0] === '.' && str_ends_with($domain, $devDomain)) {
                 return [
-                    'valid' => true,
-                    'reason' => 'Entwicklungsdomäne (nur für lokale Tests)'
+                    'valid'  => true,
+                    'reason' => 'Development domain (local testing only)',
                 ];
             }
             if ($domain === $devDomain) {
                 return [
-                    'valid' => true,
-                    'reason' => 'Lokale Entwicklung'
+                    'valid'  => true,
+                    'reason' => 'Local development',
                 ];
             }
         }
 
-        // Prüfe auf IP-Adresse
+        // Check for IP address
         if (filter_var($domain, FILTER_VALIDATE_IP)) {
             return [
-                'valid' => false,
-                'reason' => 'IP-Adressen sind für WebAuthn nicht erlaubt'
+                'valid'  => false,
+                'reason' => 'IP addresses are not allowed for WebAuthn',
             ];
         }
 
-        // Grundlegende Domain-Validierung
+        // Basic domain validation
         if (!preg_match('/^[a-z0-9]+(?:[.-][a-z0-9]+)*\.[a-z]{2,}$/i', $domain)) {
             return [
-                'valid' => false,
-                'reason' => 'Ungültiges Domain-Format'
+                'valid'  => false,
+                'reason' => 'Invalid domain format',
             ];
         }
 
-        // Hole TLD
+        // Extract TLD
         $parts = explode('.', $domain);
-        $tld = strtolower(end($parts));
+        $tld   = strtolower(end($parts));
 
-        // Bekannte ungültige TLDs
+        // Known invalid TLDs
         $invalidTlds = [
             'local',
             'internal',
             'test',
             'invalid',
             'example',
-            'dev'  // Die alte .dev TLD, nicht Google's neue .dev
+            'dev',  // The old .dev TLD, not Google's new .dev
         ];
 
         if (in_array($tld, $invalidTlds)) {
             return [
-                'valid' => false,
-                'reason' => "Die TLD '.$tld' ist für WebAuthn nicht erlaubt"
+                'valid'  => false,
+                'reason' => "TLD '.$tld' is not allowed for WebAuthn",
             ];
         }
 
-        // Liste gültiger TLDs (sollte regelmäßig aktualisiert werden)
+        // List of valid TLDs (should be updated regularly)
         $validTlds = [
             // Generic TLDs
             'com', 'org', 'net', 'edu', 'gov', 'mil', 'int',
@@ -76,62 +79,58 @@ class DomainValidator
             'de', 'uk', 'fr', 'it', 'es', 'nl', 'be', 'at', 'ch',
             // New gTLDs
             'io', 'dev', 'app', 'cloud', 'online', 'tech', 'site',
-            // Fügen Sie weitere TLDs nach Bedarf hinzu
+            // Add more TLDs as needed
         ];
 
         if (!in_array($tld, $validTlds)) {
             return [
-                'valid' => false,
-                'reason' => "Unbekannte oder nicht unterstützte TLD '.$tld'"
+                'valid'  => false,
+                'reason' => "Unknown or unsupported TLD '.$tld'",
             ];
         }
 
         return [
-            'valid' => true,
-            'reason' => 'Domain ist für WebAuthn geeignet'
+            'valid'  => true,
+            'reason' => 'Domain is suitable for WebAuthn',
         ];
     }
 
     /**
-     * Prüft ob HTTPS für diese Domain erzwungen werden soll
+     * Checks whether HTTPS should be enforced for this domain.
      */
-    public static function requiresHttps(string $domain): bool 
+    public static function requiresHttps(string $domain): bool
     {
-        // Localhost darf HTTP verwenden
+        // Localhost may use HTTP
         if ($domain === 'localhost' || str_ends_with($domain, '.localhost')) {
             return false;
         }
-        
+
         return true;
     }
 
     /**
-     * Gibt eine benutzerfreundliche Empfehlung für WebAuthn
+     * Returns a user-friendly WebAuthn recommendation for the given domain.
      */
-    public static function getWebAuthnRecommendation(string $domain): string 
+    public static function getWebAuthnRecommendation(string $domain): string
     {
         $result = self::validateForWebAuthn($domain);
-        
+
         if (!$result['valid']) {
             if (filter_var($domain, FILTER_VALIDATE_IP)) {
-                return "Für WebAuthn wird eine echte Domain benötigt. " .
-                       "Bitte konfigurieren Sie einen Domainname anstelle der IP-Adresse {$domain}";
+                return "WebAuthn requires a real domain name. "
+                     . "Please configure a domain name instead of the IP address {$domain}.";
             }
-            
-            $parts = explode('.', $domain);
-            $tld = end($parts);
-            
-            return "Die Domain {$domain} kann nicht für WebAuthn verwendet werden. " .
-                   "Grund: {$result['reason']}\n" .
-                   "Empfehlung: Verwenden Sie eine Domain mit einer offiziellen TLD " .
-                   "wie .com, .org, .de etc.";
+
+            return "The domain {$domain} cannot be used for WebAuthn. "
+                 . "Reason: {$result['reason']}\n"
+                 . "Recommendation: Use a domain with an official TLD such as .com, .org, .de etc.";
         }
-        
+
         if ($domain === 'localhost' || str_ends_with($domain, '.localhost')) {
-            return "Die Domain {$domain} ist nur für Entwicklungszwecke geeignet. " .
-                   "Für Produktivumgebungen verwenden Sie bitte eine echte Domain.";
+            return "The domain {$domain} is suitable for development purposes only. "
+                 . "For production environments please use a real domain.";
         }
-        
-        return "Die Domain {$domain} ist für WebAuthn geeignet.";
+
+        return "The domain {$domain} is suitable for WebAuthn.";
     }
 }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 /**
- * User Entity — Repräsentiert einen Benutzer im System.
+ * User Entity — represents a user in the system.
  *
  * Datenbankanbindung via UserRepository / Doctrine DBAL.
  *

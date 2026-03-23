@@ -8,10 +8,10 @@ namespace App\Service;
  * ThemeManager – verwaltet das aktive Theme des DeSEC Managers.
  *
  * Themes liegen unter themes/{name}/ und enthalten eine theme.json Metadatendatei.
- * Templates können durch theme-eigene Varianten in themes/{name}/templates/ überschrieben werden.
- * CSS und JS werden über CDN-Links und lokale Dateien eingebunden.
+ * Templates can be overridden by theme-specific variants in themes/{name}/templates/.
+ * CSS and JS are included via CDN links and local files.
  *
- * Eigene Themes können außerhalb des Projekts über config['theme']['custom_path'] eingebunden werden.
+ * Custom themes can be included outside the project via config['theme']['custom_path'].
  */
 class ThemeManager
 {
@@ -38,8 +38,8 @@ class ThemeManager
     // ─── Interne Helpers ────────────────────────────────────────────────────
 
     /**
-     * Gibt den absoluten Dateisystem-Pfad zum Theme-Verzeichnis zurück.
-     * Unterstützt Custom-Themes über config['theme']['custom_path'].
+     * Returns the absolute file system path to the theme directory.
+     * Supports custom themes via config['theme']['custom_path'].
      */
     private function getThemePath(): ?string
     {
@@ -48,7 +48,7 @@ class ThemeManager
     }
 
     /**
-     * Gibt den URL-Basispfad (relativ zur Web-Root) für Theme-Assets zurück.
+     * Returns the URL base path (relative to the web root) for theme assets.
      */
     private function getThemeWebPath(): string
     {
@@ -142,7 +142,7 @@ class ThemeManager
     // ─── Dark Mode ──────────────────────────────────────────────────────────
 
     /**
-     * Gibt true zurück, wenn das Theme einen Dark-Mode-Toggle unterstützt.
+     * Returns true if the theme supports a dark mode toggle.
      */
     public function supportsDarkMode(): bool
     {
@@ -150,13 +150,13 @@ class ThemeManager
         return (bool) ($meta['supports_dark_mode'] ?? false);
     }
 
-    // ─── Template-Auflösung ─────────────────────────────────────────────────
+    // ─── Template resolution ─────────────────────────────────────────────────
 
     /**
-     * Löst einen Template-Bezeichner zu einem absoluten Dateipfad auf.
+     * Resolves a template identifier to an absolute file path.
      *
-     * 3-stufige Auflösungsreihenfolge:
-     *   1. themes/{aktiv}/templates/{template}.php   – Eigenes Theme (wird übersprungen wenn aktives Theme = default)
+     * 3-level resolution order:
+     *   1. themes/{active}/templates/{template}.php   – Custom theme (skipped if active theme = default)
      *   2. themes/default/templates/{template}.php   – Default-Theme (Basis zum Anpassen per Kopie)
      *   3. templates/{template}.php                  – Core-Fallback (nicht anfassen)
      *
@@ -164,7 +164,7 @@ class ThemeManager
      */
     public function resolveTemplate(string $template): string
     {
-        // Ebene 1: aktives Custom-Theme (übersprungen wenn es das Default-Theme ist)
+        // Level 1: active custom theme (skipped when it is the default theme)
         if ($this->themeName !== 'default') {
             $themePath = $this->getThemePath();
             if ($themePath !== null) {
@@ -186,13 +186,13 @@ class ThemeManager
     }
 
     /**
-     * Löst einen optionalen Template-Partial auf.
-     * Gibt null zurück wenn kein Partial gefunden → Extension-Point wird einfach übersprungen.
+     * Resolves an optional template partial.
+     * Returns null if no partial is found → extension point is simply skipped.
      *
      * Partials liegen in themes/{name}/partials/ und dienen als Hook-Punkte,
-     * über die Templates ohne Kernänderungen erweitert werden können.
+     * allowing templates to be extended without core changes.
      *
-     * 2-stufige Auflösung:
+     * 2-level resolution:
      *   1. themes/{aktiv}/partials/{partial}.php   – Theme-eigener Hook
      *   2. themes/default/partials/{partial}.php   – Default-Hook (Fallback)
      *
@@ -225,7 +225,7 @@ class ThemeManager
     // ─── Theme-Info ─────────────────────────────────────────────────────────
 
     /**
-     * Gibt alle verfügbaren Theme-Namen zurück (Unterverzeichnisse von themes/).
+     * Returns all available theme names (subdirectories of themes/).
      * @return string[]
      */
     public function getAvailableThemes(): array
@@ -247,7 +247,7 @@ class ThemeManager
     }
 
     /**
-     * Gibt den menschenlesbaren Namen des aktuellen Themes zurück.
+     * Returns the human-readable name of the current theme.
      */
     public function getDisplayName(): string
     {

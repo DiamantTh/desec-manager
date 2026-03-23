@@ -15,9 +15,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * WebAuthnApiHandler — JSON-API für FIDO2/WebAuthn-Operationen.
+ * WebAuthnApiHandler — JSON API for FIDO2/WebAuthn operations.
  *
- * Alle Endpunkte liefern JSON zurück (keine HTML-Responses).
+ * All endpoints return JSON (no HTML responses).
  * Authentifizierung:
  *   - Auth-Endpunkte (auth-options, verify-auth): mfa_pending oder user_id in Session
  *   - Registrierungs-/Verwaltungsendpunkte: user_id in Session (AuthMiddleware)
@@ -66,12 +66,12 @@ class WebAuthnApiHandler extends AbstractHandler implements RequestHandlerInterf
     {
         $userId = $this->userId();
         if ($userId === 0) {
-            return $this->jsonError('Nicht authentifiziert.', 401);
+            return $this->jsonError(__('Not authenticated.'), 401);
         }
 
         $user = $this->users->findById($userId);
         if ($user === null) {
-            return $this->jsonError('Benutzer nicht gefunden.', 404);
+            return $this->jsonError(__('User not found.'), 404);
         }
 
         try {
@@ -90,7 +90,7 @@ class WebAuthnApiHandler extends AbstractHandler implements RequestHandlerInterf
     {
         $userId = $this->userId();
         if ($userId === 0) {
-            return $this->jsonError('Nicht authentifiziert.', 401);
+            return $this->jsonError(__('Not authenticated.'), 401);
         }
 
         $body     = $request->getParsedBody();
@@ -98,7 +98,7 @@ class WebAuthnApiHandler extends AbstractHandler implements RequestHandlerInterf
         $credJson = $this->bodyString($body, 'credential');
 
         if ($credJson === '') {
-            return $this->jsonError('Keine Authenticator-Antwort.');
+            return $this->jsonError(__('No authenticator response.'));
         }
 
         try {
@@ -118,7 +118,7 @@ class WebAuthnApiHandler extends AbstractHandler implements RequestHandlerInterf
     {
         $userId = $this->resolveUserId();
         if ($userId === 0) {
-            return $this->jsonError('Kein ausstehender Login-Prozess.', 401);
+            return $this->jsonError(__('No pending login process.'), 401);
         }
 
         try {
@@ -134,27 +134,27 @@ class WebAuthnApiHandler extends AbstractHandler implements RequestHandlerInterf
     {
         $userId = $this->resolveUserId();
         if ($userId === 0) {
-            return $this->jsonError('Kein ausstehender Login-Prozess.', 401);
+            return $this->jsonError(__('No pending login process.'), 401);
         }
 
         $body     = $request->getParsedBody();
         $credJson = $this->bodyString($body, 'credential');
 
         if ($credJson === '') {
-            return $this->jsonError('Keine Authenticator-Antwort.');
+            return $this->jsonError(__('No authenticator response.'));
         }
 
         try {
-            // Credential-ID aus der Browser-Antwort extrahieren (vor vollständiger Validierung)
+            // Extract credential ID from the browser response (before full validation)
             $decoded = json_decode($credJson, true);
             if (!is_array($decoded) || !isset($decoded['id'])) {
-                return $this->jsonError('Ungültiges Credential-JSON.');
+                return $this->jsonError(__('Invalid credential JSON.'));
             }
             $credentialId = (string) $decoded['id'];
 
             $storedCred = $this->credentials->findByCredentialId($credentialId);
             if ($storedCred === null) {
-                return $this->jsonError('Unbekanntes Credential.');
+                return $this->jsonError(__('Unknown credential.'));
             }
 
             $userHandle = base64_encode((string) $userId);
@@ -163,7 +163,7 @@ class WebAuthnApiHandler extends AbstractHandler implements RequestHandlerInterf
             // Sign-Counter aktualisieren
             $this->credentials->updateSignCount($credentialId, $source->counter);
 
-            // Wenn MFA-Pending → Login abschließen
+            // If MFA is pending → complete the login
             if (isset($_SESSION['mfa_pending'])) {
                 $user = $this->users->findById($userId);
                 if ($user !== null) {
@@ -193,7 +193,7 @@ class WebAuthnApiHandler extends AbstractHandler implements RequestHandlerInterf
     {
         $userId = $this->userId();
         if ($userId === 0) {
-            return $this->jsonError('Nicht authentifiziert.', 401);
+            return $this->jsonError(__('Not authenticated.'), 401);
         }
 
         $body         = $request->getParsedBody();
@@ -212,7 +212,7 @@ class WebAuthnApiHandler extends AbstractHandler implements RequestHandlerInterf
     {
         $userId = $this->userId();
         if ($userId === 0) {
-            return $this->jsonError('Nicht authentifiziert.', 401);
+            return $this->jsonError(__('Not authenticated.'), 401);
         }
 
         $body         = $request->getParsedBody();

@@ -51,35 +51,35 @@ class DomainHandler extends AbstractHandler implements RequestHandlerInterface
                 $apiKeyId = $this->bodyInt($body, 'api_key_id');
 
                 if ($domain === '' || $apiKeyId === 0) {
-                    throw new \InvalidArgumentException('Bitte Domain und API-Key auswählen.');
+                    throw new \InvalidArgumentException(__('Please select a domain and API key.'));
                 }
                 if (!preg_match('/^[a-z0-9.-]+$/', $domain)) {
-                    throw new \InvalidArgumentException('Ungültiger Domainname.');
+                    throw new \InvalidArgumentException(__('Invalid domain name.'));
                 }
 
                 $this->dns->createDomain($userId, $apiKeyId, $domain);
-                $this->flash('is-success', 'Domain wurde hinzugefügt.');
+                $this->flash('is-success', __('Domain added successfully.'));
 
             } elseif ($action === 'delete') {
                 $domain   = $this->bodyString($body, 'domain');
                 $apiKeyId = $this->bodyInt($body, 'api_key_id');
 
                 if ($domain === '' || $apiKeyId === 0) {
-                    throw new \InvalidArgumentException('Domain und API-Key werden benötigt.');
+                    throw new \InvalidArgumentException(__('Domain and API key are required.'));
                 }
 
                 $this->dns->deleteDomain($userId, $apiKeyId, $domain);
-                $this->flash('is-success', 'Domain wurde entfernt.');
+                $this->flash('is-success', __('Domain removed successfully.'));
 
             } elseif ($action === 'sync') {
                 $apiKeyId = $this->bodyInt($body, 'api_key_id');
                 if ($apiKeyId === 0) {
-                    throw new \InvalidArgumentException('Bitte einen API-Key auswählen.');
+                    throw new \InvalidArgumentException(__('Please select an API key.'));
                 }
                 $result  = $this->dns->syncDomains($userId, $apiKeyId);
                 $added   = count($result['added']);
                 $removed = count($result['removed']);
-                $this->flash('is-success', "Sync abgeschlossen ({$added} hinzugefügt, {$removed} entfernt).");
+                $this->flash('is-success', sprintf(__('Sync completed (%d added, %d removed).'), $added, $removed));
             }
         } catch (\Throwable $e) {
             $this->flash('is-danger', $e->getMessage());

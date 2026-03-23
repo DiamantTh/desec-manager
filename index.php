@@ -1,6 +1,13 @@
 <?php
 declare(strict_types=1);
 
+// ── Vendor-Check (muss vor jedem require stehen) ─────────────────────────────
+if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
+    http_response_code(503);
+    renderPreInstallPage('vendor_missing');
+    exit;
+}
+
 use App\Controller\AdminController;
 use App\Controller\AuthController;
 use App\Controller\DashboardController;
@@ -15,33 +22,99 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 session_start();
 
-// ── Keine Konfiguration → Setup-Hinweis ─────────────────────────────────────
+// Initialize translator after session start
+\App\Service\Translator::init(__DIR__ . '/locale');
+
+// No configuration → Welcome/install page
 $configPath = __DIR__ . '/config/config.php';
 
 if (!file_exists($configPath)) {
-    http_response_code(503);
+    http_response_code(200);
+    renderPreInstallPage('not_configured');
+    exit;
+}
+
+// ── Hilfsfunktion: Vorinstallations-Seite ausgeben ───────────────────────────
+function renderPreInstallPage(string $reason): void
+{
+    $vendorMissing = ($reason === 'vendor_missing');
+    $installUrl = htmlspecialchars('install/', ENT_QUOTES, 'UTF-8');
     ?><!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Installation erforderlich — DeSEC Manager</title>
+    <title>DeSEC Manager</title>
     <link rel="stylesheet" href="assets/css/bulma.min.css">
+    <style>
+        body { background: linear-gradient(135deg, #e3f0ff 0%, #f0fff4 100%); min-height: 100vh; }
+        .hero-logo { font-size: 3rem; }
+        .feature-icon { font-size: 1.5rem; margin-right: .5rem; }
+        .card-equal { height: 100%; }
+    </style>
 </head>
 <body>
-<section class="section">
-    <div class="container" style="max-width:600px">
-        <div class="notification is-warning">
-            <strong>Konfiguration fehlt.</strong><br>
-            Bitte führen Sie <a href="install.php"><code>install.php</code></a> aus,
-            um die Erstkonfiguration zu erstellen.
+
+<section class="hero is-medium is-primary is-bold" style="background:linear-gradient(135deg,#1565c0,#0d47a1)">
+    <div class="hero-body">
+        <div class="container has-text-centered">
+            <p class="hero-logo">🛡️</p>
+            <h1 class="title is-2 has-text-white">DeSEC Manager</h1>
+            <p class="subtitle has-text-white" style="opacity:.9">
+                Self-hosted Web-Interface für die <a href="https://desec.io" style="color:#90caf9" target="_blank" rel="noopener">deSEC DNS API</a>
+            </p>
         </div>
     </div>
 </section>
+
+<section class="section">
+    <div class="container" style="max-width:900px">
+
+        <?php if ($vendorMissing): ?>
+        <div class="notification is-warning is-light mb-5" style="border-left:4px solid #ff9800">
+            <p><strong>⚠️ Composer-Abhängigkeiten fehlen.</strong></p>
+            <p class="mt-2">Bitte führen Sie im Projektverzeichnis folgenden Befehl aus:</p>
+            <pre style="background:#fff3e0;border-radius:6px;padding:.75rem 1rem;margin-top:.5rem"><code>composer install --no-dev</code></pre>
+            <p class="mt-2 is-size-7 has-text-grey">Danach diese Seite neu laden.</p>
+        </div>
+        <?php else: ?>
+        <div class="notification is-info is-light mb-5" style="border-left:4px solid #2196f3">
+            <p><strong>ℹ️ Noch nicht konfiguriert.</strong></p>
+            <p class="mt-2">Der DeSEC Manager wurde noch nicht eingerichtet. Starten Sie den Installations-Assistenten:</p>
+            <a href="<?= $installUrl ?>" class="button is-primary mt-3">🛠️ Installation starten</a>
+        </div>
+        <?php endif; ?>
+
+        <h2 class="title is-4 mt-5 mb-4">Funktionen</h2>
+        <div class="columns is-multiline">
+            <?php
+            $features = [
+                ['🌐', 'Domain-Verwaltung',       'Domains bei deSEC anlegen, einsehen und löschen.'],
+                ['📋', 'DNS-Record-Editor',        'RRsets direkt im Browser bearbeiten – inkl. Inline-Editor.'],
+                ['🔑', 'API-Key-Verwaltung',       'Mehrere deSEC-API-Keys pro Nutzer verwalten und verschlüsselt speichern.'],
+                ['👥', 'Benutzerverwaltung',        'Lokale Benutzer mit Admin-Rollen und individualisierten Zugängen.'],
+                ['🔒', 'Zwei-Faktor-Authentifizierung', 'TOTP (Google Authenticator) und WebAuthn / Passkeys.'],
+                ['🎨', 'Theme-System',              'Anpassbares Design – inkl. Dark-Mode-Unterstützung.'],
+            ];
+            foreach ($features as [$icon, $title, $desc]): ?>
+            <div class="column is-half">
+                <div class="box card-equal">
+                    <p><span class="feature-icon"><?= $icon ?></span><strong><?= htmlspecialchars($title, ENT_QUOTES, 'UTF-8') ?></strong></p>
+                    <p class="is-size-7 has-text-grey mt-1"><?= htmlspecialchars($desc, ENT_QUOTES, 'UTF-8') ?></p>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+
+        <div class="content mt-5 has-text-centered has-text-grey is-size-7">
+            <p>DeSEC Manager &nbsp;·&nbsp; <a href="https://desec.io" target="_blank" rel="noopener">deSEC DNS</a></p>
+        </div>
+    </div>
+</section>
+
 </body>
 </html>
     <?php
-    exit;
 }
 
 $config = require $configPath;
@@ -142,17 +215,17 @@ if ($theme->supportsDarkMode()) {
     <div id="mainNavbar" class="navbar-menu">
         <div class="navbar-start">
             <a class="navbar-item <?= $route === 'dashboard' ? 'is-active' : '' ?>"
-               href="?route=dashboard">Dashboard</a>
+               href="?route=dashboard"><?= __('Dashboard') ?></a>
 
             <a class="navbar-item <?= $route === 'domains' ? 'is-active' : '' ?>"
-               href="?route=domains">Domains</a>
+               href="?route=domains"><?= __('Domains') ?></a>
 
             <a class="navbar-item <?= $route === 'keys' ? 'is-active' : '' ?>"
-               href="?route=keys">API Keys</a>
+               href="?route=keys"><?= __('API Keys') ?></a>
 
             <?php if (!empty($_SESSION['is_admin'])): ?>
             <a class="navbar-item <?= $route === 'admin' ? 'is-active' : '' ?>"
-               href="?route=admin">Admin</a>
+               href="?route=admin"><?= __('Admin') ?></a>
             <?php endif; ?>
         </div>
 
@@ -166,13 +239,30 @@ if ($theme->supportsDarkMode()) {
             <?php endif; ?>
 
             <div class="navbar-item has-dropdown is-hoverable">
+                <a class="navbar-link"><?= __('Language') ?></a>
+                <div class="navbar-dropdown is-right">
+                    <?php foreach (\App\Service\Translator::SUPPORTED_LOCALES as $code => $name): ?>
+                    <form method="post" style="display:inline">
+                        <input type="hidden" name="_locale" value="<?= htmlspecialchars($code, ENT_QUOTES, 'UTF-8') ?>">
+                        <button type="submit" class="navbar-item" style="border:none;background:none;cursor:pointer;width:100%;text-align:left;padding:0.375rem 1rem">
+                            <?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>
+                            <?php if (\App\Service\Translator::getCurrentLocale() === $code): ?>
+                            <span class="tag is-primary is-small ml-1">✓</span>
+                            <?php endif; ?>
+                        </button>
+                    </form>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+
+            <div class="navbar-item has-dropdown is-hoverable">
                 <a class="navbar-link">
-                    <?= htmlspecialchars($_SESSION['username'] ?? 'Benutzer', ENT_QUOTES, 'UTF-8') ?>
+                    <?= htmlspecialchars($_SESSION['username'] ?? __('User'), ENT_QUOTES, 'UTF-8') ?>
                 </a>
                 <div class="navbar-dropdown is-right">
-                    <a class="navbar-item" href="?route=profile">Profil</a>
+                    <a class="navbar-item" href="?route=profile"><?= __('Profile') ?></a>
                     <hr class="navbar-divider">
-                    <a class="navbar-item" href="?route=auth&action=logout">Abmelden</a>
+                    <a class="navbar-item" href="?route=auth&action=logout"><?= __('Sign out') ?></a>
                 </div>
             </div>
         </div>

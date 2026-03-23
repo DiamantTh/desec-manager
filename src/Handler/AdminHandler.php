@@ -40,18 +40,18 @@ class AdminHandler extends AbstractHandler implements RequestHandlerInterface
             try {
                 if ($action === 'add') {
                     $this->handleAdd($body);
-                    $message = 'Administrator wurde angelegt.';
+                    $message = __('Administrator created successfully.');
                 } elseif ($action === 'deactivate') {
                     $id = $this->bodyInt($body, 'id');
                     if ($id > 0) {
                         $this->users->setActive($id, false);
-                        $message = 'Benutzer wurde deaktiviert.';
+                        $message = __('User has been deactivated.');
                     }
                 } elseif ($action === 'delete') {
                     $id = $this->bodyInt($body, 'id');
                     if ($id > 0 && $id !== $this->userId()) {
                         $this->users->delete($id);
-                        $message = 'Benutzer wurde gelöscht.';
+                        $message = __('User has been deleted.');
                     }
                 }
             } catch (\Throwable $e) {
@@ -77,13 +77,13 @@ class AdminHandler extends AbstractHandler implements RequestHandlerInterface
         $password = $this->bodyString($body, 'password');
 
         if ($username === '' || $email === '' || $password === '') {
-            throw new \InvalidArgumentException('Bitte alle Felder ausfüllen.');
+            throw new \InvalidArgumentException(__('Please fill in all fields.'));
         }
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new \InvalidArgumentException('Ungültige E-Mail-Adresse.');
+            throw new \InvalidArgumentException(__('Invalid email address.'));
         }
         if (!$this->users->isUsernameAvailable($username)) {
-            throw new \RuntimeException('Benutzername bereits vergeben.');
+            throw new \RuntimeException(__('Username already taken.'));
         }
         if (!$this->users->isEmailAvailable($email)) {
             throw new \RuntimeException('E-Mail-Adresse wird bereits verwendet.');
