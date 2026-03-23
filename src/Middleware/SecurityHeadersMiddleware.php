@@ -10,9 +10,9 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * SecurityHeadersMiddleware — setzt HTTP-Sicherheits-Header für alle Responses.
+ * SecurityHeadersMiddleware — sets HTTP security headers for all responses.
  *
- * Schützt vor:
+ * Protects against:
  *   - Clickjacking        → X-Frame-Options: DENY
  *   - MIME-Sniffing       → X-Content-Type-Options: nosniff
  *   - XSS (legacy)        → X-XSS-Protection

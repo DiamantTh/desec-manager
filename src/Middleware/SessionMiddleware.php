@@ -10,13 +10,13 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * SessionMiddleware — startet die PHP-Session mit sicheren Cookie-Flags.
+ * SessionMiddleware — starts the PHP session with secure cookie flags.
  *
- * Konfiguration aus security.toml [security.session]:
- *   secure   = true       → nur HTTPS
- *   httponly = true       → kein JS-Zugriff
- *   samesite = "Strict"   → CSRF-Schutz
- *   lifetime = 3600       → Session-Gültigkeitsdauer
+ * Configuration from security.toml [security.session]:
+ *   secure   = true       → HTTPS only
+ *   httponly = true       → no JS access
+ *   samesite = "Strict"   → CSRF protection
+ *   lifetime = 3600       → session lifetime
  */
 class SessionMiddleware implements MiddlewareInterface
 {
@@ -48,6 +48,9 @@ class SessionMiddleware implements MiddlewareInterface
             ]);
 
             session_start();
+            
+            // Initialize translator after session start
+            \App\Service\Translator::init(dirname(__DIR__, 2) . '/locale');
         }
 
         return $handler->handle($request);

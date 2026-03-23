@@ -1,0 +1,377 @@
+# Swedish translation for deSEC Manager
+# Copyright (C) 2025
+# This file is distributed under the same license as the deSEC Manager package.
+msgid ""
+msgstr ""
+"Project-Id-Version: deSEC Manager 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-01 00:00+0000\n"
+"PO-Revision-Date: 2025-01-01 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: Swedish\n"
+"Language: sv_SE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Please enter your username and password."
+msgstr "Ange ditt användarnamn och lösenord."
+
+msgid "Invalid credentials."
+msgstr "Ogiltiga inloggningsuppgifter."
+
+msgid "This account has been deactivated."
+msgstr "Det här kontot har inaktiverats."
+
+msgid "Please enter the code."
+msgstr "Ange koden."
+
+msgid "Invalid code. Please try again."
+msgstr "Ogiltig kod. Försök igen."
+
+msgid "Username"
+msgstr "Användarnamn"
+
+msgid "Password"
+msgstr "Lösenord"
+
+msgid "Sign in"
+msgstr "Logga in"
+
+msgid "Default credentials are created during installation."
+msgstr "Standardinloggningsuppgifter skapas under installationen."
+
+msgid "Two-Factor Authentication"
+msgstr "Tvåfaktorsautentisering"
+
+msgid "Please enter the current code from your authenticator app."
+msgstr "Ange den aktuella koden från din autentiseringsapp."
+
+msgid "Authentication code"
+msgstr "Autentiseringskod"
+
+msgid "Cancel"
+msgstr "Avbryt"
+
+msgid "Confirm"
+msgstr "Bekräfta"
+
+msgid "Use Security Key"
+msgstr "Använd säkerhetsnyckel"
+
+msgid "Insert your security key and click Sign in."
+msgstr "Sätt i din säkerhetsnyckel och klicka på Logga in."
+
+msgid "Sign in with security key"
+msgstr "Logga in med säkerhetsnyckel"
+
+msgid "Back to login"
+msgstr "Tillbaka till inloggning"
+
+msgid "Waiting for key…"
+msgstr "Väntar på nyckel…"
+
+msgid "Retry"
+msgstr "Försök igen"
+
+msgid "Authentication cancelled or timed out."
+msgstr "Autentisering avbruten eller timeout."
+
+msgid "An unknown error occurred."
+msgstr "Ett okänt fel inträffade."
+
+msgid "Unknown error"
+msgstr "Okänt fel"
+
+msgid "User data could not be loaded."
+msgstr "Användardata kunde inte laddas."
+
+msgid "Profile"
+msgstr "Profil"
+
+msgid "Email"
+msgstr "E-post"
+
+msgid "Created at"
+msgstr "Skapad"
+
+msgid "Last login"
+msgstr "Senaste inloggning"
+
+msgid "Never"
+msgstr "Aldrig"
+
+msgid "Password changed successfully."
+msgstr "Lösenordet har ändrats."
+
+msgid "Please fill in all fields."
+msgstr "Fyll i alla fält."
+
+msgid "Current password is incorrect."
+msgstr "Nuvarande lösenord är felaktigt."
+
+msgid "New password and confirmation do not match."
+msgstr "Nytt lösenord och bekräftelse stämmer inte överens."
+
+msgid "The new password must be at least 12 characters long."
+msgstr "Det nya lösenordet måste vara minst 12 tecken långt."
+
+msgid "Change password"
+msgstr "Byt lösenord"
+
+msgid "Current password"
+msgstr "Nuvarande lösenord"
+
+msgid "New password"
+msgstr "Nytt lösenord"
+
+msgid "Confirm new password"
+msgstr "Bekräfta nytt lösenord"
+
+msgid "Save"
+msgstr "Spara"
+
+msgid "Recent Domains"
+msgstr "Senaste domäner"
+
+msgid "Recent API Keys"
+msgstr "Senaste API-nycklar"
+
+msgid "No domains registered yet."
+msgstr "Inga domäner registrerade ännu."
+
+msgid "No API keys added yet."
+msgstr "Inga API-nycklar tillagda ännu."
+
+msgid "Active"
+msgstr "Aktiv"
+
+msgid "Inactive"
+msgstr "Inaktiv"
+
+msgid "Created"
+msgstr "Skapad"
+
+msgid "%s is active"
+msgstr "%s är aktiv"
+
+msgid "(JIT enabled)"
+msgstr "(JIT aktiverat)"
+
+msgid "Domains"
+msgstr "Domäner"
+
+msgid "Actions"
+msgstr "Åtgärder"
+
+msgid "Delete"
+msgstr "Ta bort"
+
+msgid "No API keys"
+msgstr "Inga API-nycklar"
+
+msgid "Add domain"
+msgstr "Lägg till domän"
+
+msgid "Please select"
+msgstr "Välj"
+
+msgid "API Key"
+msgstr "API-nyckel"
+
+msgid "Sync with deSEC"
+msgstr "Synkronisera med deSEC"
+
+msgid "Synchronize"
+msgstr "Synkronisera"
+
+msgid "Fetches domains from the deSEC account and creates missing local entries."
+msgstr "Hämtar domäner från deSEC-kontot och skapar saknade lokala poster."
+
+msgid "API keys are required first."
+msgstr "API-nycklar krävs först."
+
+msgid "API keys are required."
+msgstr "API-nycklar krävs."
+
+msgid "Please select a domain and API key."
+msgstr "Välj en domän och API-nyckel."
+
+msgid "Invalid domain name."
+msgstr "Ogiltigt domännamn."
+
+msgid "Domain added successfully."
+msgstr "Domänen har lagts till."
+
+msgid "Domain and API key are required."
+msgstr "Domän och API-nyckel krävs."
+
+msgid "Domain removed successfully."
+msgstr "Domänen har tagits bort."
+
+msgid "Please select an API key."
+msgstr "Välj en API-nyckel."
+
+msgid "Sync completed (%d added, %d removed)."
+msgstr "Synkronisering klar (%d tillagda, %d borttagna)."
+
+msgid "API Keys"
+msgstr "API-nycklar"
+
+msgid "Name"
+msgstr "Namn"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "No API keys found."
+msgstr "Inga API-nycklar hittades."
+
+msgid "Add new API key"
+msgstr "Lägg till ny API-nyckel"
+
+msgid "Label"
+msgstr "Etikett"
+
+msgid "Deactivate"
+msgstr "Inaktivera"
+
+msgid "Name and API key are required."
+msgstr "Namn och API-nyckel krävs."
+
+msgid "No domains available."
+msgstr "Inga domäner tillgängliga."
+
+msgid "Please add a domain before managing DNS records."
+msgstr "Lägg till en domän innan du hanterar DNS-poster."
+
+msgid "No API keys configured."
+msgstr "Inga API-nycklar konfigurerade."
+
+msgid "Please save at least one deSEC API key to manage DNS records."
+msgstr "Spara minst en deSEC API-nyckel för att hantera DNS-poster."
+
+msgid "Update"
+msgstr "Uppdatera"
+
+msgid "RRsets for %s"
+msgstr "RRsets för %s"
+
+msgid "Subname"
+msgstr "Undernamn"
+
+msgid "Type"
+msgstr "Typ"
+
+msgid "Records"
+msgstr "Poster"
+
+msgid "Edit"
+msgstr "Redigera"
+
+msgid "Records (one entry per line)"
+msgstr "Poster (en post per rad)"
+
+msgid "TTL"
+msgstr "TTL"
+
+msgid "No RRsets found."
+msgstr "Inga RRsets hittades."
+
+msgid "New RRset"
+msgstr "Nytt RRset"
+
+msgid "@ for root"
+msgstr "@ för rot"
+
+msgid "One entry per line"
+msgstr "En post per rad"
+
+msgid "Save RRset"
+msgstr "Spara RRset"
+
+msgid "Existing RRsets will be replaced."
+msgstr "Befintliga RRsets kommer att ersättas."
+
+msgid "Record type not supported."
+msgstr "Posttypen stöds inte."
+
+msgid "At least one record must be specified."
+msgstr "Minst en post måste anges."
+
+msgid "Record type missing."
+msgstr "Posttyp saknas."
+
+msgid "Administrators"
+msgstr "Administratörer"
+
+msgid "Last Login"
+msgstr "Senaste inloggning"
+
+msgid "No administrators found."
+msgstr "Inga administratörer hittades."
+
+msgid "Add administrator"
+msgstr "Lägg till administratör"
+
+msgid "The password will be hashed immediately with Argon2id."
+msgstr "Lösenordet hashas omedelbart med Argon2id."
+
+msgid "Create administrator"
+msgstr "Skapa administratör"
+
+msgid "Administrator created successfully."
+msgstr "Administratören har skapats."
+
+msgid "User has been deactivated."
+msgstr "Användaren har inaktiverats."
+
+msgid "User has been deleted."
+msgstr "Användaren har tagits bort."
+
+msgid "Invalid email address."
+msgstr "Ogiltig e-postadress."
+
+msgid "Username already taken."
+msgstr "Användarnamnet är redan taget."
+
+msgid "Not authenticated."
+msgstr "Inte autentiserad."
+
+msgid "User not found."
+msgstr "Användare hittades inte."
+
+msgid "No authenticator response."
+msgstr "Inget autentiseringssvar."
+
+msgid "No pending login process."
+msgstr "Ingen pågående inloggningsprocess."
+
+msgid "Invalid credential JSON."
+msgstr "Ogiltig credential JSON."
+
+msgid "Unknown credential."
+msgstr "Okänd credential."
+
+msgid "Dashboard"
+msgstr "Instrumentpanel"
+
+msgid "Admin"
+msgstr "Administration"
+
+msgid "Sign out"
+msgstr "Logga ut"
+
+msgid "User"
+msgstr "Användare"
+
+msgid "Language"
+msgstr "Språk"
+
+msgid "Template not found"
+msgstr "Mall hittades inte"
+
+
+msgid "At least 12 characters."
+msgstr "Minst 12 tecken."

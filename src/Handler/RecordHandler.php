@@ -75,7 +75,7 @@ class RecordHandler extends AbstractHandler implements RequestHandlerInterface
         $apiKeyId = $this->bodyInt($body, 'api_key_id') ?: $selectedKeyId;
 
         if ($domain === '' || $apiKeyId === 0) {
-            $this->flash('is-danger', 'Bitte Domain und API-Key auswählen.');
+            $this->flash('is-danger', __('Please select a domain and API key.'));
             return $this->redirectToRecords($domain, $apiKeyId);
         }
 
@@ -115,7 +115,7 @@ class RecordHandler extends AbstractHandler implements RequestHandlerInterface
 
         $allowed = ['A', 'AAAA', 'ALIAS', 'CNAME', 'TXT', 'MX', 'NS', 'SRV', 'CAA', 'TLSA'];
         if (!in_array($type, $allowed, true)) {
-            throw new RuntimeException('Record-Typ wird nicht unterstützt.');
+            throw new RuntimeException(__('Record type not supported.'));
         }
         if ($ttl < 30 || $ttl > 86400) {
             throw new RuntimeException('TTL muss zwischen 30 und 86400 liegen.');
@@ -123,7 +123,7 @@ class RecordHandler extends AbstractHandler implements RequestHandlerInterface
 
         $records = $this->parseRecords($recordsRaw);
         if ($records === []) {
-            throw new RuntimeException('Es muss mindestens ein Record angegeben werden.');
+            throw new RuntimeException(__('At least one record must be specified.'));
         }
 
         if ($type === 'MX') {
@@ -148,7 +148,7 @@ class RecordHandler extends AbstractHandler implements RequestHandlerInterface
             $subName = '';
         }
         if ($type === '') {
-            throw new RuntimeException('Record-Typ fehlt.');
+            throw new RuntimeException(__('Record type missing.'));
         }
 
         $this->dns->deleteRRSet($userId, $apiKeyId, $domain, $subName, $type);

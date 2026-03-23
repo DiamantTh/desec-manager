@@ -8,30 +8,30 @@ use RuntimeException;
 use Yosymfony\Toml\Toml;
 
 /**
- * Lädt und mergt TOML-Konfigurationsdateien zu einem einheitlichen PHP-Array.
+ * Loads and merges TOML configuration files into a unified PHP array.
  *
- * Ladereihenfolge (jede Ebene überschreibt die vorherige via array_replace_recursive):
+ * Load order (each level overrides the previous via array_replace_recursive):
  *   1. app.toml
  *   2. database.toml
  *   3. mail.toml
  *   4. security.toml
- *   5. config.local.toml (optional, gitignored — lokale Überschreibungen)
+ *   5. config.local.toml (optional, gitignored — local overrides)
  *
- * Sensible Werte (DB-Passwort, Mail-Passwort, Encryption-Key) werden aus
- * Umgebungsvariablen gelesen: DB_PASSWORD, MAIL_PASSWORD, ENCRYPTION_KEY.
+ * Sensitive values (DB password, mail password, encryption key) are read from
+ * environment variables: DB_PASSWORD, MAIL_PASSWORD, ENCRYPTION_KEY.
  */
 final class TomlLoader
 {
-    /** @var list<string> Pflicht-Konfigurationsdateien (ohne .toml-Suffix) */
+    /** @var list<string> Required configuration files (without .toml suffix) */
     private const FILES = ['app', 'database', 'mail', 'security'];
 
     public function __construct(private readonly string $configDir) {}
 
     /**
-     * Lädt alle TOML-Konfigurationsdateien und gibt das gemergete Array zurück.
+     * Loads all TOML configuration files and returns the merged array.
      *
      * @return array<string, mixed>
-     * @throws RuntimeException wenn eine Pflichtdatei fehlt
+     * @throws RuntimeException if a required file is missing
      */
     public function load(): array
     {
@@ -52,7 +52,7 @@ final class TomlLoader
             $merged = array_replace_recursive($merged, $data);
         }
 
-        // Lokale Überschreibungen (gitignored — optional)
+        // Local overrides (gitignored — optional)
         $localPath = $this->configDir . '/config.local.toml';
         if (file_exists($localPath)) {
             /** @var array<string, mixed> $local */
@@ -60,14 +60,14 @@ final class TomlLoader
             $merged = array_replace_recursive($merged, $local);
         }
 
-        // Secrets aus Umgebungsvariablen einsetzen (niemals in TOML-Dateien committen)
+        // Apply secrets from environment variables (never commit secrets to TOML files)
         $merged = $this->applyEnvironmentSecrets($merged);
 
         return $merged;
     }
 
     /**
-     * Überschreibt sensible Werte mit Umgebungsvariablen wenn gesetzt.
+     * Overrides sensitive values with environment variables if set.
      *
      * @param array<string, mixed> $config
      * @return array<string, mixed>

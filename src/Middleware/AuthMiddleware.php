@@ -11,13 +11,13 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * AuthMiddleware — prüft ob ein eingeloggter User in der Session existiert.
+ * AuthMiddleware — checks whether an authenticated user exists in the session.
  *
  * Verwendung:
  *   Pro-Route: [\App\Middleware\AuthMiddleware::class, SomeHandler::class]
  *
  * Leitet bei fehlendem `$_SESSION['user_id']` auf /auth/login um.
- * Die ursprünglich angeforderte URL wird NICHT gespeichert (bewusste Entscheidung
+ * The originally requested URL is NOT stored (deliberate design decision
  * gegen `redirect_to`-Parameter wegen CSRF-Risiken bei offener URL-Weitergabe).
  *
  * Admin-Check: wird per `\App\Middleware\AdminMiddleware` oder im Handler selbst erledigt.

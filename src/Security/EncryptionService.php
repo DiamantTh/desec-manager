@@ -6,7 +6,7 @@ class EncryptionService
     private string $key;
 
     /**
-     * @param string $key Base64-kodierter 32-Byte-Sodium-Schlüssel.
+     * @param string $key Base64-encoded 32-byte Sodium key.
      *                    Wird vom DI-Container via TOML-Konfiguration / ENCRYPTION_KEY-Env injiziert.
      */
     public function __construct(string $key)

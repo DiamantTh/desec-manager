@@ -13,7 +13,7 @@
                         <?php if ($hasIssue): ?>
                             <p><?= htmlspecialchars($status['message'], ENT_QUOTES, 'UTF-8') ?></p>
                         <?php else: ?>
-                            <p><?= $label ?> ist aktiv<?= !empty($status['jit']) ? ' (JIT eingeschaltet)' : '' ?>.</p>
+                            <p><?= $label ?> <?= __('is active') ?><?= !empty($status['jit']) ? ' (' . __('JIT enabled') . ')' : '' ?>.</p>
                         <?php endif; ?>
                         <p class="is-size-7 has-text-grey mt-2">
                             SAPI: <?= htmlspecialchars($status['details']['sapi'] ?? '', ENT_QUOTES, 'UTF-8') ?> ·
@@ -47,7 +47,7 @@
         <div class="card">
             <header class="card-header">
                 <p class="card-header-title">
-                    Letzte Domains
+                    <?= __('Recent Domains') ?>
                 </p>
             </header>
             <div class="card-content">
@@ -56,7 +56,7 @@
                         <thead>
                             <tr>
                                 <th>Domain</th>
-                                <th>Erstellt</th>
+                                <th><?= __('Created') ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -69,7 +69,7 @@
                         </tbody>
                     </table>
                 <?php else: ?>
-                    <p class="has-text-grey">Noch keine Domains hinterlegt.</p>
+                    <p class="has-text-grey"><?= __('No domains registered yet.') ?></p>
                 <?php endif; ?>
             </div>
         </div>
@@ -78,7 +78,7 @@
         <div class="card">
             <header class="card-header">
                 <p class="card-header-title">
-                    Letzte API Keys
+                    <?= __('Recent API Keys') ?>
                 </p>
             </header>
             <div class="card-content">
@@ -86,9 +86,9 @@
                     <table class="table is-fullwidth">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Status</th>
-                                <th>Erstellt</th>
+                                <th><?= __('Name') ?></th>
+                                <th><?= __('Status') ?></th>
+                                <th><?= __('Created') ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -97,7 +97,7 @@
                                     <td><?= htmlspecialchars($key['name'], ENT_QUOTES, 'UTF-8') ?></td>
                                     <td>
                                         <span class="tag <?= !empty($key['is_active']) ? 'is-success' : 'is-light' ?>">
-                                            <?= !empty($key['is_active']) ? 'aktiv' : 'deaktiviert' ?>
+                                            <?= !empty($key['is_active']) ? __('Active') : __('Inactive') ?>
                                         </span>
                                     </td>
                                     <td><?= htmlspecialchars($key['created_at'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
@@ -106,7 +106,7 @@
                         </tbody>
                     </table>
                 <?php else: ?>
-                    <p class="has-text-grey">Noch keine API Keys hinterlegt.</p>
+                    <p class="has-text-grey"><?= __('No API keys added yet.') ?></p>
                 <?php endif; ?>
             </div>
         </div>

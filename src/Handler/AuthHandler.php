@@ -14,20 +14,20 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * AuthHandler — Login, Logout und MFA-Flow.
+ * AuthHandler — Login, Logout and MFA flow.
  *
- * Routen:
- *   GET  /auth/login           → Login-Formular
- *   POST /auth/login           → Zugangsdaten prüfen → ggf. MFA-Weiterleitung
- *   POST /auth/logout          → Session beenden
- *   GET  /auth/mfa/totp        → TOTP-Eingabeformular (requires mfa_pending)
- *   POST /auth/mfa/totp        → TOTP-Code verifizieren → Login abschließen
- *   GET  /auth/mfa/webauthn    → WebAuthn-Challenge-Seite (requires mfa_pending)
+ * Routes:
+ *   GET  /auth/login           → Login form
+ *   POST /auth/login           → Verify credentials → MFA redirect if needed
+ *   POST /auth/logout          → End session
+ *   GET  /auth/mfa/totp        → TOTP input form (requires mfa_pending)
+ *   POST /auth/mfa/totp        → Verify TOTP code → Complete login
+ *   GET  /auth/mfa/webauthn    → WebAuthn challenge page (requires mfa_pending)
  *
- * MFA-Ablauf:
- *   1. Zugangsdaten korrekt aber MFA aktiv → $_SESSION['mfa_pending'] setzen
- *   2. User wird auf die passende MFA-Seite weitergeleitet
- *   3. Erfolgreiche MFA → mfa_pending löschen → user_id in Session setzen
+ * MFA flow:
+ *   1. Credentials correct but MFA active → set $_SESSION['mfa_pending']
+ *   2. User redirected to appropriate MFA page
+ *   3. Successful MFA → clear mfa_pending → set user_id in session
  */
 class AuthHandler extends AbstractHandler implements RequestHandlerInterface
 {
@@ -86,21 +86,21 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
         $password = $this->bodyString($body, 'password');
 
         if ($username === '' || $password === '') {
-            return $this->renderLoginError('Bitte Benutzernamen und Passwort eingeben.');
+            return $this->renderLoginError(__('Please enter your username and password.'));
         }
 
         $user = $this->users->findByUsername($username);
         if ($user === null || !$this->passwordHasher->verify($password, (string) ($user['password_hash'] ?? ''))) {
-            return $this->renderLoginError('Ungültige Zugangsdaten.');
+            return $this->renderLoginError(__('Invalid credentials.'));
         }
 
         if (isset($user['is_active']) && (int) $user['is_active'] === 0) {
-            return $this->renderLoginError('Dieses Konto wurde deaktiviert.');
+            return $this->renderLoginError(__('This account has been deactivated.'));
         }
 
         $userId = (int) $user['id'];
 
-        // --- MFA prüfen: WebAuthn hat Vorrang vor TOTP ---
+        // --- Check MFA: WebAuthn takes priority over TOTP ---
         $hasWebAuthn = $this->webAuthnCredentials->countActiveByUserId($userId) > 0;
         $hasTOTP     = !empty($user['totp_enabled']);
 
@@ -116,7 +116,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
             return $this->redirect('/auth/mfa/totp');
         }
 
-        // Kein MFA → direkte Anmeldung
+        // No MFA → direct login
         $this->completeLogin($userId, $username, (bool) ($user['is_admin'] ?? false));
         return $this->redirect('/dashboard');
     }
@@ -172,7 +172,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
         $code = $this->bodyString($body, 'code');
 
         if ($code === '') {
-            return $this->renderTotpError('Bitte Code eingeben.');
+            return $this->renderTotpError(__('Please enter the code.'));
         }
 
         $user = $this->users->findById($userId);
@@ -182,7 +182,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
 
         $secret = (string) ($user['totp_secret'] ?? '');
         if ($secret === '' || !$this->totp->verify($code, $secret)) {
-            return $this->renderTotpError('Ungültiger Code. Bitte erneut versuchen.');
+            return $this->renderTotpError(__('Invalid code. Please try again.'));
         }
 
         $username = (string) ($user['username'] ?? '');
@@ -199,7 +199,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
     }
 
     // =========================================================================
-    // WebAuthn-MFA-Seite (Challenge-Daten kommen per AJAX)
+    // WebAuthn-MFA page (Challenge data comes via AJAX)
     // =========================================================================
 
     private function showWebAuthnChallenge(): ResponseInterface
@@ -214,7 +214,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
     }
 
     // =========================================================================
-    // Gemeinsame Hilfsmethoden
+    // Common helper methods
     // =========================================================================
 
     private function completeLogin(int $userId, string $username, bool $isAdmin): void
