@@ -626,7 +626,7 @@ function renderAccessDenied(): void
     $tokenFile = TOKEN_FILE;
     $wrongToken = isset($_POST['install_token']) && $_POST['install_token'] !== '';
     ?><!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -698,7 +698,7 @@ function renderLocked(): void
 {
     http_response_code(403);
     ?><!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -749,7 +749,7 @@ $isSuccess  = isset($_SESSION['install_result']);
 $displayStep = $isSuccess ? 4 : $step;   // 4 = Erfolgs-Anzeige
 
 ?><!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
