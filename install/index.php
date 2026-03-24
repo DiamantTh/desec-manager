@@ -641,8 +641,8 @@ function renderAccessDenied(): void
     <link rel="stylesheet" href="../assets/css/bulma.min.css">
     <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg">
     <style>
-        :root { --primary: #00d1b2; --primary-dark: #00c4a7; color-scheme: light; }
-        body { background: linear-gradient(135deg,#e0f9f6 0%,#e3f0ff 100%); min-height:100vh; }
+        :root { --primary: #1976d2; --primary-dark: #1565c0; color-scheme: light; }
+        body { background: linear-gradient(135deg,#e3f0ff 0%,#e8f5e9 100%); min-height:100vh; }
         .token-card { max-width:640px; margin:3rem auto; }
         pre code { font-size:.875rem; word-break:break-all; white-space:pre-wrap; }
     </style>
@@ -652,7 +652,7 @@ function renderAccessDenied(): void
     <div class="token-card">
         <div class="has-text-centered mb-5">
             <img src="../assets/img/logo.svg" alt="DeSEC Manager" width="64" height="64">
-            <h1 class="title is-4 mt-2" style="color:#00a896">DeSEC Manager – Installer</h1>
+            <h1 class="title is-4 mt-2" style="color:#1565c0">DeSEC Manager – Installer</h1>
         </div>
 
         <?php if ($wrongToken): ?>
@@ -682,7 +682,7 @@ function renderAccessDenied(): void
                     </div>
                 </div>
                 <button type="submit" class="button is-primary is-fullwidth mt-3"
-                        style="background:#00d1b2;border-color:#00c4a7">
+                        style="background:#1976d2;border-color:#1565c0">
                     🔓 Freischalten
                 </button>
             </form>
@@ -691,7 +691,7 @@ function renderAccessDenied(): void
             <p class="is-size-7 has-text-grey-dark" id="token-hint">
                 <strong>Token auf dem Server abrufen:</strong>
             </p>
-            <pre style="background:#f1f8f1;border-radius:6px;padding:.75rem 1rem;margin-top:.5rem"><code>cat <?= htmlspecialchars($tokenFile, ENT_QUOTES, 'UTF-8') ?></code></pre>
+            <pre style="background:#f0f4ff;border-radius:6px;padding:.75rem 1rem;margin-top:.5rem"><code>cat <?= htmlspecialchars($tokenFile, ENT_QUOTES, 'UTF-8') ?></code></pre>
         </div>
     </div>
 </section>
@@ -763,7 +763,7 @@ $displayStep = $isSuccess ? 4 : $step;   // 4 = Erfolgs-Anzeige
     <title>DeSEC Manager — Installation</title>
     <link rel="stylesheet" href="../assets/css/bulma.min.css">
     <style>
-        :root { --primary: #00d1b2; --primary-dark: #00c4a7; --success: #48c774; color-scheme: light; }
+        :root { --primary: #1976d2; --primary-dark: #1565c0; --success: #388e3c; color-scheme: light; }
         body { background: #f5f5f5; }
         .wizard-card { max-width: 820px; margin: 2rem auto; }
         .progress-bar { display: flex; gap: .5rem; margin-bottom: 2rem; }
@@ -772,10 +772,10 @@ $displayStep = $isSuccess ? 4 : $step;   // 4 = Erfolgs-Anzeige
             border-radius: 8px; font-size: .8rem; font-weight: 700;
             background: #e2e8f0; color: #64748b;
         }
-        .progress-bar .pb-step.done   { background: #48c774; color: #fff; }
-        .progress-bar .pb-step.active { background: #00d1b2; color: #fff; }
+        .progress-bar .pb-step.done   { background: #388e3c; color: #fff; }
+        .progress-bar .pb-step.active { background: #1976d2; color: #fff; }
         .section-divider { border: none; border-top: 2px solid #e2e8f0; margin: 1.5rem 0; }
-        .section-title { font-size: 1rem; font-weight: 700; color: #00d1b2; margin-bottom: 1rem; }
+        .section-title { font-size: 1rem; font-weight: 700; color: #1976d2; margin-bottom: 1rem; }
         code { background: #f1f5f9; padding: .1em .3em; border-radius: 4px; font-size: .875em; }
         pre  { background: #f8fafc; border-radius: 6px; padding: .75rem 1rem; font-size: .85rem; }
         .warn-left { border-left: 4px solid #ff9800; padding-left: 1rem; }
@@ -785,7 +785,7 @@ $displayStep = $isSuccess ? 4 : $step;   // 4 = Erfolgs-Anzeige
 </head>
 <body>
 <div class="wizard-card card">
-    <header class="card-header" style="background:linear-gradient(135deg,#00c4a7,#008a78);border-radius:9px 9px 0 0">
+    <header class="card-header" style="background:linear-gradient(135deg,#1976d2,#0d47a1);border-radius:9px 9px 0 0">
         <p class="card-header-title" style="color:#fff;font-size:1.1rem">🛠️ DeSEC Manager — Installation</p>
     </header>
     <div class="card-content">
