@@ -69,29 +69,27 @@ path = "var/cache"          # Relativ zum Projekt-Root — muss beschreibbar sei
 # Mail-Transport (Verbindungsparameter — Absender/Name im Admin-Interface)
 # Passwort via Umgebungsvariable: MAIL_PASSWORD
 #
-# transport-Werte:
-#   "smtp"                              — SMTP (Einstellungen aus [mail.smtp])
-#   "sendmail"                          — lokales sendmail-Binary
-#   "null://"                           — Deaktiviert (nur lokale Entwicklung)
-# Vollständige DSNs für Cloud-Dienste (kein Passwort hier nötig):
-#   "ses+smtp://KEY:SECRET@default"     — Amazon SES
-#   "sendgrid+api://API_KEY@default"    — SendGrid
-#   "mailgun+api://KEY:DOMAIN@default"  — Mailgun
-#   "postmark+api://API_KEY@default"    — Postmark
+# Entweder einen vollständigen DSN eintragen ODER [mail.smtp] konfigurieren:
+#
+# Vollständiger DSN (transport = DSN, [mail.smtp] wird ignoriert):
+#   "smtps://user:pass@mail.example.com:465"  — SMTPS (Port 465)
+#   "smtp://user:pass@mail.example.com:587"   — STARTTLS (Port 587)
+#   "ses+smtp://KEY:SECRET@default"           — Amazon SES
+#   "sendgrid+api://API_KEY@default"          — SendGrid
+#   "mailgun+api://KEY:DOMAIN@default"        — Mailgun
+#   "postmark+api://API_KEY@default"          — Postmark
+#   "null://"                                 — Deaktiviert (Entwicklung)
+#
+# Ohne DSN: transport = "smtps" oder "smtp" → [mail.smtp] wird verwendet.
 # ------------------------------------------------------------
 [mail]
-transport = "smtp"
+transport = "smtps"   # vollständiger DSN oder: smtps | smtp
 
-# Aktiv wenn transport = "smtp"
+# Aktiv wenn transport = "smtps" oder "smtp"
 [mail.smtp]
-host       = "localhost"
-port       = 587
-encryption = "tls"   # "tls" (STARTTLS) | "ssl" (SMTPS) | "" (kein TLS)
-username   = ""      # SMTP-Benutzername (Passwort via MAIL_PASSWORD)
-
-# Auskommentieren wenn transport = "sendmail":
-# [mail.sendmail]
-# path = "/usr/sbin/sendmail"
+host     = "localhost"
+port     = 465
+username = ""      # SMTP-Benutzername (Passwort via MAIL_PASSWORD)
 
 # ------------------------------------------------------------
 # Sicherheit — ausschließlich Bootstrap-Werte

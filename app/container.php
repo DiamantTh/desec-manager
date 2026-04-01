@@ -219,17 +219,16 @@ $builder->addDefinitions([
         $transport = $mailCfg['transport'] ?? 'smtp';
 
         if (str_contains($transport, '://')) {
-            // Vollständiger DSN (z.B. "ses+smtp://key:secret@default")
+            // Vollständiger DSN (z.B. "smtps://user:pass@host:465", Cloud-API etc.)
             $dsn = $transport;
         } else {
-            $smtp = $mailCfg['smtp'] ?? [];
-            $user = rawurlencode((string)($smtp['username'] ?? ''));
-            $pass = rawurlencode((string)($smtp['password'] ?? ''));
-            $host = $smtp['host'] ?? 'localhost';
-            $port = (int)($smtp['port'] ?? 587);
-            // "ssl" = SMTPS (Port 465, direktes TLS) → smtps://
-            // "tls" / "" = STARTTLS (Port 587, TLS per EHLO) → smtp://
-            $scheme = (($smtp['encryption'] ?? 'tls') === 'ssl') ? 'smtps' : 'smtp';
+            // transport = "smtps" | "smtp" → [mail.smtp] auswerten
+            $smtp   = $mailCfg['smtp'] ?? [];
+            $user   = rawurlencode((string)($smtp['username'] ?? ''));
+            $pass   = rawurlencode((string)($smtp['password'] ?? ''));
+            $host   = $smtp['host'] ?? 'localhost';
+            $port   = (int)($smtp['port'] ?? 465);
+            $scheme = ($transport === 'smtp') ? 'smtp' : 'smtps';
 
             $dsn = ($user !== '' && $pass !== '')
                 ? "{$scheme}://{$user}:{$pass}@{$host}:{$port}"
