@@ -1,0 +1,44 @@
+# ============================================================
+# DeSEC Manager — config.local.toml (lokale Entwicklungsumgebung)
+# ============================================================
+# Diese Datei ist gitignored und überschreibt config.toml + database.toml.
+# Nur Werte angeben, die von der Standardkonfiguration abweichen.
+#
+# SECRETS: Passwörter und Keys hier oder besser via Umgebungsvariablen.
+# ============================================================
+
+[app]
+debug  = true
+domain = "localhost"
+# theme = "default"
+
+[database]
+driver = "pdo_mysql"
+host   = "localhost"
+port   = 3306
+name   = "desec_manager"
+user   = "desec_manager"
+# Passwort via Umgebungsvariable: export DB_PASSWORD="geheim"
+# Oder direkt hier (nur lokal!):
+# password = "geheim"
+
+# SQLite für lokale Entwicklung ohne Datenbankserver:
+# [database]
+# driver = "pdo_sqlite"
+# [database.sqlite]
+# path = "var/database.sqlite"
+
+[mail]
+transport = "smtp"
+
+[mail.smtp]
+host       = "localhost"
+port       = 1025          # Mailpit (https://mailpit.axllent.org) oder Mailhog
+encryption = ""            # kein TLS für lokalen Fake-SMTP
+
+[security]
+# Testkey erzeugen: php -r "echo sodium_bin2hex(random_bytes(32));"
+# encryption_key = "..."
+
+[security.session]
+secure = false             # Lokal ohne HTTPS

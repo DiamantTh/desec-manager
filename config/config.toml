@@ -1,0 +1,147 @@
+# ============================================================
+# DeSEC Manager — Hauptkonfiguration
+# ============================================================
+# Struktur: 2 Konfigurationsdateien
+#   config.toml    — alles außer DB-Verbindung (diese Datei)
+#   database.toml  — nur die DB-Verbindungsparameter
+#
+# Lokale Überschreibungen: config.local.toml (gitignored, aus .dist kopieren)
+# Secrets: ausschließlich über Umgebungsvariablen oder config.local.toml
+#
+#   ENCRYPTION_KEY  — 32-Byte-Key (hex): php -r "echo sodium_bin2hex(random_bytes(32));"
+#   MAIL_PASSWORD   — SMTP-Passwort
+#   SENTRY_DSN      — Sentry DSN (optional)
+# ============================================================
+
+# ------------------------------------------------------------
+# Anwendung
+# ------------------------------------------------------------
+[app]
+name             = "DeSEC Manager"
+domain           = ""          # z.B. "manager.example.com" — Pflicht für WebAuthn + CSRF
+force_https      = true
+webauthn_enabled = false       # Aktivieren wenn HTTPS + gültige Domain konfiguriert
+debug            = false
+theme            = "default"   # Ordnername unter themes/
+
+# ------------------------------------------------------------
+# Cache (PSR-16 via symfony/cache)
+# Adapter: filesystem | apcu | memcached | redis | array (nur Tests)
+#
+# Shared Hosting: "filesystem" (immer verfügbar) oder "apcu" (wenn Erweiterung aktiv)
+# VPS / Dedicated: "redis" oder "memcached" für bessere Performance
+# ------------------------------------------------------------
+[cache]
+adapter   = "filesystem"  # filesystem | apcu | memcached | redis | array
+namespace = "desec"
+ttl       = 3600          # Standard-TTL in Sekunden
+
+[cache.filesystem]
+path = "var/cache"        # Relativ zum Projekt-Root, muss beschreibbar sein
+
+[cache.redis]
+host     = "127.0.0.1"
+port     = 6379
+password = ""             # Leer lassen wenn kein Auth; besser via Umgebungsvariable
+database = 0
+
+[cache.memcached]
+host = "127.0.0.1"
+port = 11211
+
+# ------------------------------------------------------------
+# Mail (Symfony Mailer)
+# Passwort via Umgebungsvariable: MAIL_PASSWORD
+#
+# transport-Werte:
+#   "smtp"                                      — SMTP (Einstellungen aus [mail.smtp])
+#   "sendmail"                                  — lokales sendmail-Binary
+#   "ses+smtp://KEY:SECRET@default"             — Amazon SES
+#   "sendgrid+api://API_KEY@default"            — SendGrid
+#   "mailgun+api://API_KEY:DOMAIN@default"      — Mailgun
+#   "postmark+api://API_KEY@default"            — Postmark
+#   "null://"                                   — Deaktiviert (nur Entwicklung)
+# ------------------------------------------------------------
+[mail]
+transport    = "smtp"
+from_address = ""           # Absender-Adresse (Pflicht wenn Mail aktiviert)
+from_name    = "DeSEC Manager"
+
+[mail.smtp]
+host       = "localhost"
+port       = 587
+encryption = "tls"          # "tls" (STARTTLS) | "ssl" (SMTPS) | "" (kein TLS)
+username   = ""             # SMTP-Benutzername
+
+# ------------------------------------------------------------
+# Sicherheit — Bootstrap-Werte (Fix, nicht via Admin-UI änderbar)
+# Alles was zur Laufzeit angepasst werden kann, steht in der DB (settings-Tabelle)
+# ------------------------------------------------------------
+[security]
+encryption_key = ""         # 32-Byte-Hex — zwingend via ENCRYPTION_KEY-Umgebungsvariable setzen
+
+# Argon2id-Parameter (Passwort-Hashing)
+# OWASP-Empfehlungen: memory_cost ≥ 64 MB, time_cost ≥ 4
+[security.password]
+memory_cost = 65536   # 64 MB
+time_cost   = 4
+threads     = 2
+
+# Session-Cookie (sicherheitskritisch, nicht via DB änderbar)
+[security.session]
+secure   = true        # Nur über HTTPS — lokal auf false setzen
+httponly = true
+samesite = "Strict"
+lifetime = 3600        # Sekunden
+
+# CSRF (mezzio/mezzio-csrf)
+[security.csrf]
+strategy  = "session"  # session | flash  ("flash" = Token gilt einmal)
+attribute = "__csrf"   # Name des Hidden-Fields in Formularen
+
+# Rate-Limiting pro Endpunkt (Zähler via PSR-16-Cache)
+# Schlüssel: rate_limit:{action}:{clientIp}
+[security.rate_limit.login]
+max_attempts   = 10
+window_seconds = 900   # 15 Minuten
+
+[security.rate_limit.form]
+max_attempts   = 20
+window_seconds = 300
+
+[security.rate_limit.domain]
+max_attempts   = 30
+window_seconds = 60
+
+[security.rate_limit.key]
+max_attempts   = 10
+window_seconds = 600
+
+[security.rate_limit.totp]
+max_attempts   = 5
+window_seconds = 300
+
+# FIDO2 / WebAuthn (Bootstrap-Werte — Änderung via Admin-UI möglich über DB)
+[security.fido2]
+user_verification    = "required"    # required | preferred | discouraged
+require_resident_key = true
+algorithms           = [-8, -7, -257] # EdDSA (Ed25519), ES256, RS256
+attestation          = "direct"
+challenge_bytes      = 32
+timeout_ms           = 60000
+
+# TOTP (Bootstrap-Werte)
+[security.totp]
+digits       = 8
+algorithm    = "sha256"
+period       = 30
+secret_bytes = 32
+window       = 1
+
+# ------------------------------------------------------------
+# Sentry (optionales Fehler-Tracking)
+# DSN besser via SENTRY_DSN-Umgebungsvariable setzen
+# ------------------------------------------------------------
+[sentry]
+dsn                = ""
+traces_sample_rate = 0.0

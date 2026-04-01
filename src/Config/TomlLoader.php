@@ -11,19 +11,23 @@ use Yosymfony\Toml\Toml;
  * Loads and merges TOML configuration files into a unified PHP array.
  *
  * Load order (each level overrides the previous via array_replace_recursive):
- *   1. app.toml
- *   2. database.toml
- *   3. mail.toml
- *   4. security.toml
- *   5. config.local.toml (optional, gitignored — local overrides)
+ *   1. config.toml   — app, cache, mail, security (alles außer DB-Verbindung)
+ *   2. database.toml — DB-Verbindungsparameter (separat, da vor DB-Start benötigt)
+ *   3. config.local.toml (optional, gitignored — lokale Überschreibungen, Secrets)
+ *
+ * Legacyunterstützung: Existieren noch app.toml/mail.toml/security.toml, werden
+ * sie vor config.local.toml eingemischt, sodass der Übergang ohne Downtime funktioniert.
  *
  * Sensitive values (DB password, mail password, encryption key) are read from
- * environment variables: DB_PASSWORD, MAIL_PASSWORD, ENCRYPTION_KEY.
+ * environment variables: DB_PASSWORD, MAIL_PASSWORD, ENCRYPTION_KEY, SENTRY_DSN.
  */
 final class TomlLoader
 {
-    /** @var list<string> Required configuration files (without .toml suffix) */
-    private const FILES = ['app', 'database', 'mail', 'security'];
+    /** @var list<string> Pflicht-Konfigurationsdateien (ohne .toml-Suffix) */
+    private const REQUIRED = ['config', 'database'];
+
+    /** @var list<string> Legacy-Dateien — werden eingemischt wenn vorhanden */
+    private const LEGACY = ['app', 'mail', 'security'];
 
     public function __construct(private readonly string $configDir) {}
 
@@ -37,13 +41,14 @@ final class TomlLoader
     {
         $merged = [];
 
-        foreach (self::FILES as $name) {
+        // 1 + 2. Pflichtdateien laden
+        foreach (self::REQUIRED as $name) {
             $path = $this->configDir . '/' . $name . '.toml';
 
             if (!file_exists($path)) {
                 throw new RuntimeException(
                     "Konfigurationsdatei nicht gefunden: {$path}\n" .
-                    "Tipp: Kopiere die entsprechende .dist-Datei und passe sie an."
+                    "Tipp: Kopiere config/config.toml.dist → config/config.toml und passe sie an."
                 );
             }
 
@@ -52,7 +57,17 @@ final class TomlLoader
             $merged = array_replace_recursive($merged, $data);
         }
 
-        // Local overrides (gitignored — optional)
+        // Legacy-Dateien (app.toml / mail.toml / security.toml) wenn noch vorhanden
+        foreach (self::LEGACY as $name) {
+            $path = $this->configDir . '/' . $name . '.toml';
+            if (file_exists($path)) {
+                /** @var array<string, mixed> $data */
+                $data   = Toml::parseFile($path);
+                $merged = array_replace_recursive($merged, $data);
+            }
+        }
+
+        // 3. Lokale Überschreibungen (gitignored — optional)
         $localPath = $this->configDir . '/config.local.toml';
         if (file_exists($localPath)) {
             /** @var array<string, mixed> $local */
@@ -60,34 +75,44 @@ final class TomlLoader
             $merged = array_replace_recursive($merged, $local);
         }
 
-        // Apply secrets from environment variables (never commit secrets to TOML files)
+        // Secrets aus Umgebungsvariablen überschreiben TOML-Werte
         $merged = $this->applyEnvironmentSecrets($merged);
 
         return $merged;
     }
 
     /**
-     * Overrides sensitive values with environment variables if set.
+     * Überschreibt sicherheitskritische Werte mit Umgebungsvariablen.
+     * Umgebungsvariablen haben immer Vorrang vor TOML-Werten.
      *
      * @param array<string, mixed> $config
      * @return array<string, mixed>
      */
     private function applyEnvironmentSecrets(array $config): array
     {
-        $dbPassword   = getenv('DB_PASSWORD');
-        $mailPassword = getenv('MAIL_PASSWORD');
-        $encKey       = getenv('ENCRYPTION_KEY');
+        $map = [
+            'DB_PASSWORD'   => ['database', 'password'],
+            'MAIL_PASSWORD' => ['mail', 'smtp', 'password'],
+            'ENCRYPTION_KEY' => ['security', 'encryption_key'],
+            'SENTRY_DSN'    => ['sentry', 'dsn'],
+        ];
 
-        if ($dbPassword !== false && $dbPassword !== '') {
-            $config['database']['password'] = $dbPassword;
-        }
-
-        if ($mailPassword !== false && $mailPassword !== '') {
-            $config['mail']['smtp']['password'] = $mailPassword;
-        }
-
-        if ($encKey !== false && $encKey !== '') {
-            $config['security']['encryption_key'] = $encKey;
+        foreach ($map as $envVar => $path) {
+            $value = getenv($envVar);
+            if ($value !== false && $value !== '') {
+                $ref = &$config;
+                foreach ($path as $i => $key) {
+                    if ($i === count($path) - 1) {
+                        $ref[$key] = $value;
+                    } else {
+                        if (!isset($ref[$key]) || !is_array($ref[$key])) {
+                            $ref[$key] = [];
+                        }
+                        $ref = &$ref[$key];
+                    }
+                }
+                unset($ref);
+            }
         }
 
         return $config;

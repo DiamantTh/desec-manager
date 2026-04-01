@@ -1,0 +1,201 @@
+# ============================================================
+# DeSEC Manager — config.toml (vollständiges Beispiel mit Kommentaren)
+# ============================================================
+# Kopiere nach: config/config.toml  (existiert noch nicht → erste Installation)
+# Alternativ: config/config.local.toml für lokale Überschreibungen (gitignored).
+#
+# STRUKTUR: Zwei Konfigurationsdateien
+#   config.toml    — App-Bootstrap, Mail-Transport, Sicherheits-Parameter
+#   database.toml  — nur DB-Verbindung (separat, da vor DB-Start benötigt)
+#
+# SECRETS: Nie in diese Datei commiten. Entweder:
+#   a) config/config.local.toml  (gitignored)
+#   b) Umgebungsvariablen (empfohlen für Produktionsserver):
+#      ENCRYPTION_KEY  — 32-Byte-Hex: php -r "echo sodium_bin2hex(random_bytes(32));"
+#      MAIL_PASSWORD   — SMTP-Passwort
+#      SENTRY_DSN      — Sentry DSN
+#
+# LAUFZEIT-EINSTELLUNGEN: Werden über das Admin-Interface geändert und
+#   in der DB (Tabelle: settings) gespeichert. Dazu gehören:
+#   - Mail-Absender, SMTP-Credentials
+#   - Login-Rate-Limits
+#   - Registrierungsfreigabe, Domain-/Key-Limits pro User
+# ============================================================
+
+# ------------------------------------------------------------
+# Anwendung
+# ------------------------------------------------------------
+[app]
+# Öffentlich erreichbarer Hostname ohne Protokoll und ohne Slash.
+# Pflicht für WebAuthn (FIDO2) und CSRF-Schutz.
+# Beispiel: "manager.example.com"
+domain = ""
+
+# Anzeigename der Anwendung (erscheint in E-Mails, Titel, etc.)
+name = "DeSEC Manager"
+
+# Erzwingt HTTPS-Redirect. Nur für lokale Entwicklung auf false setzen.
+force_https = true
+
+# WebAuthn (FIDO2/Passkeys) aktivieren. Erfordert HTTPS und gültige TLD.
+webauthn_enabled = false
+
+# Debug-Modus: NIEMALS in Produktion aktivieren!
+# Gibt Stack-Traces im Browser aus.
+debug = false
+
+# Standard-Theme (Ordnername unter themes/).
+# Kann pro User in dessen Einstellungen überschrieben werden.
+theme = "default"
+
+# ------------------------------------------------------------
+# Cache (PSR-16 via symfony/cache)
+# ------------------------------------------------------------
+# Wird für Rate-Limiting, CSRF-Token (optional), API-Response-Caching genutzt.
+#
+# adapter-Werte und Eignung:
+#   "filesystem"  — Immer verfügbar; Standard für Shared Hosting.
+#                   Benötigt Schreibrecht auf var/cache/.
+#   "apcu"        — Sehr schnell; empfohlen wenn APCu-Extension aktiv ist.
+#                   Typisch auf cPanel/WHM-Hosting, Plesk mit PHP-FPM.
+#                   Prüfen: php -m | grep apcu
+#   "memcached"   — Verbreitet auf Shared Hosting (cPanel, Plesk).
+#                   Prüfen: php -m | grep memcached
+#   "redis"        — VPS/Dedicated; bester Persistenz- und Performance-Trade-off.
+#   "array"        — Nur für Tests (kein Persistenz, pro Request)
+# ------------------------------------------------------------
+[cache]
+adapter   = "filesystem"
+namespace = "desec"
+ttl       = 3600           # Standard-TTL in Sekunden (1 Stunde)
+
+[cache.filesystem]
+# Muss vom Webserver beschreibbar sein. Relativ zum Projekt-Root.
+path = "var/cache"
+
+[cache.redis]
+host     = "127.0.0.1"
+port     = 6379
+password = ""              # Leer lassen wenn kein Auth; oder via Umgebungsvariable
+database = 0
+
+[cache.memcached]
+host = "127.0.0.1"
+port = 11211
+
+# ------------------------------------------------------------
+# Mail (Symfony Mailer)
+# Bootstrap-Werte — SMTP-Credentials und Absender können auch über
+# das Admin-Interface in der DB eingestellt werden (settings-Tabelle).
+# DB-Werte haben Vorrang vor diesen Werten.
+# ------------------------------------------------------------
+# transport-Werte:
+#   "smtp"                                    — SMTP mit [mail.smtp]-Einstellungen
+#   "sendmail"                                — lokales sendmail (kein Passwort nötig)
+#   "null://"                                 — Deaktiviert (Entwicklung)
+#   "ses+smtp://KEY:SECRET@default"           — Amazon SES
+#   "sendgrid+api://API_KEY@default"          — SendGrid
+#   "mailgun+api://KEY:DOMAIN@default"        — Mailgun
+#   "postmark+api://API_KEY@default"          — Postmark
+# ------------------------------------------------------------
+[mail]
+transport    = "smtp"
+from_address = ""           # Absender-Adresse (z.B. "noreply@example.com")
+from_name    = "DeSEC Manager"
+
+[mail.smtp]
+host       = "localhost"
+port       = 587
+# "tls"  = STARTTLS (Port 587) — empfohlen
+# "ssl"  = SMTPS (Port 465)
+# ""     = kein TLS (nur für lokale Mailhog/Mailpit-Instanzen)
+encryption = "tls"
+username   = ""             # SMTP-Benutzername (Passwort via MAIL_PASSWORD-Umgebungsvariable)
+
+# ------------------------------------------------------------
+# Sicherheit — Bootstrap-Werte
+# Sicherheitskritische Parameter die NICHT über das Admin-Interface
+# änderbar sind (Neustart/Deploymentprozess erforderlich).
+# ------------------------------------------------------------
+[security]
+# 32-Byte-Hex-Schlüssel für XSalsa20-Poly1305-Verschlüsselung (libsodium).
+# Erzeugen: php -r "echo sodium_bin2hex(random_bytes(32));"
+# ZWINGEND via ENCRYPTION_KEY-Umgebungsvariable oder config.local.toml setzen!
+encryption_key = ""
+
+# Argon2id-Parameter (OWASP-Empfehlungen, nur mit Bedacht ändern)
+[security.password]
+memory_cost = 65536   # 64 MB minimum (OWASP)
+time_cost   = 4       # Iterationen
+threads     = 2       # Parallele Threads
+
+# Session-Cookie (browser-seitige Sicherheitsflags)
+[security.session]
+secure   = true        # true = nur über HTTPS senden. Lokal: false
+httponly = true        # JavaScript darf Cookie nicht lesen
+samesite = "Strict"   # CSRF-Schutz via SameSite=Strict
+lifetime = 3600        # Session-Gültigkeit in Sekunden (1 Stunde)
+
+# CSRF-Schutz (mezzio/mezzio-csrf)
+# Schützt alle HTML-Formulare vor Cross-Site-Request-Forgery.
+# API-Endpoints (JSON) sind davon ausgenommen.
+[security.csrf]
+strategy  = "session"  # "session" = Token solange Session aktiv
+                       # "flash"   = Token gilt einmalig (sicherer, schränkt Back-Button ein)
+attribute = "__csrf"   # Name des versteckten Form-Felds
+
+# Rate-Limiting (Zähler via PSR-16-Cache)
+# Schlüssel-Format: rate_limit:{action}:{clientIp}
+# max_attempts = 0 deaktiviert das Limit für diesen Endpunkt
+[security.rate_limit.login]
+max_attempts   = 10
+window_seconds = 900   # 15 Minuten
+
+[security.rate_limit.form]    # Passwort ändern, Profil-Updates
+max_attempts   = 20
+window_seconds = 300
+
+[security.rate_limit.domain]  # Domain hinzufügen/löschen
+max_attempts   = 30
+window_seconds = 60
+
+[security.rate_limit.key]     # API-Key erstellen/widerrufen
+max_attempts   = 10
+window_seconds = 600
+
+[security.rate_limit.totp]    # TOTP-Versuche während MFA-Flow
+max_attempts   = 5
+window_seconds = 300
+
+# FIDO2 / WebAuthn
+[security.fido2]
+# "required"    — UV zwingend (PIN oder Biometrie) — empfohlen
+# "preferred"   — UV wird angefragt, aber nicht erzwungen
+# "discouraged" — UV deaktiviert — NICHT empfohlen
+user_verification    = "required"
+# true = Passkey-Modus (Discoverable Credential, im Authenticator gespeichert)
+require_resident_key = true
+# Algorithmus-Priorität: EdDSA (Ed25519) > ES256 > RS256
+algorithms           = [-8, -7, -257]
+# "direct"  = Authenticator-Zertifikat mitliefern (AAGUID-Identifikation möglich)
+# "none"    = kein Gerätenachweis
+attestation          = "direct"
+challenge_bytes      = 32     # 256 Bit Challenge (≥16 laut Spec)
+timeout_ms           = 60000  # 60 Sekunden Browser-Timeout
+
+# TOTP (RFC 6238)
+[security.totp]
+digits       = 8       # 8-stellige Codes (höhere Entropie als Standard-6)
+algorithm    = "sha256" # sha256 | sha512 (sha1 = veraltet)
+period       = 30      # Gültigkeitszeitraum in Sekunden
+secret_bytes = 32      # 32 Bytes = 256 Bit Secret
+window       = 1       # ±1 Periode Toleranz (±30 Sekunden Uhren-Drift)
+
+# ------------------------------------------------------------
+# Sentry (optionales Fehler-Tracking)
+# DSN zwingend via SENTRY_DSN-Umgebungsvariable oder config.local.toml setzen.
+# Leer lassen = Sentry deaktiviert.
+# ------------------------------------------------------------
+[sentry]
+dsn                = ""   # via SENTRY_DSN-Umgebungsvariable setzen
+traces_sample_rate = 0.0  # 0.0 = kein Performance-Tracing; 1.0 = 100% Sampling

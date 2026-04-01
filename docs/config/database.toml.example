@@ -1,0 +1,32 @@
+# ============================================================
+# DeSEC Manager — database.toml (vollständiges Beispiel)
+# ============================================================
+# Kopiere nach: config/database.toml
+#
+# Datenbankpasswort NIEMALS hier commiten:
+#   a) config/config.local.toml:  [database] password = "..."
+#   b) Umgebungsvariable:         export DB_PASSWORD="..."
+# ============================================================
+
+# ------------------------------------------------------------
+# MySQL / MariaDB (Empfehlung für Produktion)
+# ------------------------------------------------------------
+[database]
+driver    = "pdo_mysql"    # "pdo_mysql" oder "pdo_sqlite"
+host      = "localhost"    # Hostname oder IP des Datenbankservers
+port      = 3306           # Standard-MySQL-Port
+name      = "desec_manager" # Datenbankname
+user      = "desec_manager" # Datenbankbenutzer (kein root!)
+charset   = "utf8mb4"      # Pflicht für vollständige Unicode-Unterstützung
+collation = "utf8mb4_unicode_ci"
+# password — via DB_PASSWORD-Umgebungsvariable oder config.local.toml
+
+# ------------------------------------------------------------
+# SQLite (Entwicklung / Single-User-Betrieb)
+# Kommentiere den [database]-Block oben aus und nutze diesen:
+# ------------------------------------------------------------
+# [database]
+# driver = "pdo_sqlite"
+#
+# [database.sqlite]
+# path = "var/database.sqlite"   # Relativ zum Projekt-Root; muss beschreibbar sein
