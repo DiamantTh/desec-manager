@@ -96,4 +96,22 @@ class DomainRepository
             ->executeQuery()
             ->fetchOne();
     }
+
+    /**
+     * Gibt alle Domains eines Users zurück, optional gefiltert nach Tag-ID.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function findByUserIdFilteredByTag(int $userId, int $tagId): array
+    {
+        return $this->connection->fetchAllAssociative(
+            'SELECT d.*
+               FROM domains d
+               JOIN domain_tags dt ON dt.domain_id = d.id
+               JOIN tags t        ON t.id = dt.tag_id
+              WHERE d.user_id = ? AND t.id = ? AND t.user_id = ?
+              ORDER BY d.created_at DESC',
+            [$userId, $tagId, $userId]
+        );
+    }
 }
