@@ -120,15 +120,4 @@ httponly = true      # Kein JavaScript-Zugriff
 samesite = "Strict"  # CSRF-Schutz durch SameSite
 lifetime = 3600      # Sekunden (1 Stunde)
 
-# CSRF Guard (mezzio/mezzio-csrf)
-[security.csrf]
-strategy  = "session"   # session | flash  ("flash" = einmaliges Token)
-attribute = "__csrf"    # Name des Hidden-Fields und Request-Attributs
-
-# ------------------------------------------------------------
-# Sentry (optionales Fehler-Tracking)
-# DSN via SENTRY_DSN-Umgebungsvariable setzen (nicht hier eintragen).
-# ------------------------------------------------------------
-# [sentry]
-# dsn                = ""    # via SENTRY_DSN-Umgebungsvariable
-# traces_sample_rate = 0.1   # 0.0 = kein Tracing, 1.0 = 100 %
+# Sentry: DSN via SENTRY_DSN-Umgebungsvariable — keine Config hier nötig.

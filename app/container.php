@@ -227,10 +227,13 @@ $builder->addDefinitions([
             $pass = rawurlencode((string)($smtp['password'] ?? ''));
             $host = $smtp['host'] ?? 'localhost';
             $port = (int)($smtp['port'] ?? 587);
+            // "ssl" = SMTPS (Port 465, direktes TLS) → smtps://
+            // "tls" / "" = STARTTLS (Port 587, TLS per EHLO) → smtp://
+            $scheme = (($smtp['encryption'] ?? 'tls') === 'ssl') ? 'smtps' : 'smtp';
 
             $dsn = ($user !== '' && $pass !== '')
-                ? "smtp://{$user}:{$pass}@{$host}:{$port}"
-                : "smtp://{$host}:{$port}";
+                ? "{$scheme}://{$user}:{$pass}@{$host}:{$port}"
+                : "{$scheme}://{$host}:{$port}";
         }
 
         return new Mailer(Transport::fromDsn($dsn));
