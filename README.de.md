@@ -58,16 +58,6 @@ Weboberfläche zur Verwaltung von [deSEC](https://desec.io)-Domains, DNS-Records
    rm -rf install/
    ```
 
-### Bestehende Installationen — DB-Migration
-
-Für Upgrades von Versionen, die TOTP und Benutzerpräferenzen noch nicht kennen, bitte das passende Migrationsskript ausführen:
-
-| Datenbank | Skript |
-|---|---|
-| MySQL/MariaDB | `sql/mysql/migrate_user_settings.sql` |
-| SQLite | `sql/sqlite/migrate_user_settings.sql` |
-| PostgreSQL | `sql/postgresql/migrate_user_settings.sql` |
-
 ---
 
 ## Konfiguration
