@@ -1,0 +1,36 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+/**
+ * deSEC Manager CLI - bin/desec
+ *
+ * Verwendung:
+ *   php bin/desec <command> [options]
+ *   bin/desec cache:clear
+ *   bin/desec user:create --username admin --email admin@example.com --admin
+ *   bin/desec i18n:compile
+ *   bin/desec db:migrate
+ *
+ * Voraussetzung: composer install ausgeführt, config/config.toml + config/database.toml vorhanden.
+ */
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use App\Command\CacheClearCommand;
+use App\Command\DbMigrateCommand;
+use App\Command\I18nCompileCommand;
+use App\Command\UserCreateCommand;
+use Symfony\Component\Console\Application;
+
+$container = require __DIR__ . '/../app/container.php';
+
+$cli = new Application('deSEC Manager CLI', '1.0.0');
+
+$cli->add($container->get(CacheClearCommand::class));
+$cli->add($container->get(UserCreateCommand::class));
+$cli->add($container->get(I18nCompileCommand::class));
+$cli->add($container->get(DbMigrateCommand::class));
+
+$cli->run();
