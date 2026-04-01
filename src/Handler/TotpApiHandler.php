@@ -7,6 +7,7 @@ namespace App\Handler;
 use App\Repository\UserRepository;
 use App\Security\TotpService;
 use App\Service\ThemeManager;
+use App\Service\AuthorizationService;
 use App\Session\SessionContext;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -28,10 +29,11 @@ class TotpApiHandler extends AbstractHandler implements RequestHandlerInterface
     public function __construct(
         ThemeManager $theme,
         SessionContext $sessionContext,
+        AuthorizationService $authz,
         private readonly TotpService $totp,
         private readonly UserRepository $users,
     ) {
-        parent::__construct($theme, $sessionContext);
+        parent::__construct($theme, $sessionContext, $authz);
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface

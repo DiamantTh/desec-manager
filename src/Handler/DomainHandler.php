@@ -8,6 +8,7 @@ use App\Repository\ApiKeyRepository;
 use App\Repository\DomainRepository;
 use App\Service\DNSService;
 use App\Service\ThemeManager;
+use App\Service\AuthorizationService;
 use App\Session\SessionContext;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -18,11 +19,12 @@ class DomainHandler extends AbstractHandler implements RequestHandlerInterface
     public function __construct(
         ThemeManager $theme,
         SessionContext $sessionContext,
+        AuthorizationService $authz,
         private readonly DomainRepository $domains,
         private readonly ApiKeyRepository $apiKeys,
         private readonly DNSService $dns,
     ) {
-        parent::__construct($theme, $sessionContext);
+        parent::__construct($theme, $sessionContext, $authz);
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface

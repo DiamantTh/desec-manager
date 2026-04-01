@@ -6,6 +6,7 @@ namespace App\Handler;
 
 use App\Repository\ApiKeyRepository;
 use App\Service\ThemeManager;
+use App\Service\AuthorizationService;
 use App\Session\SessionContext;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -16,9 +17,10 @@ class KeyHandler extends AbstractHandler implements RequestHandlerInterface
     public function __construct(
         ThemeManager $theme,
         SessionContext $sessionContext,
+        AuthorizationService $authz,
         private readonly ApiKeyRepository $apiKeys,
     ) {
-        parent::__construct($theme, $sessionContext);
+        parent::__construct($theme, $sessionContext, $authz);
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface

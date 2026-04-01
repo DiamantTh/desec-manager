@@ -24,6 +24,7 @@ use App\Handler\RecordHandler;
 use App\Handler\TotpApiHandler;
 use App\Handler\WebAuthnApiHandler;
 use App\Middleware\AuthMiddleware;
+use App\Middleware\RateLimitMiddleware;
 use App\Middleware\SecurityHeadersMiddleware;
 use App\Middleware\SentryMiddleware;
 use App\Middleware\SessionContextMiddleware;
@@ -33,6 +34,10 @@ use App\Repository\DomainRepository;
 use App\Repository\UserRepository;
 use App\Repository\WebAuthnCredentialRepository;
 use App\Service\SystemHealthService;
+use App\Command\CacheClearCommand;
+use App\Command\DbMigrateCommand;
+use App\Command\I18nCompileCommand;
+use App\Command\UserCreateCommand;
 use App\Security\EncryptionService;
 use App\Security\PasswordHasher;
 use App\Security\TotpService;
@@ -41,6 +46,7 @@ use App\Security\WebAuthnService;
 use App\Service\DeSECProxyService;
 use App\Service\DNSService;
 use App\Service\ThemeManager;
+use App\Service\AuthorizationService;
 use App\Session\SessionContext;
 use DI\ContainerBuilder;
 use Doctrine\DBAL\Connection;
@@ -75,6 +81,17 @@ use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UploadedFileFactoryInterface;
 use Psr\Http\Message\UriFactoryInterface;
 use Psr\Log\LoggerInterface;
+use App\Repository\DomainTagRepository;
+use App\Repository\SettingsRepository;
+use Mezzio\Csrf\CsrfMiddleware;
+use Mezzio\Csrf\CsrfMiddlewareFactory;
+use Mezzio\Csrf\SessionCsrfGuardFactory;
+use Psr\SimpleCache\CacheInterface;
+use Symfony\Component\Cache\Adapter\ApcuAdapter;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Cache\Adapter\MemcachedAdapter;
+use Symfony\Component\Cache\Adapter\RedisAdapter;
+use Symfony\Component\Cache\Psr16Cache;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mailer\Transport;
@@ -262,11 +279,55 @@ $builder->addDefinitions([
     UserKeyManager::class => DI\autowire(),
 
     // -------------------------------------------------------------------------
+    // PSR-16 Cache (symfony/cache)
+    // Adapter wird aus config.toml [cache].adapter ermittelt.
+    // -------------------------------------------------------------------------
+    CacheInterface::class => DI\factory(function (ContainerInterface $c): CacheInterface {
+        /** @var array<string, mixed> $cfg */
+        $cfg       = $c->get('config')['cache'] ?? [];
+        $adapter   = (string)($cfg['adapter']   ?? 'filesystem');
+        $namespace = (string)($cfg['namespace'] ?? 'desec');
+        $ttl       = (int)($cfg['ttl']          ?? 3600);
+
+        $psr6 = match ($adapter) {
+            'apcu' => new ApcuAdapter($namespace, $ttl),
+
+            'redis' => (static function () use ($cfg, $namespace, $ttl): RedisAdapter {
+                $redisCfg = $cfg['redis'] ?? [];
+                $dsn      = sprintf(
+                    'redis://%s%s:%d/%d',
+                    ($redisCfg['password'] ?? '') !== '' ? ':' . $redisCfg['password'] . '@' : '',
+                    $redisCfg['host']     ?? '127.0.0.1',
+                    (int)($redisCfg['port']     ?? 6379),
+                    (int)($redisCfg['database'] ?? 0),
+                );
+                return new RedisAdapter(RedisAdapter::createConnection($dsn), $namespace, $ttl);
+            })(),
+
+            'memcached' => (static function () use ($cfg, $namespace, $ttl): MemcachedAdapter {
+                $mCfg = $cfg['memcached'] ?? [];
+                $dsn  = sprintf('memcached://%s:%d', $mCfg['host'] ?? '127.0.0.1', (int)($mCfg['port'] ?? 11211));
+                return new MemcachedAdapter(MemcachedAdapter::createConnection($dsn), $namespace, $ttl);
+            })(),
+
+            default => new FilesystemAdapter(
+                $namespace,
+                $ttl,
+                dirname(__DIR__) . '/' . ($cfg['filesystem']['path'] ?? 'var/cache')
+            ),
+        };
+
+        return new Psr16Cache($psr6);
+    }),
+
+    // -------------------------------------------------------------------------
     // Repositories (Doctrine DBAL, kein ORM)
     // -------------------------------------------------------------------------
     UserRepository::class               => DI\autowire(),
     ApiKeyRepository::class             => DI\autowire(),
     DomainRepository::class             => DI\autowire(),
+    DomainTagRepository::class          => DI\autowire(),
+    SettingsRepository::class           => DI\autowire(),
     WebAuthnCredentialRepository::class => DI\autowire(),
 
     // -------------------------------------------------------------------------
@@ -321,7 +382,52 @@ $builder->addDefinitions([
         return new SentryMiddleware($c->get('config'));
     }),
 
+    // mezzio/mezzio-csrf: Guard-Factory + Middleware
+    // CsrfMiddleware liest den Guard-Typ aus der Konfiguration:
+    //   security.csrf.strategy = "session" → SessionCsrfGuard
+    //   security.csrf.strategy = "flash"   → FlashCsrfGuard
+    'Mezzio\Csrf\CsrfGuardFactoryInterface' => DI\factory(function (ContainerInterface $c): \Mezzio\Csrf\CsrfGuardFactoryInterface {
+        $strategy = (string)(($c->get('config')['security']['csrf']['strategy'] ?? 'session'));
+        return $strategy === 'flash'
+            ? new \Mezzio\Csrf\FlashCsrfGuardFactory()
+            : new SessionCsrfGuardFactory();
+    }),
+
+    CsrfMiddleware::class => DI\factory(function (ContainerInterface $c): CsrfMiddleware {
+        $attribute = (string)(($c->get('config')['security']['csrf']['attribute'] ?? '__csrf'));
+        return new CsrfMiddleware(
+            $c->get('Mezzio\Csrf\CsrfGuardFactoryInterface'),
+            $attribute
+        );
+    }),
+
     AuthMiddleware::class => DI\autowire(),
+
+    // -------------------------------------------------------------------------
+    // Rate-Limiting (PSR-16, per Aktion)
+    // Key: rate_limit:{action}:{sha256(ip)}
+    // Verwendung in routes.php: ['rate_limit.login', SomeHandler::class]
+    // -------------------------------------------------------------------------
+    'rate_limit.login' => DI\factory(function (ContainerInterface $c): RateLimitMiddleware {
+        $cfg = $c->get('config')['security']['rate_limit']['login'] ?? [];
+        return new RateLimitMiddleware($c->get(\Psr\SimpleCache\CacheInterface::class), 'login', $cfg);
+    }),
+    'rate_limit.form' => DI\factory(function (ContainerInterface $c): RateLimitMiddleware {
+        $cfg = $c->get('config')['security']['rate_limit']['form'] ?? [];
+        return new RateLimitMiddleware($c->get(\Psr\SimpleCache\CacheInterface::class), 'form', $cfg);
+    }),
+    'rate_limit.domain' => DI\factory(function (ContainerInterface $c): RateLimitMiddleware {
+        $cfg = $c->get('config')['security']['rate_limit']['domain'] ?? [];
+        return new RateLimitMiddleware($c->get(\Psr\SimpleCache\CacheInterface::class), 'domain', $cfg);
+    }),
+    'rate_limit.key' => DI\factory(function (ContainerInterface $c): RateLimitMiddleware {
+        $cfg = $c->get('config')['security']['rate_limit']['key'] ?? [];
+        return new RateLimitMiddleware($c->get(\Psr\SimpleCache\CacheInterface::class), 'key', $cfg);
+    }),
+    'rate_limit.totp' => DI\factory(function (ContainerInterface $c): RateLimitMiddleware {
+        $cfg = $c->get('config')['security']['rate_limit']['totp'] ?? [];
+        return new RateLimitMiddleware($c->get(\Psr\SimpleCache\CacheInterface::class), 'totp', $cfg);
+    }),
 
     // -------------------------------------------------------------------------
     // PSR-15-Handler
@@ -332,6 +438,7 @@ $builder->addDefinitions([
         return new AuthHandler(
             $c->get(ThemeManager::class),
             $c->get(SessionContext::class),
+            $c->get(AuthorizationService::class),
             $c->get(UserRepository::class),
             $c->get(WebAuthnCredentialRepository::class),
             $c->get(TotpService::class),
@@ -357,6 +464,18 @@ $builder->addDefinitions([
         $projectRoot = dirname(__DIR__);
 
         return new ThemeManager(['theme' => ['name' => $themeName]], $projectRoot);
+    }),
+
+    AuthorizationService::class => DI\autowire(),
+
+    // -------------------------------------------------------------------------
+    // CLI-Commands (symfony/console)
+    // -------------------------------------------------------------------------
+    CacheClearCommand::class  => DI\autowire(),
+    I18nCompileCommand::class => DI\autowire(),
+    UserCreateCommand::class  => DI\autowire(),
+    DbMigrateCommand::class   => DI\factory(function (ContainerInterface $c): DbMigrateCommand {
+        return new DbMigrateCommand($c->get(Connection::class), $c->get('config'));
     }),
 ]);
 

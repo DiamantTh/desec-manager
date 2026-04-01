@@ -34,12 +34,12 @@ return static function (
     // -------------------------------------------------------------------------
     // Authentifizierung (öffentlich — kein Auth-Guard)
     // -------------------------------------------------------------------------
-    $app->route('/auth/login',  [\App\Handler\AuthHandler::class], ['GET', 'POST'], 'auth.login');
-    $app->route('/auth/logout', [\App\Handler\AuthHandler::class], ['POST'],        'auth.logout');
+    $app->route('/auth/login',  ['rate_limit.login', \App\Handler\AuthHandler::class], ['GET', 'POST'], 'auth.login');
+    $app->route('/auth/logout', [\App\Handler\AuthHandler::class],                     ['POST'],        'auth.logout');
 
     // MFA-Zwischenschritte (kein user_id in Session, aber mfa_pending erforderlich)
-    $app->route('/auth/mfa/totp',    [\App\Handler\AuthHandler::class], ['GET', 'POST'], 'auth.mfa.totp');
-    $app->get('/auth/mfa/webauthn',  \App\Handler\AuthHandler::class,                   'auth.mfa.webauthn');
+    $app->route('/auth/mfa/totp',    ['rate_limit.totp', \App\Handler\AuthHandler::class], ['GET', 'POST'], 'auth.mfa.totp');
+    $app->get('/auth/mfa/webauthn',  \App\Handler\AuthHandler::class,                     'auth.mfa.webauthn');
 
     // Redirect von / auf /dashboard oder /auth/login
     $app->get('/', \App\Handler\HomeHandler::class, 'home');

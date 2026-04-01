@@ -9,6 +9,7 @@ use App\Repository\WebAuthnCredentialRepository;
 use App\Security\UserKeyManager;
 use App\Security\WebAuthnService;
 use App\Service\ThemeManager;
+use App\Service\AuthorizationService;
 use App\Session\SessionContext;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -36,12 +37,13 @@ class WebAuthnApiHandler extends AbstractHandler implements RequestHandlerInterf
     public function __construct(
         ThemeManager $theme,
         SessionContext $sessionContext,
+        AuthorizationService $authz,
         private readonly WebAuthnService $webAuthn,
         private readonly WebAuthnCredentialRepository $credentials,
         private readonly UserRepository $users,
         private readonly UserKeyManager $userKeyManager,
     ) {
-        parent::__construct($theme, $sessionContext);
+        parent::__construct($theme, $sessionContext, $authz);
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface

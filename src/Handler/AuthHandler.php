@@ -10,6 +10,7 @@ use App\Security\PasswordHasher;
 use App\Security\TotpService;
 use App\Security\UserKeyManager;
 use App\Service\ThemeManager;
+use App\Service\AuthorizationService;
 use App\Session\SessionContext;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -37,6 +38,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
     public function __construct(
         ThemeManager $theme,
         SessionContext $sessionContext,
+        AuthorizationService $authz,
         private readonly UserRepository $users,
         private readonly WebAuthnCredentialRepository $webAuthnCredentials,
         private readonly TotpService $totp,
@@ -44,7 +46,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
         private readonly UserKeyManager $userKeyManager,
         private readonly array $config,
     ) {
-        parent::__construct($theme, $sessionContext);
+        parent::__construct($theme, $sessionContext, $authz);
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface

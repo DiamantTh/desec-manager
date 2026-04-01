@@ -5,10 +5,15 @@ declare(strict_types=1);
 namespace App\Handler;
 
 use App\Session\SessionContext;
+use App\Service\AuthorizationService;
 use App\Service\ThemeManager;
 use Laminas\Diactoros\Response\HtmlResponse;
+use Laminas\Diactoros\Response\JsonResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
+use Mezzio\Csrf\CsrfGuardInterface;
+use Mezzio\Csrf\CsrfMiddleware;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * AbstractHandler — gemeinsame Basis für alle PSR-15-Handler im deSEC Manager.
@@ -26,6 +31,7 @@ abstract class AbstractHandler
     public function __construct(
         protected readonly ThemeManager $theme,
         protected readonly SessionContext $sessionContext,
+        protected readonly AuthorizationService $authz,
     ) {
         // Per-User-Theme aus Session: überschreibt globale Konfiguration.
         $userTheme = (string) $this->sessionContext->get('user_theme', '');
@@ -85,6 +91,53 @@ abstract class AbstractHandler
         $data['theme'] = $this->theme;
         extract($data, EXTR_SKIP);
         require $path;
+    }
+
+    // -------------------------------------------------------------------------
+    // CSRF (mezzio/mezzio-csrf)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Gibt den CSRF-Guard für diesen Request zurück.
+     * Wirft eine RuntimeException wenn CsrfMiddleware nicht in der Pipeline ist.
+     */
+    protected function getCsrfGuard(ServerRequestInterface $request): CsrfGuardInterface
+    {
+        $guard = $request->getAttribute(CsrfMiddleware::GUARD_ATTRIBUTE);
+        if (!$guard instanceof CsrfGuardInterface) {
+            throw new \RuntimeException(
+                'CsrfGuardInterface nicht gefunden. Ist CsrfMiddleware in der Pipeline registriert?'
+            );
+        }
+        return $guard;
+    }
+
+    /**
+     * Generiert ein CSRF-Token und gibt es zurück (für Formular-Rendering).
+     */
+    protected function generateCsrfToken(ServerRequestInterface $request): string
+    {
+        return $this->getCsrfGuard($request)->generateToken();
+    }
+
+    /**
+     * Validiert das CSRF-Token aus dem POST-Body.
+     * Gibt eine 403-HtmlResponse zurück bei Fehler, null bei Erfolg.
+     */
+    protected function validateCsrf(ServerRequestInterface $request): ?ResponseInterface
+    {
+        $guard  = $this->getCsrfGuard($request);
+        $body   = $request->getParsedBody();
+        $token  = is_array($body) ? (string)($body[CsrfMiddleware::GUARD_ATTRIBUTE] ?? '') : '';
+
+        if (!$guard->validateToken($token)) {
+            return new HtmlResponse(
+                '<h1>403 – ' . htmlspecialchars(__('CSRF validation failed.')) . '</h1>',
+                403
+            );
+        }
+
+        return null;
     }
 
     // -------------------------------------------------------------------------

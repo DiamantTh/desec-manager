@@ -13,15 +13,17 @@ declare(strict_types=1);
  *   2. SecurityHeadersMiddleware    — HTTP-Sicherheits-Header (CSP, HSTS, etc.)
  *   3. SessionMiddleware            — Cookie-Flags setzen (VOR session_start)
  *   4. Mezzio\Session\SessionMiddleware — Session starten (PhpSessionPersistence)
- *   5. SessionContextMiddleware     — SessionContext + Translator-Locale initialisieren
- *   6. RouteMiddleware              — Route im Request-Attribut hinterlegen
- *   7. DispatchMiddleware           — Handler aufrufen
- *   8. NotFoundHandler              — 404-Antwort
+ *   5. CsrfMiddleware               — CSRF-Guard in Request-Attribute hinterlegen
+ *   6. SessionContextMiddleware     — SessionContext + Translator-Locale initialisieren
+ *   7. RouteMiddleware              — Route im Request-Attribut hinterlegen
+ *   8. DispatchMiddleware           — Handler aufrufen
+ *   9. NotFoundHandler              — 404-Antwort
  *
  * Auth-Guard (AuthMiddleware) wird pro Route in app/routes.php eingebunden.
  */
 
 use Mezzio\Application;
+use Mezzio\Csrf\CsrfMiddleware;
 use Mezzio\Handler\NotFoundHandler;
 use Mezzio\MiddlewareFactory;
 use Mezzio\Router\Middleware\DispatchMiddleware;
@@ -45,6 +47,12 @@ return static function (
 
     // --- mezzio/mezzio-session: Session starten + SessionInterface an Request heften ---
     $app->pipe(MezzioSessionMiddleware::class);
+
+    // --- CSRF-Schutz (mezzio/mezzio-csrf) ---
+    // Guard wird in den Request-Attributen hinterlegt; Formulare müssen Token einbinden.
+    // JSON-Requests (WebAuthn, TOTP-API) sind nicht betroffen, da CsrfMiddleware
+    // das Guard-Attribut nur setzt — die Validierung passiert im Handler/AbstractHandler.
+    $app->pipe(CsrfMiddleware::class);
 
     // --- SessionContext + Translator-Locale initialisieren ---
     $app->pipe(\App\Middleware\SessionContextMiddleware::class);
