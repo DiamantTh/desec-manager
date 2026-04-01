@@ -32,7 +32,7 @@
                             <?php foreach ($domains as $domain): ?>
                                 <?php $name = $domain['domain_name']; ?>
                                 <option value="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" <?= $name === $selectedDomain ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>
+                                    <?= htmlspecialchars(domain_to_unicode($name), ENT_QUOTES, 'UTF-8') ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>

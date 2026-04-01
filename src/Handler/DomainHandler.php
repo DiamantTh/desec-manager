@@ -58,14 +58,10 @@ class DomainHandler extends AbstractHandler implements RequestHandlerInterface
                     throw new \InvalidArgumentException(__('Please select a domain and API key.'));
                 }
 
-                // IDN/Punycode: Unicode-Domains (z.B. münchen.de) in ACE-Form umwandeln
-                if (preg_match('/[^\x00-\x7F]/', $domain)) {
-                    $ascii = idn_to_ascii($domain, INTL_IDNA_VARIANT_UTS46);
-                    if ($ascii === false) {
-                        throw new \InvalidArgumentException(__('Invalid domain name.'));
-                    }
-                    $domain = $ascii;
-                }
+                // Normalisieren: Unicode → ACE/Punycode (z.B. "müller.eu" → "xn--mller-kva.eu")
+                // DB und deSEC API speichern/erwarten ausschließlich ACE-Form (RFC 1034/1035).
+                // domain_to_ace() ist ein No-op für reine ASCII-Domains.
+                $domain = domain_to_ace($domain);
 
                 if (!preg_match('/^[a-z0-9.-]+$/', $domain)) {
                     throw new \InvalidArgumentException(__('Invalid domain name.'));

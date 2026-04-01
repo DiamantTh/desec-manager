@@ -4,6 +4,7 @@
     "type": "project",
     "require": {
         "php": ">=8.4",
+        "ext-intl": "*",
         "doctrine/dbal": "^3.7",
         "guzzlehttp/guzzle": "^7.8",
         "laminas/laminas-diactoros": "^3.5",

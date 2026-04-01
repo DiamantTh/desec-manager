@@ -443,7 +443,7 @@ function processStep3(): array
         $hash = password_hash(
             $admin['password'],
             PASSWORD_ARGON2ID,
-            ['memory_cost' => 65536, 'time_cost' => 4, 'threads' => 2]
+            ['memory_cost' => 131072, 'time_cost' => 4, 'threads' => 4]
         );
         $now = (new \DateTime())->format('Y-m-d H:i:s');
         $conn->insert('users', [

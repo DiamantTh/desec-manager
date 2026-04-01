@@ -62,7 +62,12 @@
                         <tbody>
                             <?php foreach ($domains as $domain): ?>
                                 <tr>
-                                    <td><?= htmlspecialchars($domain['domain_name'], ENT_QUOTES, 'UTF-8') ?></td>
+                                    <td>
+                                        <?= htmlspecialchars(domain_to_unicode($domain['domain_name']), ENT_QUOTES, 'UTF-8') ?>
+                                        <?php if (str_contains($domain['domain_name'], 'xn--')): ?>
+                                            <span class="has-text-grey is-size-7">(<?= htmlspecialchars($domain['domain_name'], ENT_QUOTES, 'UTF-8') ?>)</span>
+                                        <?php endif; ?>
+                                    </td>
                                     <td><?= htmlspecialchars($domain['created_at'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
                                 </tr>
                             <?php endforeach; ?>
