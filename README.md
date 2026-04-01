@@ -10,8 +10,10 @@ Web interface for managing [deSEC](https://desec.io) domains, DNS records, and A
 
 - Domain and zone management via the deSEC API
 - Full DNS record management (A/AAAA, CNAME, MX, TXT, SRV, CAA, …)
-- Role-based user management (admin / regular user)
+- International domain name support (IDN/Punycode, RFC 3492) — `müller.eu` is automatically normalised to `xn--mller-kva.eu`
+- Role-based user management (admin / regular user) with CSRF protection and rate limiting
 - Multi-factor authentication: FIDO2/WebAuthn (passkeys) and TOTP
+  - WebAuthn is auto-enabled as soon as `app.domain` is set in `config/config.toml`
 - Per-user API key management with encryption at rest
 - Per-user theme and language preferences
 - Light / Dark mode toggle (user-controlled, no OS follow)
@@ -25,7 +27,7 @@ Web interface for managing [deSEC](https://desec.io) domains, DNS records, and A
 | Requirement | Version |
 |---|---|
 | PHP | ≥ 8.4 |
-| PHP extensions | `pdo_sqlite` or `pdo_mysql` or `pdo_pgsql`, `sodium`, `openssl`, `mbstring` |
+| PHP extensions | `pdo_sqlite` or `pdo_mysql` or `pdo_pgsql`, `sodium`, `openssl`, `mbstring`, `intl` |
 | Composer | ≥ 2.x |
 | Web server | Apache 2.4+ or Nginx (see `docs/server-config/`) |
 | Database | SQLite 3, MySQL/MariaDB, or PostgreSQL |
@@ -45,7 +47,7 @@ Web interface for managing [deSEC](https://desec.io) domains, DNS records, and A
    - Choose database type (SQLite / MySQL / PostgreSQL)
    - Enter database credentials
    - Create the first admin account
-   - The installer writes `config/config.php` and creates all tables
+   - The installer writes `config/config.toml`, `config/database.toml` and creates all tables
 
 3. **Web server** — point the document root to the project root (where `index.php` lives).  
    Sample configs for Apache and Nginx are in `docs/server-config/`.
@@ -70,17 +72,36 @@ If you are upgrading from a version that pre-dates the TOTP and user-preference 
 
 ## Configuration
 
-The installer generates `config/config.php`.  
-Template files (`config/config.php.dist`, `.yaml.dist`, `.toml.dist`, `.ini.dist`) show all available options.
+The installer generates two files:
+
+| File | Contents |
+|---|---|
+| `config/config.toml` | App bootstrap: domain, HTTPS, mail transport, security parameters |
+| `config/database.toml` | Database connection (driver, host, name, credentials) |
+
+A fully commented example is at `docs/config/config.toml.example`.
+
+Local overrides (gitignored): `config/config.local.toml`
+
+Never commit secrets to TOML files — use environment variables instead:
+
+| Environment variable | Description |
+|---|---|
+| `ENCRYPTION_KEY` | 32-byte hex: `php -r "echo sodium_bin2hex(random_bytes(32));"` |
+| `MAIL_PASSWORD` | SMTP password |
+| `SENTRY_DSN` | Sentry DSN (optional) |
 
 Key settings:
 
 | Section | Key | Description |
 |---|---|---|
-| `app` | `name` | Application title shown in the UI |
-| `theme` | `name` | Default theme (`default`, `bulma`) |
-| `database` | `driver` | `pdo_sqlite`, `pdo_mysql`, or `pdo_pgsql` |
-| `security` | `argon2_memory_cost` | Argon2id memory cost (KiB) |
+| `[app]` | `domain` | Public hostname — required for WebAuthn and CSRF |
+| `[app]` | `force_https` | Enforce HTTPS redirect (`true` in production) |
+| `[cache]` | `adapter` | `filesystem` \| `apcu` \| `redis` \| `memcached` |
+| `[security.password]` | `memory_cost` | Argon2id memory in KiB (default: 131072 = 128 MB) |
+| `[database]` | `driver` | `pdo_sqlite`, `pdo_mysql`, or `pdo_pgsql` |
+
+Runtime settings (rate limits, FIDO2 parameters, TOTP parameters, mail sender, theme) are managed in the admin interface and stored in the database.
 
 ---
 
@@ -102,25 +123,38 @@ Custom themes can be placed under `themes/<name>/` with a `theme.json` descripto
 
 ## Development
 
-Run the built-in PHP server (development only):
+Run the built-in PHP server (local development only, never in production):
 
 ```bash
-php -S localhost:8080 index.php
+php -S localhost:8080 -t . index.php
 ```
+
+> **Note:** `ext-intl` must be enabled (required for IDN/Punycode).  
+> Arch Linux: uncomment `extension=intl` in `/etc/php/php.ini`.
 
 Static analysis:
 
 ```bash
-vendor/bin/phpstan analyse --level=8 src/
+vendor/bin/phpstan analyse src/
+# or short:
+composer phpstan
+```
+
+Tests:
+
+```bash
+composer test
 ```
 
 ---
 
 ## Security
 
-- Enable WebAuthn (FIDO2 / passkey) or TOTP for admin accounts.
-- Enforce HTTPS in production; `.htaccess` already sets `Strict-Transport-Security`.
-- Keep `config/config.php` unreadable from the web. The `.htaccess` in `config/` blocks direct access.
+- Set `app.domain` in `config/config.toml` — this automatically enables WebAuthn (FIDO2/passkey).
+- TOTP is recommended for all accounts, mandatory for admins.
+- Enforce HTTPS in production (`force_https = true`); `.htaccess` already sets `Strict-Transport-Security`.
+- Set `ENCRYPTION_KEY` exclusively via environment variable, never commit it to any file.
+- The `config/` directory is protected from direct web access by `.htaccess`.
 - Keep PHP and Composer dependencies up to date.
 
 ---

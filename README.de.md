@@ -10,8 +10,10 @@ Weboberfläche zur Verwaltung von [deSEC](https://desec.io)-Domains, DNS-Records
 
 - Domain- und Zonenverwaltung über die deSEC-API
 - Vollständige DNS-Record-Verwaltung (A/AAAA, CNAME, MX, TXT, SRV, CAA, …)
-- Rollenbasierte Benutzerverwaltung (Admin / normaler Benutzer)
+- Unterstützung internationaler Domain-Namen (IDN/Punycode, RFC 3492) — `müller.eu` wird automatisch zu `xn--mller-kva.eu` normalisiert
+- Rollenbasierte Benutzerverwaltung (Admin / normaler Benutzer) mit CSRF-Schutz und Rate-Limiting
 - Zwei-Faktor-Authentifizierung: FIDO2/WebAuthn (Passkeys) und TOTP
+  - WebAuthn wird automatisch aktiviert, sobald `app.domain` in `config/config.toml` gesetzt ist
 - API-Schlüssel-Verwaltung pro Benutzer mit Verschlüsselung im Ruhezustand
 - Individuelle Theme- und Spracheinstellungen pro Benutzer
 - Light-/Dark-Mode-Umschalter (benutzergesteuert, kein OS-Follow)
@@ -25,7 +27,7 @@ Weboberfläche zur Verwaltung von [deSEC](https://desec.io)-Domains, DNS-Records
 | Anforderung | Version |
 |---|---|
 | PHP | ≥ 8.4 |
-| PHP-Erweiterungen | `pdo_sqlite` oder `pdo_mysql` oder `pdo_pgsql`, `sodium`, `openssl`, `mbstring` |
+| PHP-Erweiterungen | `pdo_sqlite` oder `pdo_mysql` oder `pdo_pgsql`, `sodium`, `openssl`, `mbstring`, `intl` |
 | Composer | ≥ 2.x |
 | Webserver | Apache 2.4+ oder Nginx (siehe `docs/server-config/`) |
 | Datenbank | SQLite 3, MySQL/MariaDB oder PostgreSQL |
@@ -45,7 +47,7 @@ Weboberfläche zur Verwaltung von [deSEC](https://desec.io)-Domains, DNS-Records
    - Datenbanktyp wählen (SQLite / MySQL / PostgreSQL)
    - Datenbankzugangsdaten eingeben
    - Ersten Admin-Account anlegen
-   - Der Installer schreibt `config/config.php` und erstellt alle Tabellen
+   - Der Installer schreibt `config/config.toml`, `config/database.toml` und erstellt alle Tabellen
 
 3. **Webserver** — Document-Root auf das Projektverzeichnis (wo `index.php` liegt) zeigen.  
    Beispielkonfigurationen für Apache und Nginx liegen unter `docs/server-config/`.
@@ -70,17 +72,36 @@ Für Upgrades von Versionen, die TOTP und Benutzerpräferenzen noch nicht kennen
 
 ## Konfiguration
 
-Der Installer erzeugt `config/config.php`.  
-Vorlagedateien (`config/config.php.dist`, `.yaml.dist`, `.toml.dist`, `.ini.dist`) zeigen alle verfügbaren Optionen.
+Der Installer erzeugt zwei Dateien:
+
+| Datei | Inhalt |
+|---|---|
+| `config/config.toml` | App-Bootstrap: Domain, HTTPS, Mail-Transport, Sicherheitsparameter |
+| `config/database.toml` | Datenbankverbindung (Treiber, Host, Name, Zugangsdaten) |
+
+Ein vollständig kommentiertes Beispiel liegt unter `docs/config/config.toml.example`.
+
+Lokale Überschreibungen (gitignored): `config/config.local.toml`
+
+Secrets **niemals** in TOML-Dateien committen — stattdessen Umgebungsvariablen nutzen:
+
+| Umgebungsvariable | Beschreibung |
+|---|---|
+| `ENCRYPTION_KEY` | 32-Byte-Hex: `php -r "echo sodium_bin2hex(random_bytes(32));"` |
+| `MAIL_PASSWORD` | SMTP-Passwort |
+| `SENTRY_DSN` | Sentry DSN (optional) |
 
 Wichtige Einstellungen:
 
 | Abschnitt | Schlüssel | Beschreibung |
 |---|---|---|
-| `app` | `name` | Anwendungstitel in der Benutzeroberfläche |
-| `theme` | `name` | Standard-Theme (`default`, `bulma`) |
-| `database` | `driver` | `pdo_sqlite`, `pdo_mysql` oder `pdo_pgsql` |
-| `security` | `argon2_memory_cost` | Argon2id-Speicherkosten (KiB) |
+| `[app]` | `domain` | Öffentlicher Hostname — Pflicht für WebAuthn und CSRF |
+| `[app]` | `force_https` | HTTPS-Redirect erzwingen (`true` in Produktion) |
+| `[cache]` | `adapter` | `filesystem` \| `apcu` \| `redis` \| `memcached` |
+| `[security.password]` | `memory_cost` | Argon2id-Speicher in KiB (Standard: 131072 = 128 MB) |
+| `[database]` | `driver` | `pdo_sqlite`, `pdo_mysql` oder `pdo_pgsql` |
+
+Runtime-Einstellungen (Rate-Limits, FIDO2-Parameter, TOTP-Parameter, Mail-Absender, Theme) werden im Admin-Interface verwaltet und in der Datenbank gespeichert.
 
 ---
 
@@ -102,25 +123,38 @@ Eigene Themes können unter `themes/<name>/` mit einer `theme.json`-Beschreibung
 
 ## Entwicklung
 
-PHP-Built-in-Server starten (nur für Entwicklung):
+PHP-Built-in-Server starten (nur lokal, nie in Produktion):
 
 ```bash
-php -S localhost:8080 index.php
+php -S localhost:8080 -t . index.php
 ```
+
+> **Hinweis:** `ext-intl` muss aktiviert sein (wird für IDN/Punycode benötigt).  
+> Arch Linux: `extension=intl` in `/etc/php/php.ini` einkommentieren.
 
 Statische Analyse:
 
 ```bash
-vendor/bin/phpstan analyse --level=8 src/
+vendor/bin/phpstan analyse src/
+# oder kurz:
+composer phpstan
+```
+
+Tests:
+
+```bash
+composer test
 ```
 
 ---
 
 ## Sicherheit
 
-- WebAuthn (FIDO2 / Passkey) oder TOTP für Admin-Konten aktivieren.
-- HTTPS in der Produktion erzwingen; `.htaccess` setzt bereits `Strict-Transport-Security`.
-- `config/config.php` vor Web-Zugriff schützen. Die `.htaccess` im `config/`-Verzeichnis blockiert direkten Zugriff.
+- `app.domain` in `config/config.toml` setzen — aktiviert WebAuthn (FIDO2/Passkey) automatisch.
+- TOTP für alle Konten empfohlen, zwingend für Admins.
+- HTTPS in der Produktion erzwingen (`force_https = true`); `.htaccess` setzt bereits `Strict-Transport-Security`.
+- `ENCRYPTION_KEY` ausschließlich über Umgebungsvariable setzen, nie in Dateien committen.
+- `config/` ist per `.htaccess` vor direktem Web-Zugriff geschützt.
 - PHP und Composer-Abhängigkeiten regelmäßig aktualisieren.
 
 ---
