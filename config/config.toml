@@ -69,21 +69,25 @@ path = "var/cache"          # Relativ zum Projekt-Root — muss beschreibbar sei
 # Mail-Transport (Verbindungsparameter — Absender/Name im Admin-Interface)
 # Passwort via Umgebungsvariable: MAIL_PASSWORD
 #
+# Hinweis: Plaintext-SMTP (ohne TLS) wird bewusst nicht unterstützt.
+#          Immer SMTPS (direktes TLS, Port 465) oder STARTTLS (Port 587) verwenden.
+#
 # Entweder einen vollständigen DSN eintragen ODER [mail.smtp] konfigurieren:
 #
 # Vollständiger DSN (transport = DSN, [mail.smtp] wird ignoriert):
-#   "smtps://user:pass@mail.example.com:465"  — SMTPS (Port 465)
-#   "smtp://user:pass@mail.example.com:587"   — STARTTLS (Port 587)
+#   "smtps://user:pass@mail.example.com:465"  — SMTPS    (direktes TLS,  Port 465)
+#   "smtp://user:pass@mail.example.com:587"   — STARTTLS (TLS via EHLO,  Port 587)
 #   "ses+smtp://KEY:SECRET@default"           — Amazon SES
 #   "sendgrid+api://API_KEY@default"          — SendGrid
 #   "mailgun+api://KEY:DOMAIN@default"        — Mailgun
 #   "postmark+api://API_KEY@default"          — Postmark
-#   "null://"                                 — Deaktiviert (Entwicklung)
+#   "null://"                                 — Deaktiviert (nur lokale Entwicklung)
 #
-# Ohne DSN: transport = "smtps" oder "smtp" → [mail.smtp] wird verwendet.
+# Kurzform ohne DSN: transport = "smtps" (Port 465) oder "smtp" (Port 587)
+#   → [mail.smtp] wird ausgewertet, Passwort via MAIL_PASSWORD.
 # ------------------------------------------------------------
 [mail]
-transport = "smtps"   # vollständiger DSN oder: smtps | smtp
+transport = "smtps"   # vollständiger DSN oder: smtps (Port 465) | smtp (Port 587)
 
 # Aktiv wenn transport = "smtps" oder "smtp"
 [mail.smtp]
