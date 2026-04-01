@@ -316,8 +316,8 @@ function processStep5(): array
 
         $cfg = [
             'database'   => $dbSection,
-            'security'   => ['algo'=>PASSWORD_ARGON2ID,'options'=>['memory_cost'=>65536,'time_cost'=>4,'threads'=>2],'encryption_key'=>$encKey],
-            'application'=> ['domain'=>$app['domain'],'name'=>$app['name'],'webauthn_enabled'=>true,'force_https'=>(bool)$app['https']],
+            'security'   => ['algo'=>PASSWORD_ARGON2ID,'options'=>['memory_cost'=>131072,'time_cost'=>4,'threads'=>4],'encryption_key'=>$encKey],
+            'application'=> ['domain'=>$app['domain'],'name'=>$app['name'],'force_https'=>(bool)$app['https']],
             'theme'      => ['name'=>$app['theme']],
             'debug'      => false,
         ];

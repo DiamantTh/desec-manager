@@ -27,7 +27,7 @@ final class DomainInputFilter extends InputFilter
         $domain->getFilterChain()
             ->attach(new StripTags())
             ->attach(new StringTrim())
-            ->attach(new StringToLower());
+            ->attach(new StringToLower(['encoding' => 'UTF-8']));
         $domain->getValidatorChain()
             ->attach(new NotEmpty())
             ->attach(new StringLength(['min' => 3, 'max' => 253]))

@@ -75,7 +75,7 @@ class WebAuthnService
         $domain = (string)($appCfg['domain'] ?? '');
         if ($domain === '') {
             throw new \RuntimeException(
-                'app.domain muss in app.toml konfiguriert sein (wird für WebAuthn RP-ID benötigt).'
+                'app.domain muss in config/config.toml konfiguriert sein (wird für WebAuthn RP-ID benötigt).'
             );
         }
 

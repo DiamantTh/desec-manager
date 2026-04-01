@@ -48,7 +48,7 @@ final class TomlLoader
             if (!file_exists($path)) {
                 throw new RuntimeException(
                     "Konfigurationsdatei nicht gefunden: {$path}\n" .
-                    "Tipp: Kopiere config/config.toml.dist → config/config.toml und passe sie an."
+                    "Tipp: Kopiere docs/config/config.toml.example → config/config.toml und passe sie an."
                 );
             }
 

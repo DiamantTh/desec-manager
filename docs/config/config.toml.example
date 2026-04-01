@@ -37,9 +37,6 @@ name = "DeSEC Manager"
 # Erzwingt HTTPS-Redirect. Nur für lokale Entwicklung auf false setzen.
 force_https = true
 
-# WebAuthn (FIDO2/Passkeys) aktivieren. Erfordert HTTPS und gültige TLD.
-webauthn_enabled = false
-
 # Debug-Modus: NIEMALS in Produktion aktivieren!
 # Gibt Stack-Traces im Browser aus.
 debug = false
@@ -123,11 +120,12 @@ username   = ""             # SMTP-Benutzername (Passwort via MAIL_PASSWORD-Umge
 # ZWINGEND via ENCRYPTION_KEY-Umgebungsvariable oder config.local.toml setzen!
 encryption_key = ""
 
-# Argon2id-Parameter (OWASP-Empfehlungen, nur mit Bedacht ändern)
+# Argon2id-Parameter (OWASP 2024-Empfehlungen, nur mit Bedacht ändern)
+# PHP re-hasht automatisch beim nächsten Login wenn sich die Werte erhöhen.
 [security.password]
-memory_cost = 65536   # 64 MB minimum (OWASP)
-time_cost   = 4       # Iterationen
-threads     = 2       # Parallele Threads
+memory_cost = 131072   # 128 MB (OWASP 2024: ≥ 64 MB empfohlen, 128 MB bevorzugt)
+time_cost   = 4        # Iterationen
+threads     = 4        # Parallele Threads (NUR erhöhen wenn Server ≥ 4 Kerne hat)
 
 # Session-Cookie (browser-seitige Sicherheitsflags)
 [security.session]
@@ -147,6 +145,8 @@ attribute = "__csrf"   # Name des versteckten Form-Felds
 # Rate-Limiting (Zähler via PSR-16-Cache)
 # Schlüssel-Format: rate_limit:{action}:{clientIp}
 # max_attempts = 0 deaktiviert das Limit für diesen Endpunkt
+# HINWEIS: Diese Werte sind Bootstrap-Defaults. Im Admin-Interface (Einstellungen)
+#   können sie zur Laufzeit überschrieben werden (Werte aus DB haben Vorrang).
 [security.rate_limit.login]
 max_attempts   = 10
 window_seconds = 900   # 15 Minuten
@@ -168,28 +168,27 @@ max_attempts   = 5
 window_seconds = 300
 
 # FIDO2 / WebAuthn
-[security.fido2]
+# WebAuthn wird automatisch aktiviert wenn app.domain gesetzt ist (auto-detect).
+# Diese Werte sind Bootstrap-Defaults — im Admin-Interface überschreibbar.
+# [security.fido2]
 # "required"    — UV zwingend (PIN oder Biometrie) — empfohlen
 # "preferred"   — UV wird angefragt, aber nicht erzwungen
 # "discouraged" — UV deaktiviert — NICHT empfohlen
-user_verification    = "required"
-# true = Passkey-Modus (Discoverable Credential, im Authenticator gespeichert)
-require_resident_key = true
-# Algorithmus-Priorität: EdDSA (Ed25519) > ES256 > RS256
-algorithms           = [-8, -7, -257]
-# "direct"  = Authenticator-Zertifikat mitliefern (AAGUID-Identifikation möglich)
-# "none"    = kein Gerätenachweis
-attestation          = "direct"
-challenge_bytes      = 32     # 256 Bit Challenge (≥16 laut Spec)
-timeout_ms           = 60000  # 60 Sekunden Browser-Timeout
+# user_verification    = "required"
+# require_resident_key = true
+# algorithms           = [-8, -7, -257]
+# attestation          = "direct"
+# challenge_bytes      = 32
+# timeout_ms           = 60000
 
 # TOTP (RFC 6238)
-[security.totp]
-digits       = 8       # 8-stellige Codes (höhere Entropie als Standard-6)
-algorithm    = "sha256" # sha256 | sha512 (sha1 = veraltet)
-period       = 30      # Gültigkeitszeitraum in Sekunden
-secret_bytes = 32      # 32 Bytes = 256 Bit Secret
-window       = 1       # ±1 Periode Toleranz (±30 Sekunden Uhren-Drift)
+# HINWEIS: Bootstrap-Defaults — im Admin-Interface überschreibbar.
+# [security.totp]
+# digits       = 8
+# algorithm    = "sha256"
+# period       = 30
+# secret_bytes = 32
+# window       = 1
 
 # ------------------------------------------------------------
 # Sentry (optionales Fehler-Tracking)
