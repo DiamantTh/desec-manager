@@ -18,8 +18,6 @@
 #
 # Secrets ausschließlich via Umgebungsvariablen oder config.local.toml:
 #   ENCRYPTION_KEY  — 32-Byte-Key (hex): php -r "echo sodium_bin2hex(random_bytes(32));"
-#   MAIL_PASSWORD   — SMTP-Passwort
-#   SENTRY_DSN      — Sentry DSN (optional)
 # ============================================================
 
 # ------------------------------------------------------------
@@ -64,10 +62,6 @@ path = "var/cache"          # Relativ zum Projekt-Root — muss beschreibbar sei
 # [cache.memcached]
 # host = "127.0.0.1"
 # port = 11211
-
-# SMTP-Passwort via Umgebungsvariable: MAIL_PASSWORD
-# Alle Mail-Einstellungen (Transport, Host, Port, Absender) werden im
-# Admin-Interface konfiguriert und in der Datenbank gespeichert.
 
 # ------------------------------------------------------------
 # Sicherheit — ausschließlich Bootstrap-Werte
