@@ -6,3 +6,5 @@ vendor/
 install/.lock
 install/.install_token
 config/config.php
+node_modules/
+.svelte-kit/

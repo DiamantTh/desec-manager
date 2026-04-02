@@ -1,8 +1,8 @@
 {
   "name": "Default (Dunkelblau + Grün)",
   "description": "Eigenes deSEC-Manager-Theme mit Dunkelblau+Grün-Palette. Unterstützt manuell schaltbaren Light/Dark-Modus (kein OS-Follow).",
-  "version": "1.1.0",
-  "framework": "bulma-1.0",
+  "version": "1.2.0",
+  "framework": "bulma-1.0+svelte-5",
   "external_css": [
     "assets/css/bulma.min.css"
   ],
@@ -12,6 +12,9 @@
   "external_js": [],
   "local_js": [
     "js/theme.js"
+  ],
+  "svelte_bundles": [
+    "js/records.bundle.js"
   ],
   "supports_dark_mode": true,
   "author": "deSEC Manager"
