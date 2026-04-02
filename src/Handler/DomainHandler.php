@@ -39,6 +39,7 @@ class DomainHandler extends AbstractHandler implements RequestHandlerInterface
         return $this->render('domains/index', [
             'domains'     => $this->domains->findByUserId($userId),
             'apiKeys'     => $this->apiKeys->findByUserId($userId),
+            'csrfToken'   => $this->generateCsrfToken($request),
             'message'     => $flash['message'] ?? null,
             'messageType' => $flash['type']    ?? 'is-success',
         ]);
@@ -46,6 +47,10 @@ class DomainHandler extends AbstractHandler implements RequestHandlerInterface
 
     private function handlePost(ServerRequestInterface $request, int $userId): ResponseInterface
     {
+        if ($csrfError = $this->validateCsrf($request)) {
+            return $csrfError;
+        }
+
         $body   = $request->getParsedBody();
         $action = $this->bodyString($body, 'action');
 

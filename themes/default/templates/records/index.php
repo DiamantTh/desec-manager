@@ -78,92 +78,14 @@
 
 <div class="columns">
     <div class="column is-two-thirds">
-        <div class="card">
-            <header class="card-header">
-                <p class="card-header-title">
-                    <?= sprintf(__('RRsets for %s'), htmlspecialchars($selectedDomain, ENT_QUOTES, 'UTF-8')) ?>
-                </p>
-            </header>
-            <div class="card-content">
-                <?php if ($rrsets): ?>
-                    <table class="table is-striped is-fullwidth" id="records-list" data-selected-domain="<?= htmlspecialchars($selectedDomain, ENT_QUOTES, 'UTF-8') ?>" data-selected-key="<?= (int) $selectedKeyId ?>">
-                        <thead>
-                            <tr>
-                                <th><?= __('Subname') ?></th>
-                                <th><?= __('Type') ?></th>
-                                <th>TTL</th>
-                                <th><?= __('Records') ?></th>
-                                <th class="has-text-right"><?= __('Actions') ?></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($rrsets as $rrset): ?>
-                                <?php
-                                    $subname = $rrset['subname'] === '' ? '@' : $rrset['subname'];
-                                    $recordsText = implode("\n", $rrset['records']);
-                                ?>
-                                <tr class="rrset-row" data-type="<?= htmlspecialchars($rrset['type'], ENT_QUOTES, 'UTF-8') ?>" data-subname="<?= htmlspecialchars($rrset['subname'], ENT_QUOTES, 'UTF-8') ?>">
-                                    <td><code><?= htmlspecialchars($subname, ENT_QUOTES, 'UTF-8') ?></code></td>
-                                    <td><?= htmlspecialchars($rrset['type'], ENT_QUOTES, 'UTF-8') ?></td>
-                                    <td><?= (int) $rrset['ttl'] ?></td>
-                                    <td>
-                                        <pre class="records-block"><?= htmlspecialchars($recordsText, ENT_QUOTES, 'UTF-8') ?></pre>
-                                    </td>
-                                    <td class="has-text-right">
-                                        <div class="buttons is-right">
-                                            <button type="button" class="button is-small js-inline-toggle">
-                                                <?= __('Edit') ?>
-                                            </button>
-                                            <form method="post" class="is-inline-block js-delete-form">
-                                                <input type="hidden" name="action" value="delete">
-                                                <input type="hidden" name="domain" value="<?= htmlspecialchars($selectedDomain, ENT_QUOTES, 'UTF-8') ?>">
-                                                <input type="hidden" name="api_key_id" value="<?= (int) $selectedKeyId ?>">
-                                                <input type="hidden" name="type" value="<?= htmlspecialchars($rrset['type'], ENT_QUOTES, 'UTF-8') ?>">
-                                                <input type="hidden" name="subname" value="<?= htmlspecialchars($rrset['subname'], ENT_QUOTES, 'UTF-8') ?>">
-                                                <button type="submit" class="button is-danger is-small">
-                                                    <?= __('Delete') ?>
-                                                </button>
-                                            </form>
-                                        </div>
-                                        <form method="post" class="box mt-3 rrset-inline-form is-hidden">
-                                            <input type="hidden" name="action" value="update">
-                                            <input type="hidden" name="domain" value="<?= htmlspecialchars($selectedDomain, ENT_QUOTES, 'UTF-8') ?>">
-                                            <input type="hidden" name="api_key_id" value="<?= (int) $selectedKeyId ?>">
-                                            <input type="hidden" name="type" value="<?= htmlspecialchars($rrset['type'], ENT_QUOTES, 'UTF-8') ?>">
-                                            <input type="hidden" name="subname" value="<?= htmlspecialchars($rrset['subname'], ENT_QUOTES, 'UTF-8') ?>">
-                                            <div class="field">
-                                                <label class="label is-small"><?= __('Records (one entry per line)') ?></label>
-                                                <div class="control">
-                                                    <textarea class="textarea" name="records" rows="3" required><?= htmlspecialchars($recordsText, ENT_QUOTES, 'UTF-8') ?></textarea>
-                                                </div>
-                                            </div>
-                                            <div class="field">
-                                                <label class="label is-small">TTL</label>
-                                                <div class="control">
-                                                    <input type="number" name="ttl" class="input" value="<?= (int) $rrset['ttl'] ?>" min="30" max="86400" required>
-                                                </div>
-                                            </div>
-                                            <div class="field is-grouped is-justify-content-flex-end">
-                                                <div class="control">
-                                                    <button type="submit" class="button is-primary is-small">
-                                                        <?= __('Save') ?>
-                                                    </button>
-                                                </div>
-                                                <div class="control">
-                                                    <button type="button" class="button is-light is-small js-inline-cancel"><?= __('Cancel') ?></button>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                <?php else: ?>
-                    <p class="has-text-grey"><?= __('No RRsets found.') ?></p>
-                <?php endif; ?>
-            </div>
-        </div>
+        <?php /* Props für die Svelte Records-App */ ?>
+        <script id="svelte-records-props" type="application/json">
+            <?= json_encode([
+                'domain'   => $selectedDomain,
+                'apiKeyId' => $selectedKeyId,
+            ], JSON_HEX_TAG | JSON_HEX_AMP) ?>
+        </script>
+        <div id="svelte-records"></div>
     </div>
     <div class="column">
         <div class="card">
@@ -172,6 +94,7 @@
             </header>
             <div class="card-content">
                 <form method="post" id="add-record-form">
+                    <input type="hidden" name="csrf" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
                     <input type="hidden" name="action" value="create">
                     <input type="hidden" name="domain" value="<?= htmlspecialchars($selectedDomain, ENT_QUOTES, 'UTF-8') ?>">
                     <input type="hidden" name="api_key_id" value="<?= (int) $selectedKeyId ?>">

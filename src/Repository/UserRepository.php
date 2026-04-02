@@ -110,6 +110,35 @@ class UserRepository
         return $this->findByEmail($email) === null;
     }
 
+    /**
+     * Gibt alle Benutzer zurück (für Admin-Übersicht).
+     * @return array<int, array<string, mixed>>
+     */
+    public function findAll(): array
+    {
+        $qb = $this->connection->createQueryBuilder();
+
+        return $qb->select(
+            'id', 'username', 'email',
+            'is_admin', 'is_active',
+            'totp_enabled',
+            'created_at', 'last_login'
+        )
+            ->from('users')
+            ->orderBy('username', 'ASC')
+            ->executeQuery()
+            ->fetchAllAssociative();
+    }
+
+    public function setAdmin(int $userId, bool $admin): void
+    {
+        $this->connection->update(
+            'users',
+            ['is_admin' => $admin ? 1 : 0],
+            ['id' => $userId]
+        );
+    }
+
     public function updatePassword(int $userId, string $passwordHash): void
     {
         $this->connection->update(

@@ -62,6 +62,7 @@ class RecordHandler extends AbstractHandler implements RequestHandlerInterface
             'selectedDomain' => $selectedDomain,
             'selectedKeyId'  => $selectedKeyId,
             'rrsets'         => $rrsets,
+            'csrfToken'      => $this->generateCsrfToken($request),
             'message'        => $message,
             'messageType'    => $messageType,
         ]);
@@ -73,6 +74,10 @@ class RecordHandler extends AbstractHandler implements RequestHandlerInterface
         string $selectedDomain,
         int $selectedKeyId
     ): ResponseInterface {
+        if ($csrfError = $this->validateCsrf($request)) {
+            return $csrfError;
+        }
+
         $body     = $request->getParsedBody();
         $action   = $this->bodyString($body, 'action');
         $domain   = $this->bodyString($body, 'domain')   ?: $selectedDomain;

@@ -115,6 +115,13 @@ return static function (
         ['POST'], 'admin.users.create');
 
     // -------------------------------------------------------------------------
+    // DNS-Records JSON-API (Svelte-Frontend, auth-geschützt)
+    // -------------------------------------------------------------------------
+    $app->get('/api/domains/{domain}/records',
+        [\App\Middleware\AuthMiddleware::class, \App\Handler\RecordsApiHandler::class],
+        'api.records.list');
+
+    // -------------------------------------------------------------------------
     // WebAuthn JSON-API
     // -------------------------------------------------------------------------
     $app->get('/webauthn/register-options',

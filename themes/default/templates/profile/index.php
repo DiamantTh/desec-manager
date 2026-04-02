@@ -53,6 +53,7 @@ $availableThemes ??= ['default', 'bulma'];
     <div class="box">
         <h2 class="title is-5"><?= __('Change password') ?></h2>
         <form method="post" autocomplete="off">
+            <input type="hidden" name="csrf" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
             <input type="hidden" name="action" value="change_password">
             <div class="field">
                 <label class="label" for="current_password"><?= __('Current password') ?></label>
@@ -195,6 +196,7 @@ $availableThemes ??= ['default', 'bulma'];
     <div class="box">
         <h2 class="title is-5"><?= __('Appearance & Language') ?></h2>
         <form method="post" autocomplete="off">
+            <input type="hidden" name="csrf" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
             <input type="hidden" name="action" value="update_preferences">
 
             <div class="columns">

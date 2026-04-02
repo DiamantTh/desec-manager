@@ -55,10 +55,10 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
         $method = $request->getMethod();
 
         return match (true) {
-            $path === '/auth/login'        && $method === 'GET'  => $this->showLogin(),
+            $path === '/auth/login'        && $method === 'GET'  => $this->showLogin($request),
             $path === '/auth/login'        && $method === 'POST' => $this->handleLogin($request),
-            $path === '/auth/logout'       && $method === 'POST' => $this->handleLogout(),
-            $path === '/auth/mfa/totp'     && $method === 'GET'  => $this->showTotpForm(),
+            $path === '/auth/logout'       && $method === 'POST' => $this->handleLogout($request),
+            $path === '/auth/mfa/totp'     && $method === 'GET'  => $this->showTotpForm($request),
             $path === '/auth/mfa/totp'     && $method === 'POST' => $this->handleTotpVerify($request),
             $path === '/auth/mfa/webauthn' && $method === 'GET'  => $this->showWebAuthnChallenge(),
             default => $this->redirect('/auth/login'),
@@ -69,15 +69,16 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
     // Login
     // =========================================================================
 
-    private function showLogin(): ResponseInterface
+    private function showLogin(ServerRequestInterface $request): ResponseInterface
     {
         if ($this->sessionContext->has('user_id')) {
             return $this->redirect('/dashboard');
         }
 
         return $this->render('auth/login', [
-            'error'  => null,
-            'config' => $this->config,
+            'error'     => null,
+            'csrfToken' => $this->generateCsrfToken($request),
+            'config'    => $this->config,
         ]);
     }
 
@@ -87,21 +88,25 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
             return $this->redirect('/dashboard');
         }
 
+        if ($csrfError = $this->validateCsrf($request)) {
+            return $csrfError;
+        }
+
         $body     = $request->getParsedBody();
         $username = $this->bodyString($body, 'username');
         $password = $this->bodyString($body, 'password');
 
         if ($username === '' || $password === '') {
-            return $this->renderLoginError(__('Please enter your username and password.'));
+            return $this->renderLoginError(__('Please enter your username and password.'), $request);
         }
 
         $user = $this->users->findByUsername($username);
         if ($user === null || !$this->passwordHasher->verify($password, (string) ($user['password_hash'] ?? ''))) {
-            return $this->renderLoginError(__('Invalid credentials.'));
+            return $this->renderLoginError(__('Invalid credentials.'), $request);
         }
 
         if (isset($user['is_active']) && (int) $user['is_active'] === 0) {
-            return $this->renderLoginError(__('This account has been deactivated.'));
+            return $this->renderLoginError(__('This account has been deactivated.'), $request);
         }
 
         $userId = (int) $user['id'];
@@ -138,11 +143,12 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
         return $this->redirect('/dashboard');
     }
 
-    private function renderLoginError(string $error): ResponseInterface
+    private function renderLoginError(string $error, ServerRequestInterface $request): ResponseInterface
     {
         return $this->render('auth/login', [
-            'error'  => $error,
-            'config' => $this->config,
+            'error'     => $error,
+            'csrfToken' => $this->generateCsrfToken($request),
+            'config'    => $this->config,
         ]);
     }
 
@@ -150,8 +156,11 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
     // Logout
     // =========================================================================
 
-    private function handleLogout(): ResponseInterface
+    private function handleLogout(ServerRequestInterface $request): ResponseInterface
     {
+        if ($csrfError = $this->validateCsrf($request)) {
+            return $csrfError;
+        }
         $this->sessionContext->clear();
         return $this->redirect('/auth/login');
     }
@@ -160,15 +169,16 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
     // TOTP-MFA
     // =========================================================================
 
-    private function showTotpForm(): ResponseInterface
+    private function showTotpForm(ServerRequestInterface $request): ResponseInterface
     {
         if (!$this->hasMfaPending('totp')) {
             return $this->redirect('/auth/login');
         }
 
         return $this->render('auth/mfa-totp', [
-            'error'  => null,
-            'config' => $this->config,
+            'error'     => null,
+            'csrfToken' => $this->generateCsrfToken($request),
+            'config'    => $this->config,
         ]);
     }
 
@@ -182,11 +192,15 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
         $pending = $this->sessionContext->get('mfa_pending');
         $userId  = (int) $pending['user_id'];
 
+        if ($csrfError = $this->validateCsrf($request)) {
+            return $csrfError;
+        }
+
         $body = $request->getParsedBody();
         $code = $this->bodyString($body, 'code');
 
         if ($code === '') {
-            return $this->renderTotpError(__('Please enter the code.'));
+            return $this->renderTotpError(__('Please enter the code.'), $request);
         }
 
         $user = $this->users->findById($userId);
@@ -196,7 +210,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
 
         $secret = (string) ($user['totp_secret'] ?? '');
         if ($secret === '' || !$this->totp->verify($code, $secret)) {
-            return $this->renderTotpError(__('Invalid code. Please try again.'));
+            return $this->renderTotpError(__('Invalid code. Please try again.'), $request);
         }
 
         $username = (string) ($user['username'] ?? '');
@@ -204,11 +218,12 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
         return $this->redirect('/dashboard');
     }
 
-    private function renderTotpError(string $error): ResponseInterface
+    private function renderTotpError(string $error, ServerRequestInterface $request): ResponseInterface
     {
         return $this->render('auth/mfa-totp', [
-            'error'  => $error,
-            'config' => $this->config,
+            'error'     => $error,
+            'csrfToken' => $this->generateCsrfToken($request),
+            'config'    => $this->config,
         ]);
     }
 

@@ -30,6 +30,10 @@ class KeyHandler extends AbstractHandler implements RequestHandlerInterface
         $messageType = 'is-success';
 
         if ($request->getMethod() === 'POST') {
+            if ($csrfError = $this->validateCsrf($request)) {
+                return $csrfError;
+            }
+
             $body   = $request->getParsedBody();
             $action = $this->bodyString($body, 'action');
 
@@ -65,6 +69,7 @@ class KeyHandler extends AbstractHandler implements RequestHandlerInterface
 
         return $this->render('keys/index', [
             'apiKeys'     => $this->apiKeys->findByUserId($userId),
+            'csrfToken'   => $this->generateCsrfToken($request),
             'message'     => $message,
             'messageType' => $messageType,
         ]);

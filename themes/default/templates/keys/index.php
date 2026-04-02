@@ -36,6 +36,7 @@
                                     <td class="has-text-right">
                                         <?php if (!empty($key['is_active'])): ?>
                                             <form method="post" class="is-inline">
+                                                <input type="hidden" name="csrf" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
                                                 <input type="hidden" name="action" value="deactivate">
                                                 <input type="hidden" name="key_id" value="<?= (int) $key['id'] ?>">
                                                 <button type="submit" class="button is-warning is-small">
@@ -61,6 +62,7 @@
             </header>
             <div class="card-content">
                 <form method="post">
+                    <input type="hidden" name="csrf" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
                     <input type="hidden" name="action" value="create">
                     <div class="field">
                         <label class="label" for="name"><?= __('Label') ?></label>

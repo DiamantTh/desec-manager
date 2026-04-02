@@ -48,6 +48,10 @@ class ProfileHandler extends AbstractHandler implements RequestHandlerInterface
         $messageType = 'is-success';
 
         if ($request->getMethod() === 'POST') {
+            if ($csrfError = $this->validateCsrf($request)) {
+                return $csrfError;
+            }
+
             $body   = $request->getParsedBody();
             $action = $this->bodyString($body, 'action');
 
@@ -74,6 +78,7 @@ class ProfileHandler extends AbstractHandler implements RequestHandlerInterface
             'user'           => $user,
             'webAuthnKeys'   => $webAuthnKeys,
             'totpEnabled'    => !empty($user['totp_enabled']),
+            'csrfToken'      => $this->generateCsrfToken($request),
             'message'        => $message,
             'messageType'    => $messageType,
             'availableThemes' => $this->theme->getAvailableThemes(),

@@ -2,22 +2,17 @@ import type { RRset } from './types.js'
 
 /**
  * Lädt alle RRsets für eine Domain vom PHP-Backend.
- * PHP-Endpoint: ?route=api/records&domain=…&key=…
- * (Endpoint wird separat implementiert.)
+ * Endpoint: GET /api/domains/{domain}/records?key_id=…
  */
 export async function fetchRRsets(domain: string, apiKeyId: number): Promise<RRset[]> {
-    const params = new URLSearchParams({
-        route:  'api/records',
-        domain,
-        key:    String(apiKeyId),
-    })
-
-    const res = await fetch(`?${params}`, {
+    const params = new URLSearchParams({ key_id: String(apiKeyId) })
+    const res = await fetch(`/api/domains/${encodeURIComponent(domain)}/records?${params}`, {
         headers: { Accept: 'application/json' },
     })
 
     if (!res.ok) {
-        throw new Error(`HTTP ${res.status}: ${res.statusText}`)
+        const body = await res.json().catch(() => ({}))
+        throw new Error((body as { error?: string }).error ?? `HTTP ${res.status}`)
     }
 
     return res.json() as Promise<RRset[]>

@@ -38,18 +38,40 @@ class AdminHandler extends AbstractHandler implements RequestHandlerInterface
         $messageType = 'is-success';
 
         if ($request->getMethod() === 'POST') {
+            if ($csrfError = $this->validateCsrf($request)) {
+                return $csrfError;
+            }
+
             $body   = $request->getParsedBody();
             $action = $this->bodyString($body, 'action');
 
             try {
                 if ($action === 'add') {
                     $this->handleAdd($body);
-                    $message = __('Administrator created successfully.');
+                    $message = __('User created successfully.');
                 } elseif ($action === 'deactivate') {
                     $id = $this->bodyInt($body, 'id');
                     if ($id > 0) {
                         $this->users->setActive($id, false);
                         $message = __('User has been deactivated.');
+                    }
+                } elseif ($action === 'activate') {
+                    $id = $this->bodyInt($body, 'id');
+                    if ($id > 0) {
+                        $this->users->setActive($id, true);
+                        $message = __('User has been activated.');
+                    }
+                } elseif ($action === 'promote') {
+                    $id = $this->bodyInt($body, 'id');
+                    if ($id > 0) {
+                        $this->users->setAdmin($id, true);
+                        $message = __('User has been promoted to administrator.');
+                    }
+                } elseif ($action === 'demote') {
+                    $id = $this->bodyInt($body, 'id');
+                    if ($id > 0 && $id !== $this->userId()) {
+                        $this->users->setAdmin($id, false);
+                        $message = __('Administrator privileges have been revoked.');
                     }
                 } elseif ($action === 'delete') {
                     $id = $this->bodyInt($body, 'id');
@@ -65,7 +87,9 @@ class AdminHandler extends AbstractHandler implements RequestHandlerInterface
         }
 
         return $this->render('admin/index', [
-            'admins'      => $this->users->findAdmins(),
+            'users'       => $this->users->findAll(),
+            'currentId'   => $this->userId(),
+            'csrfToken'   => $this->generateCsrfToken($request),
             'message'     => $message,
             'messageType' => $messageType,
         ]);
@@ -97,7 +121,7 @@ class AdminHandler extends AbstractHandler implements RequestHandlerInterface
             'username'      => $username,
             'email'         => $email,
             'password_hash' => $this->passwordHasher->hash($password),
-            'is_admin'      => true,
+            'is_admin'      => is_array($body) && !empty($body['is_admin']),
             'is_active'     => true,
         ]);
 

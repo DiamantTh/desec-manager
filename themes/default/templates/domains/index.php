@@ -1,4 +1,5 @@
 <?php /** @var array $domains */ ?>
+<?php $csrfToken ??= ''; ?>
 <?php if ($message): ?>
     <div class="notification <?= $messageType ?>">
         <?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?>
@@ -38,6 +39,7 @@
                                     <td class="has-text-right">
                                         <?php if ($apiKeys): ?>
                                             <form method="post" class="is-inline-block">
+                                                <input type="hidden" name="csrf" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
                                                 <input type="hidden" name="action" value="delete">
                                                 <input type="hidden" name="domain" value="<?= htmlspecialchars($domain['domain_name'], ENT_QUOTES, 'UTF-8') ?>">
                                                 <div class="field has-addons is-justify-content-flex-end">
@@ -82,6 +84,7 @@
             <div class="card-content">
                 <?php if ($apiKeys): ?>
                     <form method="post" id="add-domain-form">
+                        <input type="hidden" name="csrf" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
                         <input type="hidden" name="action" value="add">
                         <div class="field">
                             <label class="label" for="domain">Domain</label>
@@ -124,6 +127,7 @@
             <div class="card-content">
                 <?php if ($apiKeys): ?>
                     <form method="post">
+                        <input type="hidden" name="csrf" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
                         <input type="hidden" name="action" value="sync">
                         <div class="field">
                             <label class="label" for="sync-api-key">API Key</label>

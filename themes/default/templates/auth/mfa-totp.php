@@ -19,6 +19,7 @@ $error ??= null;
             <?php endif; ?>
 
             <form method="post" autocomplete="off">
+                <input type="hidden" name="csrf" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
                 <div class="field">
                     <label class="label" for="totp_code"><?= __('Authentication code') ?></label>
                     <div class="control">
