@@ -20,8 +20,7 @@
     <?php return; ?>
 <?php endif; ?>
 
-<form method="get" class="box mb-5">
-    <input type="hidden" name="route" value="records">
+<form method="get" action="/records" class="box mb-5">
     <div class="columns is-multiline">
         <div class="column is-5">
             <div class="field">

@@ -35,7 +35,8 @@ class RecordHandler extends AbstractHandler implements RequestHandlerInterface
         $apiKeys = $this->apiKeys->findByUserId($userId);
 
         $queryParams     = $request->getQueryParams();
-        $selectedDomain  = (string) ($queryParams['domain']  ?? ($domains[0]['domain_name'] ?? ''));
+        // Domain aus (1) Query-Param, (2) Mezzio-Routen-Attribut, (3) erstem eigenen Eintrag
+        $selectedDomain  = (string) ($queryParams['domain'] ?? $request->getAttribute('domain') ?? ($domains[0]['domain_name'] ?? ''));
         $selectedKeyId   = isset($queryParams['api_key']) ? (int) $queryParams['api_key'] : ((int) ($apiKeys[0]['id'] ?? 0));
 
         if ($request->getMethod() === 'POST') {

@@ -54,9 +54,9 @@ return static function (
     // -------------------------------------------------------------------------
     // DNS-Domains (auth-geschützt)
     // -------------------------------------------------------------------------
-    $app->get('/domains',
+    $app->route('/domains',
         [\App\Middleware\AuthMiddleware::class, \App\Handler\DomainHandler::class],
-        'domains.index');
+        ['GET', 'POST'], 'domains.index');
     $app->route('/domains/add',
         [\App\Middleware\AuthMiddleware::class, \App\Handler\DomainHandler::class],
         ['GET', 'POST'], 'domains.add');
@@ -71,9 +71,13 @@ return static function (
     // -------------------------------------------------------------------------
     // DNS-Records (auth-geschützt)
     // -------------------------------------------------------------------------
-    $app->get('/domains/{domain}/records',
+    $app->route('/domains/{domain}/records',
         [\App\Middleware\AuthMiddleware::class, \App\Handler\RecordHandler::class],
-        'records.index');
+        ['GET', 'POST'], 'records.index');
+    // Einstiegspunkt für das Domain-Auswahl-Formular (query-param-basiert)
+    $app->route('/records',
+        [\App\Middleware\AuthMiddleware::class, \App\Handler\RecordHandler::class],
+        ['GET', 'POST'], 'records');
     $app->route('/domains/{domain}/records/add',
         [\App\Middleware\AuthMiddleware::class, \App\Handler\RecordHandler::class],
         ['GET', 'POST'], 'records.add');
@@ -84,9 +88,9 @@ return static function (
     // -------------------------------------------------------------------------
     // API-Keys (auth-geschützt)
     // -------------------------------------------------------------------------
-    $app->get('/keys',
+    $app->route('/keys',
         [\App\Middleware\AuthMiddleware::class, \App\Handler\KeyHandler::class],
-        'keys.index');
+        ['GET', 'POST'], 'keys.index');
     $app->route('/keys/create',
         [\App\Middleware\AuthMiddleware::class, \App\Handler\KeyHandler::class],
         ['GET', 'POST'], 'keys.create');
@@ -104,9 +108,9 @@ return static function (
     // -------------------------------------------------------------------------
     // Administration (auth-geschützt + Admin-Check im Handler)
     // -------------------------------------------------------------------------
-    $app->get('/admin',
+    $app->route('/admin',
         [\App\Middleware\AuthMiddleware::class, \App\Handler\AdminHandler::class],
-        'admin.index');
+        ['GET', 'POST'], 'admin.index');
     $app->route('/admin/users/{id}',
         [\App\Middleware\AuthMiddleware::class, \App\Handler\AdminHandler::class],
         ['GET', 'POST', 'DELETE'], 'admin.user');

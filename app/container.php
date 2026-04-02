@@ -460,11 +460,11 @@ $builder->addDefinitions([
 
     ThemeManager::class => DI\factory(function (ContainerInterface $c): ThemeManager {
         /** @var array<string, mixed> $cfg */
-        $cfg       = $c->get('config');
-        $themeName = (string)($cfg['app']['theme'] ?? 'default');
+        $cfg         = $c->get('config');
         $projectRoot = dirname(__DIR__);
 
-        return new ThemeManager(['theme' => ['name' => $themeName]], $projectRoot);
+        // Volle Config übergeben: ThemeManager liest theme.name + application.name
+        return new ThemeManager($cfg, $projectRoot);
     }),
 
     AuthorizationService::class => DI\autowire(),

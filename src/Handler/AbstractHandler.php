@@ -157,7 +157,7 @@ abstract class AbstractHandler
     {
         $guard  = $this->getCsrfGuard($request);
         $body   = $request->getParsedBody();
-        $token  = is_array($body) ? (string)($body[CsrfMiddleware::GUARD_ATTRIBUTE] ?? '') : '';
+        $token  = is_array($body) ? (string)($body['csrf'] ?? '') : '';
 
         if (!$guard->validateToken($token)) {
             return new HtmlResponse(
