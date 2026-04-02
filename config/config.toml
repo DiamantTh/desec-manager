@@ -89,5 +89,3 @@ secure   = true      # Nur über HTTPS — lokal: false in config.local.toml
 httponly = true      # Kein JavaScript-Zugriff
 samesite = "Strict"  # CSRF-Schutz durch SameSite
 lifetime = 3600      # Sekunden (1 Stunde)
-
-# Sentry: DSN via SENTRY_DSN-Umgebungsvariable — keine Config hier nötig.
