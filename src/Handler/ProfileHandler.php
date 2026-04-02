@@ -82,7 +82,7 @@ class ProfileHandler extends AbstractHandler implements RequestHandlerInterface
             'message'        => $message,
             'messageType'    => $messageType,
             'availableThemes' => $this->theme->getAvailableThemes(),
-        ]);
+        ], $request);
     }
 
     /**

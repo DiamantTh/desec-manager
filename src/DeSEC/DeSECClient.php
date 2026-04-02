@@ -247,7 +247,7 @@ class DeSECClient
         }
 
         preg_match($pattern, $header, $matches);
-        return urldecode($matches[1]);
+        return isset($matches[1]) ? urldecode($matches[1]) : null;
     }
 
     /**

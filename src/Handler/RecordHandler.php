@@ -65,7 +65,7 @@ class RecordHandler extends AbstractHandler implements RequestHandlerInterface
             'csrfToken'      => $this->generateCsrfToken($request),
             'message'        => $message,
             'messageType'    => $messageType,
-        ]);
+        ], $request);
     }
 
     private function handlePost(

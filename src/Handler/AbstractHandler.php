@@ -46,11 +46,16 @@ abstract class AbstractHandler
 
     /**
      * Renders a PHP template via ThemeManager (3-level fallback resolution).
+     * If a layout template exists, wraps the fragment in the full page layout.
      *
-     * @param array<string, mixed> $data  Template variables
+     * @param array<string, mixed>       $data     Template variables
+     * @param ServerRequestInterface|null $request  Current request (used for layout + CSRF)
      */
-    protected function render(string $template, array $data = []): ResponseInterface
-    {
+    protected function render(
+        string $template,
+        array $data = [],
+        ?ServerRequestInterface $request = null
+    ): ResponseInterface {
         $path = $this->theme->resolveTemplate($template);
         if (!file_exists($path)) {
             return new HtmlResponse(
@@ -60,8 +65,32 @@ abstract class AbstractHandler
         }
 
         $data['theme'] = $this->theme;
+        $content       = $this->renderToString($path, $data);
 
-        return new HtmlResponse($this->renderToString($path, $data));
+        // Wrap in layout if one exists
+        $layoutPath = $this->theme->resolveTemplate('layout');
+        if (file_exists($layoutPath) && $request !== null) {
+            // Generate a CSRF token for the layout (logout form) if not already provided
+            if (!isset($data['csrfToken'])) {
+                try {
+                    $data['csrfToken'] = $this->generateCsrfToken($request);
+                } catch (\Throwable) {
+                    $data['csrfToken'] = '';
+                }
+            }
+
+            $layoutData = [
+                'content'       => $content,
+                'theme'         => $this->theme,
+                'sessionContext' => $this->sessionContext,
+                'currentPath'   => $request->getUri()->getPath(),
+                'csrfToken'     => (string) $data['csrfToken'],
+            ];
+
+            return new HtmlResponse($this->renderToString($layoutPath, $layoutData));
+        }
+
+        return new HtmlResponse($content);
     }
 
     /**

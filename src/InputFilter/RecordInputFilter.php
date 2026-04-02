@@ -19,6 +19,7 @@ use Laminas\Validator\StringLength;
  *
  * Felder: type, subname, ttl, records
  */
+/** @extends InputFilter<array<string, mixed>> */
 final class RecordInputFilter extends InputFilter
 {
     /** Erlaubte DNS-Record-Typen (deSEC-Subset). */

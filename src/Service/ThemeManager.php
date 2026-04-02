@@ -17,6 +17,7 @@ class ThemeManager
 {
     private string $themeName;
     private string $projectRoot;
+    private string $appName;
 
     /** @var array<string, mixed>|null */
     private ?array $cachedMeta = null;
@@ -28,6 +29,12 @@ class ThemeManager
     {
         $this->projectRoot = rtrim($projectRoot, '/');
         $this->themeName   = (string) ($config['theme']['name'] ?? 'default');
+        $this->appName     = (string) ($config['application']['name'] ?? 'DeSEC Manager');
+    }
+
+    public function getAppName(): string
+    {
+        return $this->appName;
     }
 
     public function getThemeName(): string

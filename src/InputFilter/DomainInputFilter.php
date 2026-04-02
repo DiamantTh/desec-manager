@@ -18,6 +18,7 @@ use Laminas\Validator\StringLength;
  *
  * Felder: domain (vollqualifizierter Hostname), api_key_id (int)
  */
+/** @extends InputFilter<array<string, mixed>> */
 final class DomainInputFilter extends InputFilter
 {
     public function __construct()

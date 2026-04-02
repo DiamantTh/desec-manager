@@ -72,6 +72,6 @@ class KeyHandler extends AbstractHandler implements RequestHandlerInterface
             'csrfToken'   => $this->generateCsrfToken($request),
             'message'     => $message,
             'messageType' => $messageType,
-        ]);
+        ], $request);
     }
 }

@@ -27,6 +27,7 @@ final class DbMigrateCommand extends Command
 {
     public function __construct(
         private readonly Connection $db,
+        /** @var array<string, mixed> */
         private readonly array $config,
     ) {
         parent::__construct();

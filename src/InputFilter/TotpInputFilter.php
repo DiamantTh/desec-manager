@@ -17,6 +17,7 @@ use Laminas\Validator\StringLength;
  *
  * Felder: code (6 Ziffern)
  */
+/** @extends InputFilter<array<string, mixed>> */
 final class TotpInputFilter extends InputFilter
 {
     public function __construct()

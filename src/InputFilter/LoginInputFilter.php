@@ -16,6 +16,7 @@ use Laminas\Validator\StringLength;
  *
  * Felder: username, password
  */
+/** @extends InputFilter<array<string, mixed>> */
 final class LoginInputFilter extends InputFilter
 {
     public function __construct()

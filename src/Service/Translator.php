@@ -167,7 +167,7 @@ class Translator
         }
 
         $header = unpack('Vmagic/Vrevision/VN/VorigOffset/VtransOffset', substr($data, 0, 20));
-        if ($header['magic'] !== 0x950412de) {
+        if (!is_array($header) || $header['magic'] !== 0x950412de) {
             return [];
         }
 
@@ -179,6 +179,9 @@ class Translator
         for ($i = 0; $i < $n; $i++) {
             $origEntry   = unpack('Vlength/Voffset', substr($data, $origOffset  + $i * 8, 8));
             $transEntry  = unpack('Vlength/Voffset', substr($data, $transOffset + $i * 8, 8));
+            if (!is_array($origEntry) || !is_array($transEntry)) {
+                continue;
+            }
             $origString  = substr($data, $origEntry['offset'],  $origEntry['length']);
             $transString = substr($data, $transEntry['offset'], $transEntry['length']);
             if ($origString !== '') {

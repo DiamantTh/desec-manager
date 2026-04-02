@@ -455,25 +455,109 @@ function processStep3(): array
             'created_at'    => $now,
         ]);
 
-        // Konfigurationsdatei schreiben
+        // Konfigurationsdateien schreiben
+        // ── 1. config.local.toml (Secrets + App-Einstellungen) ─────────────
+        $cfgDir  = PROJECT_ROOT . '/config';
+        if (!is_dir($cfgDir)) {
+            mkdir($cfgDir, 0750, true);
+        }
+
+        $forceHttps = $app['https'] ? 'true' : 'false';
+        $escapedEncKey    = addcslashes($encKey,          '"\\');
+        $escapedDomain    = addcslashes($app['domain'],   '"\\');
+        $escapedAppName   = addcslashes($app['name'],     '"\\');
+        $escapedAppTheme  = addcslashes($app['theme'],    '"\\');
+
+        $localToml = <<<TOML
+# DeSEC Manager — Lokale Konfiguration (auto-generiert am {$now})
+# NIEMALS ins Git einpflegen!
+
+[security]
+encryption_key = "{$escapedEncKey}"
+
+[app]
+domain      = "{$escapedDomain}"
+force_https = {$forceHttps}
+debug       = false
+
+[application]
+name = "{$escapedAppName}"
+
+[theme]
+name = "{$escapedAppTheme}"
+TOML;
+
+        $localTomlFile = $cfgDir . '/config.local.toml';
+        if (file_exists($localTomlFile)) {
+            copy($localTomlFile, $localTomlFile . '.bak.' . date('Y-m-d-H-i-s'));
+        }
+        file_put_contents($localTomlFile, $localToml);
+        chmod($localTomlFile, 0600);
+
+        // ── 2. database.toml (Datenbankverbindung) ──────────────────────────
+        if ($db['driver'] === 'pdo_sqlite') {
+            $escapedPath = addcslashes($db['path'], '"\\');
+            $dbToml = <<<TOML
+# DeSEC Manager — Datenbankonfiguration (auto-generiert am {$now})
+
+[database]
+driver = "pdo_sqlite"
+
+[database.sqlite]
+path = "{$escapedPath}"
+TOML;
+        } else {
+            $dbDriver  = addcslashes($db['driver'],   '"\\');
+            $dbHost    = addcslashes($db['host'],     '"\\');
+            $dbPort    = (int) $db['port'];
+            $dbName    = addcslashes($db['name'],     '"\\');
+            $dbUser    = addcslashes($db['user'],     '"\\');
+            $dbPass    = addcslashes($db['pass'] ?? '', '"\\');
+            $dbCharset = $db['driver'] === 'pdo_mysql' ? 'utf8mb4' : '';
+
+            $dbToml = <<<TOML
+# DeSEC Manager — Datenbankonfiguration (auto-generiert am {$now})
+# Passwort besser via DB_PASSWORD-Umgebungsvariable statt in dieser Datei.
+
+[database]
+driver   = "{$dbDriver}"
+host     = "{$dbHost}"
+port     = {$dbPort}
+name     = "{$dbName}"
+user     = "{$dbUser}"
+password = "{$dbPass}"
+TOML;
+            if ($dbCharset !== '') {
+                $dbToml .= "\ncharset   = \"{$dbCharset}\"";
+                $dbToml .= "\ncollation = \"utf8mb4_unicode_ci\"";
+            }
+        }
+
+        $dbTomlFile = $cfgDir . '/database.toml';
+        if (file_exists($dbTomlFile)) {
+            copy($dbTomlFile, $dbTomlFile . '.bak.' . date('Y-m-d-H-i-s'));
+        }
+        file_put_contents($dbTomlFile, $dbToml);
+        chmod($dbTomlFile, 0600);
+
+        // ── 3. config.php schreiben (Mezzio-kompatibles Format, für Fallback) ──
+        $cfgFile = $cfgDir . '/config.php';
         $dbSection = ['driver' => $db['driver']];
         if ($db['driver'] === 'pdo_sqlite') {
             $dbSection['path'] = $db['path'];
         } else {
             $dbSection += [
-                'host' => $db['host'],
-                'port' => (int) $db['port'],
-                'name' => $db['name'],
-                'user' => $db['user'],
-                'pass' => $db['pass'],
+                'host'     => $db['host'],
+                'port'     => (int) $db['port'],
+                'name'     => $db['name'],
+                'user'     => $db['user'],
+                'password' => $db['pass'] ?? '',
             ];
-            // charset/collation nur für MySQL/MariaDB
             if ($db['driver'] === 'pdo_mysql') {
                 $dbSection['charset']   = 'utf8mb4';
                 $dbSection['collation'] = 'utf8mb4_unicode_ci';
             }
         }
-
         $cfg = [
             'database'    => $dbSection,
             'security'    => [
@@ -487,14 +571,13 @@ function processStep3(): array
                 'force_https' => (bool) $app['https'],
             ],
             'theme' => ['name' => $app['theme']],
+            'app'   => [
+                'domain'      => $app['domain'],
+                'force_https' => (bool) $app['https'],
+                'debug'       => false,
+            ],
             'debug' => false,
         ];
-
-        $cfgDir  = PROJECT_ROOT . '/config';
-        $cfgFile = $cfgDir . '/config.php';
-        if (!is_dir($cfgDir)) {
-            mkdir($cfgDir, 0750, true);
-        }
         if (file_exists($cfgFile)) {
             copy($cfgFile, $cfgFile . '.bak.' . date('Y-m-d-H-i-s'));
         }

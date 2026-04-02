@@ -41,6 +41,6 @@ class DashboardHandler extends AbstractHandler implements RequestHandlerInterfac
             'domains'     => array_slice($domainList, 0, 5),
             'apiKeys'     => array_slice($keyList, 0, 5),
             'cacheStatus' => $this->systemHealth->getCacheStatus(),
-        ]);
+        ], $request);
     }
 }

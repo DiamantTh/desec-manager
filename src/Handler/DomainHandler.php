@@ -42,7 +42,7 @@ class DomainHandler extends AbstractHandler implements RequestHandlerInterface
             'csrfToken'   => $this->generateCsrfToken($request),
             'message'     => $flash['message'] ?? null,
             'messageType' => $flash['type']    ?? 'is-success',
-        ]);
+        ], $request);
     }
 
     private function handlePost(ServerRequestInterface $request, int $userId): ResponseInterface

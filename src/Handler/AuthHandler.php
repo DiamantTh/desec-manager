@@ -60,7 +60,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
             $path === '/auth/logout'       && $method === 'POST' => $this->handleLogout($request),
             $path === '/auth/mfa/totp'     && $method === 'GET'  => $this->showTotpForm($request),
             $path === '/auth/mfa/totp'     && $method === 'POST' => $this->handleTotpVerify($request),
-            $path === '/auth/mfa/webauthn' && $method === 'GET'  => $this->showWebAuthnChallenge(),
+            $path === '/auth/mfa/webauthn' && $method === 'GET'  => $this->showWebAuthnChallenge($request),
             default => $this->redirect('/auth/login'),
         };
     }
@@ -79,7 +79,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
             'error'     => null,
             'csrfToken' => $this->generateCsrfToken($request),
             'config'    => $this->config,
-        ]);
+        ], $request);
     }
 
     private function handleLogin(ServerRequestInterface $request): ResponseInterface
@@ -149,7 +149,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
             'error'     => $error,
             'csrfToken' => $this->generateCsrfToken($request),
             'config'    => $this->config,
-        ]);
+        ], $request);
     }
 
     // =========================================================================
@@ -179,7 +179,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
             'error'     => null,
             'csrfToken' => $this->generateCsrfToken($request),
             'config'    => $this->config,
-        ]);
+        ], $request);
     }
 
     private function handleTotpVerify(ServerRequestInterface $request): ResponseInterface
@@ -224,14 +224,14 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
             'error'     => $error,
             'csrfToken' => $this->generateCsrfToken($request),
             'config'    => $this->config,
-        ]);
+        ], $request);
     }
 
     // =========================================================================
     // WebAuthn-MFA page (Challenge data comes via AJAX)
     // =========================================================================
 
-    private function showWebAuthnChallenge(): ResponseInterface
+    private function showWebAuthnChallenge(ServerRequestInterface $request): ResponseInterface
     {
         if (!$this->hasMfaPending('webauthn')) {
             return $this->redirect('/auth/login');
@@ -239,7 +239,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
 
         return $this->render('auth/mfa-webauthn', [
             'config' => $this->config,
-        ]);
+        ], $request);
     }
 
     // =========================================================================

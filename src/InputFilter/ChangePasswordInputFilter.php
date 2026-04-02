@@ -18,6 +18,7 @@ use Laminas\Validator\StringLength;
  * Hinweis: Die Übereinstimmung von new_password und new_password_confirm
  * wird im Handler geprüft (Identical-Validator erfordert Zugriff auf das andere Feld).
  */
+/** @extends InputFilter<array<string, mixed>> */
 final class ChangePasswordInputFilter extends InputFilter
 {
     public function __construct()

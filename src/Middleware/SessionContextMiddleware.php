@@ -6,6 +6,7 @@ namespace App\Middleware;
 
 use App\Session\SessionContext;
 use App\Service\Translator;
+use Laminas\Diactoros\Response\RedirectResponse;
 use Mezzio\Session\SessionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -41,12 +42,22 @@ class SessionContextMiddleware implements MiddlewareInterface
         }
 
         // 2. Locale-Wechsel via POST (_locale=de_DE)
+        // Locale setzen und sofort per GET-Redirect auf dieselbe URL weiterleiten,
+        // damit der nachgelagerte Handler kein "unbekanntes" POST sieht.
         $body = $request->getParsedBody();
         if (is_array($body)
             && isset($body['_locale'])
             && isset(Translator::SUPPORTED_LOCALES[$body['_locale']])
         ) {
             $this->sessionContext->setLocale((string) $body['_locale']);
+
+            // Locale in Translator setzen, bevor wir weiterleiten
+            $locale = $this->resolveLocale($request);
+            $this->translator->setLocale($locale);
+            Translator::setLaminasTranslator($this->translator);
+
+            // POST-Redirect-GET: verhindert, dass Handler ein _locale-POST verarbeitet
+            return new RedirectResponse((string) $request->getUri(), 303);
         }
 
         // 3. Locale ermitteln (Session → Accept-Language → Fallback en_US)

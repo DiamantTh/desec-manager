@@ -10,7 +10,11 @@ class PoToMoCompiler
      */
     public static function compile(string $poFile, string $moFile): bool
     {
-        $entries = self::parsePo(file_get_contents($poFile));
+        $content = file_get_contents($poFile);
+        if ($content === false) {
+            return false;
+        }
+        $entries = self::parsePo($content);
         $moData  = self::buildMo($entries);
         $dir = dirname($moFile);
         if (!is_dir($dir)) {

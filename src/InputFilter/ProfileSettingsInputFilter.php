@@ -16,6 +16,7 @@ use Laminas\Validator\StringLength;
  *
  * Felder: theme (optionaler String), locale (optionaler Locale-Code)
  */
+/** @extends InputFilter<array<string, mixed>> */
 final class ProfileSettingsInputFilter extends InputFilter
 {
     /** Unterstützte Themes (muss mit ThemeManager::getAvailableThemes() übereinstimmen). */
