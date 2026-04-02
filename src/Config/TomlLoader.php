@@ -91,10 +91,9 @@ final class TomlLoader
     private function applyEnvironmentSecrets(array $config): array
     {
         $map = [
-            'DB_PASSWORD'   => ['database', 'password'],
-            'MAIL_PASSWORD' => ['mail', 'smtp', 'password'],
+            'DB_PASSWORD'    => ['database', 'password'],
             'ENCRYPTION_KEY' => ['security', 'encryption_key'],
-            'SENTRY_DSN'    => ['sentry', 'dsn'],
+            'SENTRY_DSN'     => ['sentry', 'dsn'],
         ];
 
         foreach ($map as $envVar => $path) {

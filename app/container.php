@@ -211,23 +211,22 @@ $builder->addDefinitions([
     }),
 
     // -------------------------------------------------------------------------
-    // Mail (Symfony Mailer)
+    // Mail (Symfony Mailer — Konfiguration via Admin-Interface / DB)
+    // Passwort ausschließlich via MAIL_PASSWORD-Umgebungsvariable.
     // -------------------------------------------------------------------------
     MailerInterface::class => DI\factory(function (ContainerInterface $c): MailerInterface {
-        /** @var array<string, mixed> $mailCfg */
-        $mailCfg  = $c->get('config')['mail'] ?? [];
-        $transport = $mailCfg['transport'] ?? 'smtp';
+        $settings  = $c->get(SettingsRepository::class);
+        $transport = $settings->getString('mail.transport', 'smtps');
 
         if (str_contains($transport, '://')) {
-            // Vollständiger DSN (z.B. "smtps://user:pass@host:465", Cloud-API etc.)
+            // Vollständiger DSN (smtps://…, smtp://…, Cloud-API etc.)
             $dsn = $transport;
         } else {
-            // transport = "smtps" | "smtp" → [mail.smtp] auswerten
-            $smtp   = $mailCfg['smtp'] ?? [];
-            $user   = rawurlencode((string)($smtp['username'] ?? ''));
-            $pass   = rawurlencode((string)($smtp['password'] ?? ''));
-            $host   = $smtp['host'] ?? 'localhost';
-            $port   = (int)($smtp['port'] ?? 465);
+            // transport = "smtps" | "smtp" → Einzelfelder aus DB
+            $host   = $settings->getString('mail.smtp.host', 'localhost');
+            $port   = $settings->getInt('mail.smtp.port', 465);
+            $user   = rawurlencode($settings->getString('mail.smtp.username'));
+            $pass   = rawurlencode((string)(getenv('MAIL_PASSWORD') ?: ''));
             $scheme = ($transport === 'smtp') ? 'smtp' : 'smtps';
 
             $dsn = ($user !== '' && $pass !== '')
