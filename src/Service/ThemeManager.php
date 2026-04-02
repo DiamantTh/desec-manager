@@ -41,7 +41,7 @@ class ThemeManager
      */
     public function setThemeName(string $name): void
     {
-        $name = preg_replace('/[^a-z0-9_-]/i', '', $name);
+        $name = (string) preg_replace('/[^a-z0-9_-]/i', '', $name);
         if ($name === '') {
             return;
         }
@@ -154,6 +154,22 @@ class ThemeManager
         }
         $base = $this->getThemeWebPath();
         return array_map(static fn(string $f): string => $base . '/' . $f, $local);
+    }
+
+    /**
+     * Svelte-Bundle-Dateien (type="module"), relativ zur Web-Root.
+     * Werden aus theme.json[svelte_bundles] gelesen.
+     * @return string[]
+     */
+    public function getSvelteBundles(): array
+    {
+        $meta   = $this->getMeta();
+        $bundles = $meta['svelte_bundles'] ?? [];
+        if (!is_array($bundles)) {
+            return [];
+        }
+        $base = $this->getThemeWebPath();
+        return array_map(static fn(string $f): string => $base . '/' . $f, $bundles);
     }
 
     // ─── Dark Mode ──────────────────────────────────────────────────────────

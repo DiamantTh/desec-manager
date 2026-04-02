@@ -381,5 +381,10 @@ if ($theme->supportsDarkMode()) {
 <?php endforeach; ?>
 <?php endif; ?>
 
+<?php /* Svelte-Bundles (ES-Module) */ ?>
+<?php foreach ($theme->getSvelteBundles() as $bundle): ?>
+<script type="module" src="<?= htmlspecialchars($bundle, ENT_QUOTES, 'UTF-8') ?>"></script>
+<?php endforeach; ?>
+
 </body>
 </html>
