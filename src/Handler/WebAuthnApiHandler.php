@@ -13,6 +13,7 @@ use App\Security\WebAuthnService;
 use App\Service\ThemeManager;
 use App\Service\AuthorizationService;
 use App\Entity\WebAuthnCredential;
+use App\Security\AuthenticationResult;
 use App\Session\SessionContext;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -169,10 +170,10 @@ class WebAuthnApiHandler extends AbstractHandler implements RequestHandlerInterf
             }
 
             $userHandle = base64_encode((string) $userId);
-            $source     = $this->webAuthn->verifyAuthentication($credJson, $storedCred, $userHandle);
+            $result     = $this->webAuthn->verifyAuthentication($credJson, $storedCred, $userHandle);
 
             // Sign-Counter aktualisieren
-            $this->credentials->updateSignCount($credentialId, $source->counter);
+            $this->credentials->updateSignCount($credentialId, $result->source->counter);
 
             // If MFA is pending → complete the login
             if ($this->sessionContext->has('mfa_pending')) {
@@ -199,7 +200,7 @@ class WebAuthnApiHandler extends AbstractHandler implements RequestHandlerInterf
                             username:     (string) ($user['username'] ?? ''),
                             sessionToken: $sessionToken,
                             isTls:        $this->tlsDetector->isSecure($request),
-                            authMethod:   $this->deriveAuthMethod($storedCred),
+                            authMethod:   $this->deriveAuthMethod($storedCred, $result->uvPerformed),
                             clientIp:     $this->tlsDetector->getClientIp($request),
                             userAgent:    $request->getHeaderLine('User-Agent'),
                             lifetime:     $lifetime,
@@ -285,24 +286,34 @@ class WebAuthnApiHandler extends AbstractHandler implements RequestHandlerInterf
      * Leitet die Authentifizierungsmethode aus dem verwendeten WebAuthn-Credential ab.
      *
      * Platform-Authenticator (Face ID / Touch ID / Windows Hello) → 'webauthn:platform'
-     * Cross-platform nach Transport:
-     *   USB → 'webauthn:usb', NFC → 'webauthn:nfc', BLE → 'webauthn:ble',
-     *   Hybrid (Passkey via QR) → 'webauthn:hybrid'
+     * (UV ist hier immer implizit — kein +uv-Suffix nötig)
+     *
+     * Cross-platform nach Transport, jeweils mit optionalem '+uv'-Suffix wenn
+     * User Verification (PIN am Key) durchgeführt wurde:
+     *   USB           → 'webauthn:usb'     / 'webauthn:usb+uv'
+     *   NFC           → 'webauthn:nfc'     / 'webauthn:nfc+uv'
+     *   BLE           → 'webauthn:ble'     / 'webauthn:ble+uv'
+     *   Hybrid (QR)   → 'webauthn:hybrid'  / 'webauthn:hybrid+uv'
+     *
+     * @param bool $uvPerformed  UV-Flag aus den Authenticator-Data-Flags dieser Authentifizierung
      */
-    private function deriveAuthMethod(WebAuthnCredential $credential): string
+    private function deriveAuthMethod(WebAuthnCredential $credential, bool $uvPerformed = false): string
     {
         if ($credential->getAttachmentType() === 'platform') {
+            // Platform-Authenticatoren verifizieren immer via Biometrie/System-PIN
             return 'webauthn:platform';
         }
 
         $transports = $credential->getTransports();
-        return match (true) {
+        $base = match (true) {
             in_array('usb',    $transports, true) => 'webauthn:usb',
             in_array('nfc',    $transports, true) => 'webauthn:nfc',
             in_array('ble',    $transports, true) => 'webauthn:ble',
             in_array('hybrid', $transports, true) => 'webauthn:hybrid',
             default                               => 'webauthn',
         };
+
+        return $uvPerformed ? $base . '+uv' : $base;
     }
 
     private function jsonError(string $message, int $status = 400): ResponseInterface

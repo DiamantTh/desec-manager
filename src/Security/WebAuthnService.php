@@ -30,6 +30,7 @@ use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
 use Webauthn\TrustPath\EmptyTrustPath;
 use App\Entity\WebAuthnCredential;
+use App\Security\AuthenticationResult;
 use App\Session\SessionContext;
 
 /**
@@ -254,14 +255,14 @@ class WebAuthnService
      * @param string           $browserJson      Rohe JSON-Antwort vom Browser (navigator.credentials.get())
      * @param WebAuthnCredential $storedCredential Das passende gespeicherte Credential aus der DB
      * @param string           $userHandle       Binary user handle from the database
-     * @return PublicKeyCredentialSource          Aktualisierter Credential-Source (sign_count, backup_state aktuell)
+     * @return AuthenticationResult               Quelle + UV-Flag (ob PIN/Biometrie am Key durchgeführt wurde)
      * @throws \RuntimeException                  Bei fehlender Session, falschem Credential-Typ oder Validierungsfehler
      */
     public function verifyAuthentication(
         string $browserJson,
         WebAuthnCredential $storedCredential,
         string $userHandle
-    ): PublicKeyCredentialSource {
+    ): AuthenticationResult {
         $optionsJson = $this->loadFromSession('webauthn_options');
 
         $serializer = $this->buildSerializer();
@@ -284,9 +285,12 @@ class WebAuthnService
 
         $updatedSource = $validator->check($source, $response, $options, $this->rpId, $userHandle);
 
+        // UV-Flag aus den Authenticator-Data-Flags lesen (Bit 2, 0x04)
+        $uvPerformed = $response->authenticatorData->isUserVerified();
+
         $this->clearFromSession('webauthn_options');
 
-        return $updatedSource;
+        return new AuthenticationResult($updatedSource, $uvPerformed);
     }
 
     // =========================================================================

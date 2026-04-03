@@ -26,14 +26,18 @@ $icon = static function (bool $val): string {
 /** Helper: auth_method als farbiges Tag ausgeben */
 $authMethodTag = static function (string $method): string {
     return match ($method) {
-        'totp'              => '<span class="tag is-warning  is-light is-small" title="TOTP 2FA">&#128273; TOTP</span>',
-        'webauthn:platform' => '<span class="tag is-success  is-light is-small" title="Eingebaut (Face ID / Touch ID / Windows Hello)">&#128274; Platform</span>',
-        'webauthn:usb'      => '<span class="tag is-info     is-light is-small" title="USB Hardware-Key (z.&nbsp;B. YubiKey)">&#128273; USB</span>',
-        'webauthn:nfc'      => '<span class="tag is-info     is-light is-small" title="NFC Hardware-Key">&#128273; NFC</span>',
-        'webauthn:ble'      => '<span class="tag is-info     is-light is-small" title="Bluetooth Hardware-Key">&#128273; BLE</span>',
-        'webauthn:hybrid'   => '<span class="tag is-link     is-light is-small" title="Passkey via QR-Code / Smartphone">&#128241; Hybrid</span>',
-        'webauthn'          => '<span class="tag is-info     is-light is-small" title="WebAuthn (Transport unbekannt)">&#128273; WebAuthn</span>',
-        default             => '<span class="has-text-grey">&#8211;</span>',
+        'totp'               => '<span class="tag is-warning  is-light is-small" title="TOTP 2FA">&#128273; TOTP</span>',
+        'webauthn:platform'  => '<span class="tag is-success  is-light is-small" title="Eingebaut (Face ID / Touch ID / Windows Hello) – UV immer aktiv">&#128274; Platform</span>',
+        'webauthn:usb'       => '<span class="tag is-info     is-light is-small" title="USB Hardware-Key – nur Touch (kein PIN)">&#128273; USB</span>',
+        'webauthn:usb+uv'    => '<span class="tag is-success  is-light is-small" title="USB Hardware-Key – Touch + PIN/Biometrie">&#128274; USB+PIN</span>',
+        'webauthn:nfc'       => '<span class="tag is-info     is-light is-small" title="NFC Hardware-Key – nur Touch (kein PIN)">&#128273; NFC</span>',
+        'webauthn:nfc+uv'    => '<span class="tag is-success  is-light is-small" title="NFC Hardware-Key – Touch + PIN/Biometrie">&#128274; NFC+PIN</span>',
+        'webauthn:ble'       => '<span class="tag is-info     is-light is-small" title="Bluetooth Hardware-Key – nur Touch (kein PIN)">&#128273; BLE</span>',
+        'webauthn:ble+uv'    => '<span class="tag is-success  is-light is-small" title="Bluetooth Hardware-Key – Touch + PIN/Biometrie">&#128274; BLE+PIN</span>',
+        'webauthn:hybrid'    => '<span class="tag is-link     is-light is-small" title="Passkey via QR-Code / Smartphone – kein lokaler PIN">&#128241; Hybrid</span>',
+        'webauthn:hybrid+uv' => '<span class="tag is-success  is-light is-small" title="Passkey via QR-Code / Smartphone – mit PIN/Biometrie">&#128241; Hybrid+PIN</span>',
+        'webauthn'           => '<span class="tag is-info     is-light is-small" title="WebAuthn (Transport unbekannt)">&#128273; WebAuthn</span>',
+        default              => '<span class="has-text-grey">&#8211;</span>',
     };
 };
 ?>
@@ -250,7 +254,7 @@ $authMethodTag = static function (string $method): string {
                         <th><?= __('User') ?></th>
                         <th title="<?= __('Session is valid and not expired') ?>"><?= __('Valid') ?></th>
                         <th title="<?= __('Connection was established via TLS/HTTPS') ?>">TLS</th>
-                        <th title="<?= __('Two-factor authentication was used') ?>">2FA / Methode</th>
+                        <th title="<?= __('Authentication method used (2FA / WebAuthn + UV flag)') ?>">2FA / Methode</th>
                         <th><?= __('Login at') ?></th>
                         <th><?= __('Valid until') ?></th>
                         <th><?= __('Client IP') ?></th>
