@@ -31,6 +31,7 @@ use App\Middleware\SessionContextMiddleware;
 use App\Middleware\SessionMiddleware;
 use App\Repository\ApiKeyRepository;
 use App\Repository\DomainRepository;
+use App\Repository\SessionRepository;
 use App\Repository\UserRepository;
 use App\Repository\WebAuthnCredentialRepository;
 use App\Service\SystemHealthService;
@@ -40,6 +41,7 @@ use App\Command\I18nCompileCommand;
 use App\Command\UserCreateCommand;
 use App\Security\EncryptionService;
 use App\Security\PasswordHasher;
+use App\Security\TlsDetector;
 use App\Security\TotpService;
 use App\Security\UserKeyManager;
 use App\Security\WebAuthnService;
@@ -405,6 +407,16 @@ $builder->addDefinitions([
     AuthMiddleware::class => DI\autowire(),
 
     // -------------------------------------------------------------------------
+    // TlsDetector — erkennt HTTPS direkt und hinter Proxy
+    // -------------------------------------------------------------------------
+    TlsDetector::class => DI\factory(function (ContainerInterface $c): TlsDetector {
+        return new TlsDetector($c->get('config'));
+    }),
+
+    // SessionRepository — Autowire: Connection + ClockInterface sind registriert
+    SessionRepository::class => DI\autowire(),
+
+    // -------------------------------------------------------------------------
     // Rate-Limiting (PSR-16, per Aktion)
     // Key: rate_limit:{action}:{sha256(ip)}
     // Verwendung in routes.php: ['rate_limit.login', SomeHandler::class]
@@ -445,6 +457,8 @@ $builder->addDefinitions([
             $c->get(TotpService::class),
             $c->get(PasswordHasher::class),
             $c->get(UserKeyManager::class),
+            $c->get(SessionRepository::class),
+            $c->get(TlsDetector::class),
             $c->get('config'),
         );
     }),
@@ -455,7 +469,20 @@ $builder->addDefinitions([
     KeyHandler::class         => DI\autowire(),
     AdminHandler::class       => DI\autowire(),
     ProfileHandler::class     => DI\autowire(),
-    WebAuthnApiHandler::class => DI\autowire(),
+    WebAuthnApiHandler::class => DI\factory(function (ContainerInterface $c): WebAuthnApiHandler {
+        return new WebAuthnApiHandler(
+            $c->get(ThemeManager::class),
+            $c->get(SessionContext::class),
+            $c->get(AuthorizationService::class),
+            $c->get(\App\Security\WebAuthnService::class),
+            $c->get(WebAuthnCredentialRepository::class),
+            $c->get(UserRepository::class),
+            $c->get(UserKeyManager::class),
+            $c->get(SessionRepository::class),
+            $c->get(TlsDetector::class),
+            $c->get('config'),
+        );
+    }),
     TotpApiHandler::class     => DI\autowire(),
 
     ThemeManager::class => DI\factory(function (ContainerInterface $c): ThemeManager {

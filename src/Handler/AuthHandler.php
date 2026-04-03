@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Handler;
 
+use App\Repository\SessionRepository;
 use App\Repository\UserRepository;
 use App\Repository\WebAuthnCredentialRepository;
 use App\Security\PasswordHasher;
+use App\Security\TlsDetector;
 use App\Security\TotpService;
 use App\Security\UserKeyManager;
 use App\Service\ThemeManager;
@@ -44,6 +46,8 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
         private readonly TotpService $totp,
         private readonly PasswordHasher $passwordHasher,
         private readonly UserKeyManager $userKeyManager,
+        private readonly SessionRepository $sessionRepository,
+        private readonly TlsDetector $tlsDetector,
         private readonly array $config,
     ) {
         parent::__construct($theme, $sessionContext, $authz);
@@ -139,7 +143,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
         }
 
         // No MFA → direct login
-        $this->completeLogin($userId, $username, (bool) ($user['is_admin'] ?? false), (string) ($user['theme'] ?? ''), (string) ($user['locale'] ?? ''));
+        $this->completeLogin($userId, $username, (bool) ($user['is_admin'] ?? false), (string) ($user['theme'] ?? ''), (string) ($user['locale'] ?? ''), $request, false);
         return $this->redirect('/dashboard');
     }
 
@@ -161,6 +165,9 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
         if ($csrfError = $this->validateCsrf($request)) {
             return $csrfError;
         }
+        // Session-Record in DB als ungültig markieren
+        $token = (string) $this->sessionContext->get('session_token', '');
+        $this->sessionRepository->invalidateByToken($token);
         $this->sessionContext->clear();
         return $this->redirect('/auth/login');
     }
@@ -214,7 +221,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
         }
 
         $username = (string) ($user['username'] ?? '');
-        $this->completeLogin($userId, $username, (bool) ($user['is_admin'] ?? false), (string) ($user['theme'] ?? ''), (string) ($user['locale'] ?? ''));
+        $this->completeLogin($userId, $username, (bool) ($user['is_admin'] ?? false), (string) ($user['theme'] ?? ''), (string) ($user['locale'] ?? ''), $request, true);
         return $this->redirect('/dashboard');
     }
 
@@ -246,8 +253,15 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
     // Common helper methods
     // =========================================================================
 
-    private function completeLogin(int $userId, string $username, bool $isAdmin, string $theme = '', string $locale = ''): void
-    {
+    private function completeLogin(
+        int $userId,
+        string $username,
+        bool $isAdmin,
+        string $theme = '',
+        string $locale = '',
+        ?ServerRequestInterface $request = null,
+        bool $mfaUsed = false,
+    ): void {
         $this->sessionContext->regenerate();
 
         $this->sessionContext->unset('mfa_pending');
@@ -262,6 +276,28 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
         }
         if ($locale !== '') {
             $this->sessionContext->set('locale', $locale);
+        }
+
+        // Session-Tracking: zufälliges Token in Session hinterlegen + DB-Record anlegen
+        if ($request !== null) {
+            try {
+                $sessionToken = bin2hex(random_bytes(32));
+                $this->sessionContext->set('session_token', $sessionToken);
+
+                $lifetime = (int)($this->config['security']['session']['lifetime'] ?? 3600);
+                $this->sessionRepository->create(
+                    userId:       $userId,
+                    username:     $username,
+                    sessionToken: $sessionToken,
+                    isTls:        $this->tlsDetector->isSecure($request),
+                    mfaUsed:      $mfaUsed,
+                    clientIp:     $this->tlsDetector->getClientIp($request),
+                    userAgent:    $request->getHeaderLine('User-Agent'),
+                    lifetime:     $lifetime,
+                );
+            } catch (\Throwable) {
+                // DB-Fehler darf den Login nicht unterbrechen
+            }
         }
 
         $this->userKeyManager->promoteToSession();

@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Handler;
 
+use App\Repository\SessionRepository;
 use App\Repository\UserRepository;
 use App\Repository\WebAuthnCredentialRepository;
+use App\Security\TlsDetector;
 use App\Security\UserKeyManager;
 use App\Security\WebAuthnService;
 use App\Service\ThemeManager;
@@ -34,6 +36,7 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 class WebAuthnApiHandler extends AbstractHandler implements RequestHandlerInterface
 {
+    /** @param array<string, mixed> $config */
     public function __construct(
         ThemeManager $theme,
         SessionContext $sessionContext,
@@ -42,6 +45,9 @@ class WebAuthnApiHandler extends AbstractHandler implements RequestHandlerInterf
         private readonly WebAuthnCredentialRepository $credentials,
         private readonly UserRepository $users,
         private readonly UserKeyManager $userKeyManager,
+        private readonly SessionRepository $sessionRepository,
+        private readonly TlsDetector $tlsDetector,
+        private readonly array $config,
     ) {
         parent::__construct($theme, $sessionContext, $authz);
     }
@@ -177,10 +183,30 @@ class WebAuthnApiHandler extends AbstractHandler implements RequestHandlerInterf
                     $this->sessionContext->set('user_id',  $userId);
                     $this->sessionContext->set('username', (string) ($user['username'] ?? ''));
                     $this->sessionContext->set('is_admin', (bool)  ($user['is_admin']  ?? false));
-                    $userTheme = (string) ($user['theme']  ?? '');
+                    $userTheme  = (string) ($user['theme']  ?? '');
                     $userLocale = (string) ($user['locale'] ?? '');
                     if ($userTheme !== '')  { $this->sessionContext->set('user_theme', $userTheme); }
                     if ($userLocale !== '') { $this->sessionContext->set('locale', $userLocale); }
+
+                    // Session-Tracking
+                    try {
+                        $sessionToken = bin2hex(random_bytes(32));
+                        $this->sessionContext->set('session_token', $sessionToken);
+                        $lifetime = (int)($this->config['security']['session']['lifetime'] ?? 3600);
+                        $this->sessionRepository->create(
+                            userId:       $userId,
+                            username:     (string) ($user['username'] ?? ''),
+                            sessionToken: $sessionToken,
+                            isTls:        $this->tlsDetector->isSecure($request),
+                            mfaUsed:      true,
+                            clientIp:     $this->tlsDetector->getClientIp($request),
+                            userAgent:    $request->getHeaderLine('User-Agent'),
+                            lifetime:     $lifetime,
+                        );
+                    } catch (\Throwable) {
+                        // DB-Fehler darf den Login nicht unterbrechen
+                    }
+
                     $this->userKeyManager->promoteToSession();
                     $this->users->updateLastLogin($userId);
                 }

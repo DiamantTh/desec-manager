@@ -435,6 +435,27 @@ function processStep3(): array
         $d->addForeignKeyConstraint('users', ['user_id'], ['id'], ['onDelete' => 'CASCADE']);
         $d->addUniqueIndex(['domain_name']);
 
+        $s = $schema->createTable('user_sessions');
+        foreach ([
+            ['id',            'integer', ['autoincrement' => true]],
+            ['session_token', 'string',  ['length' => 64]],
+            ['user_id',       'integer', ['notnull' => false]],
+            ['username',      'string',  ['length' => 255, 'default' => '']],
+            ['is_valid',      'boolean', ['default' => true]],
+            ['is_tls',        'boolean', ['default' => false]],
+            ['mfa_used',      'boolean', ['default' => false]],
+            ['login_at',      'string',  ['length' => 32, 'notnull' => false]],
+            ['valid_until',   'string',  ['length' => 32, 'notnull' => false]],
+            ['client_ip',     'string',  ['length' => 45, 'notnull' => false]],
+            ['user_agent',    'text',    ['notnull' => false]],
+        ] as [$col, $type, $opts]) {
+            $s->addColumn($col, $type, $opts);
+        }
+        $s->setPrimaryKey(['id']);
+        $s->addUniqueIndex(['session_token']);
+        $s->addIndex(['user_id']);
+        $s->addForeignKeyConstraint('users', ['user_id'], ['id'], ['onDelete' => 'CASCADE']);
+
         foreach ($schema->toSql($conn->getDatabasePlatform()) as $sql) {
             $conn->executeStatement($sql);
         }

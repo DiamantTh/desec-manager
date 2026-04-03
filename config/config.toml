@@ -74,6 +74,16 @@ path = "var/cache"          # Relativ zum Projekt-Root — muss beschreibbar sei
 # Zwingend via ENCRYPTION_KEY-Umgebungsvariable oder config.local.toml setzen.
 encryption_key = ""
 
+# Reverse-Proxy-Vertrauen
+# Auf true setzen wenn ein vertrauenswürdiger Reverse Proxy (nginx, Caddy, HAProxy,
+# Traefik, Cloudflare etc.) vorgelagert ist. Aktiviert Auswertung von:
+#   X-Forwarded-Proto  → TLS-Erkennung
+#   X-Forwarded-For    → Client-IP-Ermittlung
+#   X-Forwarded-SSL    → Alternative TLS-Erkennung
+#   X-Real-IP          → Client-IP (nginx)
+# SICHERHEIT: Nur aktivieren wenn externe Clients keinen direkten PHP-Zugriff haben!
+trust_proxy = false
+
 # Argon2id (Passwort-Hashing) — OWASP 2024-Empfehlung
 # memory_cost = 128 MB, time_cost = 4, threads = 4
 # Erhöhen bei verfügbaren Ressourcen; niemals senken (bricht bestehende Passwörter nicht —

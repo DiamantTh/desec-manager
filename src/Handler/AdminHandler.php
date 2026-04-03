@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Handler;
 
 use App\Repository\UserRepository;
+use App\Repository\SessionRepository;
 use App\Security\PasswordHasher;
 use App\Security\UserKeyManager;
 use App\Service\ThemeManager;
@@ -24,6 +25,7 @@ class AdminHandler extends AbstractHandler implements RequestHandlerInterface
         private readonly UserRepository $users,
         private readonly PasswordHasher $passwordHasher,
         private readonly UserKeyManager $userKeyManager,
+        private readonly SessionRepository $sessionRepository,
     ) {
         parent::__construct($theme, $sessionContext, $authz);
     }
@@ -79,6 +81,12 @@ class AdminHandler extends AbstractHandler implements RequestHandlerInterface
                         $this->users->delete($id);
                         $message = __('User has been deleted.');
                     }
+                } elseif ($action === 'invalidate_session') {
+                    $id = $this->bodyInt($body, 'id');
+                    if ($id > 0) {
+                        $this->sessionRepository->invalidate($id);
+                        $message = __('Session has been invalidated.');
+                    }
                 }
             } catch (\Throwable $e) {
                 $message     = $e->getMessage();
@@ -88,6 +96,7 @@ class AdminHandler extends AbstractHandler implements RequestHandlerInterface
 
         return $this->render('admin/index', [
             'users'       => $this->users->findAll(),
+            'sessions'    => $this->sessionRepository->findAll(),
             'currentId'   => $this->userId(),
             'csrfToken'   => $this->generateCsrfToken($request),
             'message'     => $message,

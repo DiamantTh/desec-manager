@@ -1,16 +1,27 @@
 <?php
 /**
  * @var list<array<string, mixed>> $users
+ * @var list<array<string, mixed>> $sessions
  * @var int    $currentId
  * @var string $csrfToken
  * @var string|null $message
  * @var string $messageType  'is-success'|'is-danger'
  */
 $users       ??= [];
+$sessions    ??= [];
 $currentId   ??= 0;
 $csrfToken   ??= '';
 $message     ??= null;
 $messageType ??= 'is-success';
+
+$now = (new \DateTimeImmutable())->format('Y-m-d H:i:s');
+
+/** Helper: Boolean-Spalte als Icon ausgeben */
+$icon = static function (bool $val): string {
+    return $val
+        ? '<span class="icon has-text-success" title="Ja"><span>&#10003;</span></span>'
+        : '<span class="icon has-text-danger"  title="Nein"><span>&#10007;</span></span>';
+};
 ?>
 
 <?php if ($message): ?>
@@ -204,4 +215,82 @@ $messageType ??= 'is-success';
             </div>
         </div>
     </form>
+</div>
+
+<!-- ===================================================================
+     Aktive Sessions
+     =================================================================== -->
+<div class="box">
+    <h2 class="title is-4"><?= __('Currently active sessions') ?></h2>
+    <p class="has-text-grey is-size-7 mb-4">
+        <?= __('Sessions can be invalidated here. The user will be logged out on their next request.') ?>
+        <?= __('Sessions without a tracking token (created before this feature was added) are shown without action.') ?>
+    </p>
+
+    <?php if ($sessions): ?>
+        <div class="table-container">
+            <table class="table is-fullwidth is-striped is-hoverable is-size-7">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th><?= __('User') ?></th>
+                        <th title="<?= __('Session is valid and not expired') ?>"><?= __('Valid') ?></th>
+                        <th title="<?= __('Connection was established via TLS/HTTPS') ?>">TLS</th>
+                        <th title="<?= __('Two-factor authentication was used') ?>">2FA</th>
+                        <th><?= __('Login at') ?></th>
+                        <th><?= __('Valid until') ?></th>
+                        <th><?= __('Client IP') ?></th>
+                        <th><?= __('User Agent') ?></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($sessions as $s): ?>
+                        <?php
+                        $sid        = (int) $s['id'];
+                        $isValid    = (bool) $s['is_valid'] && ((string)($s['valid_until'] ?? '')) >= $now;
+                        $isTls      = (bool) $s['is_tls'];
+                        $mfaUsed    = (bool) $s['mfa_used'];
+                        $uname      = htmlspecialchars((string)($s['username'] ?? ''), ENT_QUOTES, 'UTF-8');
+                        $loginAt    = htmlspecialchars((string)($s['login_at']    ?? ''), ENT_QUOTES, 'UTF-8');
+                        $validUntil = htmlspecialchars((string)($s['valid_until'] ?? ''), ENT_QUOTES, 'UTF-8');
+                        $ip         = htmlspecialchars((string)($s['client_ip']   ?? ''), ENT_QUOTES, 'UTF-8');
+                        $ua         = htmlspecialchars((string)($s['user_agent']  ?? ''), ENT_QUOTES, 'UTF-8');
+                        // UA kürzen für Anzeige
+                        $uaShort    = mb_strlen($ua) > 60 ? mb_substr($ua, 0, 57) . '...' : $ua;
+                        ?>
+                        <tr class="<?= $isValid ? '' : 'has-text-grey' ?>">
+                            <td><?= $sid ?></td>
+                            <td><?= $uname ?></td>
+                            <td class="has-text-centered"><?= $icon($isValid) ?></td>
+                            <td class="has-text-centered"><?= $icon($isTls) ?></td>
+                            <td class="has-text-centered"><?= $icon($mfaUsed) ?></td>
+                            <td><?= $loginAt ?></td>
+                            <td><?= $validUntil ?></td>
+                            <td><code><?= $ip ?></code></td>
+                            <td title="<?= $ua ?>"><?= $uaShort ?></td>
+                            <td>
+                                <?php if ($isValid): ?>
+                                    <form method="post">
+                                        <input type="hidden" name="csrf"   value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
+                                        <input type="hidden" name="action" value="invalidate_session">
+                                        <input type="hidden" name="id"     value="<?= $sid ?>">
+                                        <button type="submit" class="button is-danger is-small is-outlined"
+                                                title="<?= __('Invalidate session') ?>"
+                                                onclick="return confirm('<?= __('Really invalidate this session?') ?>')">
+                                            <?= __('Invalidate') ?>
+                                        </button>
+                                    </form>
+                                <?php else: ?>
+                                    <span class="tag is-light is-small"><?= __('Expired') ?></span>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    <?php else: ?>
+        <p class="has-text-grey"><?= __('No sessions recorded yet.') ?></p>
+    <?php endif; ?>
 </div>
