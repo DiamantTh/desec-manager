@@ -443,7 +443,7 @@ function processStep3(): array
             ['username',      'string',  ['length' => 255, 'default' => '']],
             ['is_valid',      'boolean', ['default' => true]],
             ['is_tls',        'boolean', ['default' => false]],
-            ['mfa_used',      'boolean', ['default' => false]],
+            ['auth_method',   'string',  ['length' => 32, 'default' => '']],
             ['login_at',      'string',  ['length' => 32, 'notnull' => false]],
             ['valid_until',   'string',  ['length' => 32, 'notnull' => false]],
             ['client_ip',     'string',  ['length' => 45, 'notnull' => false]],

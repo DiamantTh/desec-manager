@@ -1,5 +1,4 @@
 -- Migration: user_sessions-Tabelle für Session-Tracking im Admin-Panel.
--- Speichert Metadaten zu aktiven und abgelaufenen Sessions.
 -- Für bestehende MySQL/MariaDB-Installationen ausführen:
 --   mysql -u USER -p DBNAME < sql/mysql/add_user_sessions.sql
 
@@ -10,7 +9,7 @@ CREATE TABLE IF NOT EXISTS `user_sessions` (
     `username`      VARCHAR(255)     NOT NULL DEFAULT '',
     `is_valid`      TINYINT(1)       NOT NULL DEFAULT 1,
     `is_tls`        TINYINT(1)       NOT NULL DEFAULT 0,
-    `mfa_used`      TINYINT(1)       NOT NULL DEFAULT 0,
+    `auth_method`   VARCHAR(32)      NOT NULL DEFAULT '',
     `login_at`      VARCHAR(32),
     `valid_until`   VARCHAR(32),
     `client_ip`     VARCHAR(45),

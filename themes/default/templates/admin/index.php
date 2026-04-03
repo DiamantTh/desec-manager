@@ -22,6 +22,20 @@ $icon = static function (bool $val): string {
         ? '<span class="icon has-text-success" title="Ja"><span>&#10003;</span></span>'
         : '<span class="icon has-text-danger"  title="Nein"><span>&#10007;</span></span>';
 };
+
+/** Helper: auth_method als farbiges Tag ausgeben */
+$authMethodTag = static function (string $method): string {
+    return match ($method) {
+        'totp'              => '<span class="tag is-warning  is-light is-small" title="TOTP 2FA">&#128273; TOTP</span>',
+        'webauthn:platform' => '<span class="tag is-success  is-light is-small" title="Eingebaut (Face ID / Touch ID / Windows Hello)">&#128274; Platform</span>',
+        'webauthn:usb'      => '<span class="tag is-info     is-light is-small" title="USB Hardware-Key (z.&nbsp;B. YubiKey)">&#128273; USB</span>',
+        'webauthn:nfc'      => '<span class="tag is-info     is-light is-small" title="NFC Hardware-Key">&#128273; NFC</span>',
+        'webauthn:ble'      => '<span class="tag is-info     is-light is-small" title="Bluetooth Hardware-Key">&#128273; BLE</span>',
+        'webauthn:hybrid'   => '<span class="tag is-link     is-light is-small" title="Passkey via QR-Code / Smartphone">&#128241; Hybrid</span>',
+        'webauthn'          => '<span class="tag is-info     is-light is-small" title="WebAuthn (Transport unbekannt)">&#128273; WebAuthn</span>',
+        default             => '<span class="has-text-grey">&#8211;</span>',
+    };
+};
 ?>
 
 <?php if ($message): ?>
@@ -236,7 +250,7 @@ $icon = static function (bool $val): string {
                         <th><?= __('User') ?></th>
                         <th title="<?= __('Session is valid and not expired') ?>"><?= __('Valid') ?></th>
                         <th title="<?= __('Connection was established via TLS/HTTPS') ?>">TLS</th>
-                        <th title="<?= __('Two-factor authentication was used') ?>">2FA</th>
+                        <th title="<?= __('Two-factor authentication was used') ?>">2FA / Methode</th>
                         <th><?= __('Login at') ?></th>
                         <th><?= __('Valid until') ?></th>
                         <th><?= __('Client IP') ?></th>
@@ -250,7 +264,7 @@ $icon = static function (bool $val): string {
                         $sid        = (int) $s['id'];
                         $isValid    = (bool) $s['is_valid'] && ((string)($s['valid_until'] ?? '')) >= $now;
                         $isTls      = (bool) $s['is_tls'];
-                        $mfaUsed    = (bool) $s['mfa_used'];
+                        $authMethod = (string) ($s['auth_method'] ?? '');
                         $uname      = htmlspecialchars((string)($s['username'] ?? ''), ENT_QUOTES, 'UTF-8');
                         $loginAt    = htmlspecialchars((string)($s['login_at']    ?? ''), ENT_QUOTES, 'UTF-8');
                         $validUntil = htmlspecialchars((string)($s['valid_until'] ?? ''), ENT_QUOTES, 'UTF-8');
@@ -264,7 +278,7 @@ $icon = static function (bool $val): string {
                             <td><?= $uname ?></td>
                             <td class="has-text-centered"><?= $icon($isValid) ?></td>
                             <td class="has-text-centered"><?= $icon($isTls) ?></td>
-                            <td class="has-text-centered"><?= $icon($mfaUsed) ?></td>
+                            <td class="has-text-centered"><?= $authMethodTag($authMethod) ?></td>
                             <td><?= $loginAt ?></td>
                             <td><?= $validUntil ?></td>
                             <td><code><?= $ip ?></code></td>

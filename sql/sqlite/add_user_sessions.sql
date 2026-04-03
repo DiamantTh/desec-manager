@@ -10,7 +10,9 @@ CREATE TABLE IF NOT EXISTS "user_sessions" (
     "username"      VARCHAR(255) NOT NULL DEFAULT '',
     "is_valid"      BOOLEAN NOT NULL DEFAULT 1,
     "is_tls"        BOOLEAN NOT NULL DEFAULT 0,
-    "mfa_used"      BOOLEAN NOT NULL DEFAULT 0,
+    -- Authentifizierungsmethode: '' = Passwort, 'totp', 'webauthn:platform',
+    -- 'webauthn:usb', 'webauthn:nfc', 'webauthn:ble', 'webauthn:hybrid', 'webauthn'
+    "auth_method"   VARCHAR(32) NOT NULL DEFAULT '',
     "login_at"      VARCHAR(32),
     "valid_until"   VARCHAR(32),
     "client_ip"     VARCHAR(45),

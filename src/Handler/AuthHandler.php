@@ -143,7 +143,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
         }
 
         // No MFA → direct login
-        $this->completeLogin($userId, $username, (bool) ($user['is_admin'] ?? false), (string) ($user['theme'] ?? ''), (string) ($user['locale'] ?? ''), $request, false);
+        $this->completeLogin($userId, $username, (bool) ($user['is_admin'] ?? false), (string) ($user['theme'] ?? ''), (string) ($user['locale'] ?? ''), $request, '');
         return $this->redirect('/dashboard');
     }
 
@@ -221,7 +221,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
         }
 
         $username = (string) ($user['username'] ?? '');
-        $this->completeLogin($userId, $username, (bool) ($user['is_admin'] ?? false), (string) ($user['theme'] ?? ''), (string) ($user['locale'] ?? ''), $request, true);
+        $this->completeLogin($userId, $username, (bool) ($user['is_admin'] ?? false), (string) ($user['theme'] ?? ''), (string) ($user['locale'] ?? ''), $request, 'totp');
         return $this->redirect('/dashboard');
     }
 
@@ -260,7 +260,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
         string $theme = '',
         string $locale = '',
         ?ServerRequestInterface $request = null,
-        bool $mfaUsed = false,
+        string $authMethod = '',
     ): void {
         $this->sessionContext->regenerate();
 
@@ -290,7 +290,7 @@ class AuthHandler extends AbstractHandler implements RequestHandlerInterface
                     username:     $username,
                     sessionToken: $sessionToken,
                     isTls:        $this->tlsDetector->isSecure($request),
-                    mfaUsed:      $mfaUsed,
+                    authMethod:   $authMethod,
                     clientIp:     $this->tlsDetector->getClientIp($request),
                     userAgent:    $request->getHeaderLine('User-Agent'),
                     lifetime:     $lifetime,

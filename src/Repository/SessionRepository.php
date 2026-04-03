@@ -29,10 +29,18 @@ class SessionRepository
      * Legt beim Login einen neuen Session-Record an.
      *
      * @param int    $userId       ID des eingeloggten Benutzers
-     * @param string $username     Benutzername (denormalisiert, bleibt auch nach User-Löschung)
+     * @param string $username     Benutzername (denormalisiert)
      * @param string $sessionToken Zufälliger Token (wird in der PHP-Session gespeichert)
      * @param bool   $isTls        War die Verbindung beim Login TLS-gesichert?
-     * @param bool   $mfaUsed      Wurde 2FA (TOTP oder WebAuthn) verwendet?
+     * @param string $authMethod   Authentifizierungsmethode:
+     *                             ''                   = Passwort (kein MFA)
+     *                             'totp'               = TOTP
+     *                             'webauthn:platform'  = Face ID / Touch ID / Windows Hello
+     *                             'webauthn:usb'       = Hardware-Key über USB (YubiKey etc.)
+     *                             'webauthn:nfc'       = Hardware-Key über NFC
+     *                             'webauthn:ble'       = Hardware-Key über Bluetooth
+     *                             'webauthn:hybrid'    = Passkey via QR-Code / Phone
+     *                             'webauthn'           = WebAuthn (Transport unbekannt)
      * @param string $clientIp     IP-Adresse des Clients
      * @param string $userAgent    User-Agent-Header des Browsers
      * @param int    $lifetime     Session-Lebensdauer in Sekunden
@@ -42,7 +50,7 @@ class SessionRepository
         string $username,
         string $sessionToken,
         bool $isTls,
-        bool $mfaUsed,
+        string $authMethod,
         string $clientIp,
         string $userAgent,
         int $lifetime,
@@ -56,7 +64,7 @@ class SessionRepository
             'username'      => $username,
             'is_valid'      => 1,
             'is_tls'        => $isTls ? 1 : 0,
-            'mfa_used'      => $mfaUsed ? 1 : 0,
+            'auth_method'   => $authMethod,
             'login_at'      => $now->format('Y-m-d H:i:s'),
             'valid_until'   => $validUntil->format('Y-m-d H:i:s'),
             'client_ip'     => $clientIp,

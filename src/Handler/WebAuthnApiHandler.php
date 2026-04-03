@@ -12,6 +12,7 @@ use App\Security\UserKeyManager;
 use App\Security\WebAuthnService;
 use App\Service\ThemeManager;
 use App\Service\AuthorizationService;
+use App\Entity\WebAuthnCredential;
 use App\Session\SessionContext;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -198,7 +199,7 @@ class WebAuthnApiHandler extends AbstractHandler implements RequestHandlerInterf
                             username:     (string) ($user['username'] ?? ''),
                             sessionToken: $sessionToken,
                             isTls:        $this->tlsDetector->isSecure($request),
-                            mfaUsed:      true,
+                            authMethod:   $this->deriveAuthMethod($storedCred),
                             clientIp:     $this->tlsDetector->getClientIp($request),
                             userAgent:    $request->getHeaderLine('User-Agent'),
                             lifetime:     $lifetime,
@@ -278,6 +279,30 @@ class WebAuthnApiHandler extends AbstractHandler implements RequestHandlerInterf
             return (int) $pending['user_id'];
         }
         return 0;
+    }
+
+    /**
+     * Leitet die Authentifizierungsmethode aus dem verwendeten WebAuthn-Credential ab.
+     *
+     * Platform-Authenticator (Face ID / Touch ID / Windows Hello) → 'webauthn:platform'
+     * Cross-platform nach Transport:
+     *   USB → 'webauthn:usb', NFC → 'webauthn:nfc', BLE → 'webauthn:ble',
+     *   Hybrid (Passkey via QR) → 'webauthn:hybrid'
+     */
+    private function deriveAuthMethod(WebAuthnCredential $credential): string
+    {
+        if ($credential->getAttachmentType() === 'platform') {
+            return 'webauthn:platform';
+        }
+
+        $transports = $credential->getTransports();
+        return match (true) {
+            in_array('usb',    $transports, true) => 'webauthn:usb',
+            in_array('nfc',    $transports, true) => 'webauthn:nfc',
+            in_array('ble',    $transports, true) => 'webauthn:ble',
+            in_array('hybrid', $transports, true) => 'webauthn:hybrid',
+            default                               => 'webauthn',
+        };
     }
 
     private function jsonError(string $message, int $status = 400): ResponseInterface
