@@ -5,6 +5,7 @@
     "require": {
         "php": ">=8.4",
         "ext-intl": "*",
+        "bjeavons/zxcvbn-php": "^1.4",
         "doctrine/dbal": "^3.7",
         "guzzlehttp/guzzle": "^7.8",
         "laminas/laminas-diactoros": "^3.5",
