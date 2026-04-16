@@ -99,10 +99,12 @@ final class PasswordGenerateCommand extends Command
 
         if ($type === 'xkcd') {
             $size    = $this->generator->wordlistSize();
+            $lang    = $this->generator->getActiveLang();
             $entropy = round($words * log($size, 2), 1);
             $output->writeln(
                 "<comment>Passphrasen-Entropie: ~{$entropy} bit " .
-                "({$words} Wörter × log₂({$size}) ≈ " . round(log($size, 2), 1) . " bit/Wort)</comment>"
+                "({$words} Wörter × log₂({$size}) ≈ " . round(log($size, 2), 1) . " bit/Wort, " .
+                "Sprache: {$lang})</comment>"
             );
             $output->writeln('');
         }

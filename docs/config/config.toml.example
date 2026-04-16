@@ -128,6 +128,11 @@ time_cost   = 4        # Iterationen
 threads     = 4        # Parallele Threads (NUR erhöhen wenn Server ≥ 4 Kerne hat)
 min_length  = 16       # Passwort-Mindestlänge in Zeichen (Bereich: 8–128); Empfehlung: ≥ 16
 min_score   = 0        # zxcvbn-Mindest-Score: 0 = deaktiviert, 1 = sehr schwach, 2 = mittel, 3 = stark, 4 = sehr stark
+# Sprache der Passphrasen-Wortliste (Passphrase-Generator / CLI)
+# Unterstützt: en (7776), de (7776), it (2048), pt (2048), cs (2048), fr (1682), es (1714)
+# Quellen: EFF Large Wordlist (en), dys2p wordlists-de (de), BIP-39 (fr/es/it/pt/cs)
+# Browser-UI nutzt immer Englisch (EFF); Sprache gilt für CLI + Server-seitige Generierung.
+passphrase_lang = "en"
 
 # Session-Cookie (browser-seitige Sicherheitsflags)
 [security.session]

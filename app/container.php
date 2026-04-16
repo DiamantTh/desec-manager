@@ -508,7 +508,12 @@ $builder->addDefinitions([
 
     AuthorizationService::class => DI\autowire(),
 
-    PasswordGenerator::class => DI\create(PasswordGenerator::class),
+    PasswordGenerator::class => DI\factory(function (ContainerInterface $c): PasswordGenerator {
+        /** @var array<string, mixed> $cfg */
+        $cfg  = $c->get('config');
+        $lang = (string)($cfg['security']['password']['passphrase_lang'] ?? 'en');
+        return new PasswordGenerator($lang);
+    }),
 
     // -------------------------------------------------------------------------
     // CLI-Commands (symfony/console)

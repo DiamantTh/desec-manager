@@ -95,6 +95,12 @@ threads     = 4        # Parallele Threads
 min_length  = 16       # Passwort-Mindestlänge (8–128 Zeichen); Standard: 16
 min_score   = 0        # zxcvbn-Mindestscore (0 = deaktiviert, 1–4); Empfehlung: 2
 
+# Sprache der Passphrasen-Wortliste (Passphrase-Generator / CLI)
+# Unterstützt: en (7776), de (7776), it (2048), pt (2048), cs (2048), fr (1682), es (1714)
+# Quellen: EFF Large Wordlist (en), dys2p wordlists-de (de), BIP-39 (fr/es/it/pt/cs)
+# Browser-UI nutzt immer Englisch (EFF); Sprache gilt für CLI + Server-seitige Generierung.
+passphrase_lang = "en"
+
 # Session-Cookie (sicherheitskritisch — nicht via Interface änderbar)
 [security.session]
 secure   = true      # Nur über HTTPS — lokal: false in config.local.toml
