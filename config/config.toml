@@ -92,6 +92,8 @@ trust_proxy = false
 memory_cost = 131072   # 128 MB (OWASP 2024: ≥ 64 MB empfohlen, 128 MB bevorzugt)
 time_cost   = 4        # 4 Iterationen
 threads     = 4        # Parallele Threads
+min_length  = 16       # Passwort-Mindestlänge (8–128 Zeichen); Standard: 16
+min_score   = 0        # zxcvbn-Mindestscore (0 = deaktiviert, 1–4); Empfehlung: 2
 
 # Session-Cookie (sicherheitskritisch — nicht via Interface änderbar)
 [security.session]

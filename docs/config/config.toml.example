@@ -126,6 +126,8 @@ encryption_key = ""
 memory_cost = 131072   # 128 MB (OWASP 2024: ≥ 64 MB empfohlen, 128 MB bevorzugt)
 time_cost   = 4        # Iterationen
 threads     = 4        # Parallele Threads (NUR erhöhen wenn Server ≥ 4 Kerne hat)
+min_length  = 16       # Passwort-Mindestlänge in Zeichen (Bereich: 8–128); Empfehlung: ≥ 16
+min_score   = 0        # zxcvbn-Mindest-Score: 0 = deaktiviert, 1 = sehr schwach, 2 = mittel, 3 = stark, 4 = sehr stark
 
 # Session-Cookie (browser-seitige Sicherheitsflags)
 [security.session]
