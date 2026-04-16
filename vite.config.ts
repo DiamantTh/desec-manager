@@ -11,6 +11,7 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 records: 'themes/default/src/records/main.ts',
+                pwtools: 'themes/default/src/pwtools/main.ts',
                 // domains: 'themes/default/src/domains/main.ts',  // bei Bedarf
             },
             output: {
