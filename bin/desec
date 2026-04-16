@@ -21,6 +21,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use App\Command\CacheClearCommand;
 use App\Command\DbMigrateCommand;
 use App\Command\I18nCompileCommand;
+use App\Command\PasswordGenerateCommand;
 use App\Command\UserCreateCommand;
 use Symfony\Component\Console\Application;
 
@@ -30,6 +31,7 @@ $cli = new Application('deSEC Manager CLI', '1.0.0');
 
 $cli->add($container->get(CacheClearCommand::class));
 $cli->add($container->get(UserCreateCommand::class));
+$cli->add($container->get(PasswordGenerateCommand::class));
 $cli->add($container->get(I18nCompileCommand::class));
 $cli->add($container->get(DbMigrateCommand::class));
 
