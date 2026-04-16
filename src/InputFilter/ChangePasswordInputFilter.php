@@ -35,7 +35,7 @@ final class ChangePasswordInputFilter extends InputFilter
         $new->getFilterChain()->attach(new StringTrim());
         $new->getValidatorChain()
             ->attach(new NotEmpty())
-            ->attach(new StringLength(['min' => 12, 'max' => 1024]));
+            ->attach(new StringLength(['min' => 1, 'max' => 1024]));
 
         $confirm = new Input('new_password_confirm');
         $confirm->setRequired(true);

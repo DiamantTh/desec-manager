@@ -100,6 +100,19 @@ class SessionRepository
     }
 
     /**
+     * Markiert alle aktiven Sessions eines Benutzers als ungültig.
+     * Wird beim Admin-Passwort-Reset aufgerufen.
+     */
+    public function invalidateByUserId(int $userId): void
+    {
+        $this->connection->update(
+            'user_sessions',
+            ['is_valid' => 0],
+            ['user_id' => $userId],
+        );
+    }
+
+    /**
      * Markiert die Session mit dem gegebenen Token als ungültig.
      * Wird beim Logout aufgerufen.
      */

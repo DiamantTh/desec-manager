@@ -7,6 +7,7 @@ namespace App\Handler;
 use App\Repository\UserRepository;
 use App\Repository\WebAuthnCredentialRepository;
 use App\Security\PasswordHasher;
+use App\Security\PasswordPolicy;
 use App\Security\UserKeyManager;
 use App\Service\ThemeManager;
 use App\Service\AuthorizationService;
@@ -30,6 +31,7 @@ class ProfileHandler extends AbstractHandler implements RequestHandlerInterface
         private readonly UserRepository $users,
         private readonly WebAuthnCredentialRepository $webAuthnCredentials,
         private readonly PasswordHasher $passwordHasher,
+        private readonly PasswordPolicy $passwordPolicy,
         private readonly UserKeyManager $userKeyManager,
     ) {
         parent::__construct($theme, $sessionContext, $authz);
@@ -75,13 +77,14 @@ class ProfileHandler extends AbstractHandler implements RequestHandlerInterface
         $webAuthnKeys = $this->webAuthnCredentials->findByUserId($userId);
 
         return $this->render('profile/index', [
-            'user'           => $user,
-            'webAuthnKeys'   => $webAuthnKeys,
-            'totpEnabled'    => !empty($user['totp_enabled']),
-            'csrfToken'      => $this->generateCsrfToken($request),
-            'message'        => $message,
-            'messageType'    => $messageType,
+            'user'            => $user,
+            'webAuthnKeys'    => $webAuthnKeys,
+            'totpEnabled'     => !empty($user['totp_enabled']),
+            'csrfToken'       => $this->generateCsrfToken($request),
+            'message'         => $message,
+            'messageType'     => $messageType,
             'availableThemes' => $this->theme->getAvailableThemes(),
+            'minLength'       => $this->passwordPolicy->getMinLength(),
         ], $request);
     }
 
@@ -106,9 +109,7 @@ class ProfileHandler extends AbstractHandler implements RequestHandlerInterface
         if ($new !== $confirm) {
             throw new \InvalidArgumentException(__('New password and confirmation do not match.'));
         }
-        if (strlen($new) < 12) {
-            throw new \InvalidArgumentException(__('The new password must be at least 12 characters long.'));
-        }
+        $this->passwordPolicy->assertValid($new);
 
         $this->users->updatePassword($userId, $this->passwordHasher->hash($new));
 

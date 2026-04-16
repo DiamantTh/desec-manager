@@ -7,6 +7,7 @@ namespace App\Handler;
 use App\Repository\UserRepository;
 use App\Repository\SessionRepository;
 use App\Security\PasswordHasher;
+use App\Security\PasswordPolicy;
 use App\Security\UserKeyManager;
 use App\Service\ThemeManager;
 use App\Service\AuthorizationService;
@@ -24,6 +25,7 @@ class AdminHandler extends AbstractHandler implements RequestHandlerInterface
         AuthorizationService $authz,
         private readonly UserRepository $users,
         private readonly PasswordHasher $passwordHasher,
+        private readonly PasswordPolicy $passwordPolicy,
         private readonly UserKeyManager $userKeyManager,
         private readonly SessionRepository $sessionRepository,
     ) {
@@ -87,6 +89,9 @@ class AdminHandler extends AbstractHandler implements RequestHandlerInterface
                         $this->sessionRepository->invalidate($id);
                         $message = __('Session has been invalidated.');
                     }
+                } elseif ($action === 'reset_password') {
+                    $this->handleResetPassword($body);
+                    $message = __('Password has been reset successfully.');
                 }
             } catch (\Throwable $e) {
                 $message     = $e->getMessage();
@@ -101,6 +106,7 @@ class AdminHandler extends AbstractHandler implements RequestHandlerInterface
             'csrfToken'   => $this->generateCsrfToken($request),
             'message'     => $message,
             'messageType' => $messageType,
+            'minLength'   => $this->passwordPolicy->getMinLength(),
         ], $request);
     }
 
@@ -126,6 +132,8 @@ class AdminHandler extends AbstractHandler implements RequestHandlerInterface
             throw new \RuntimeException('E-Mail-Adresse wird bereits verwendet.');
         }
 
+        $this->passwordPolicy->assertValid($password);
+
         $userId = $this->users->create([
             'username'      => $username,
             'email'         => $email,
@@ -136,5 +144,45 @@ class AdminHandler extends AbstractHandler implements RequestHandlerInterface
 
         $keyData = $this->userKeyManager->initForNewUser($password);
         $this->users->updateWrappedKey($userId, $keyData['salt'], $keyData['wrapped_key']);
+    }
+
+    /**
+     * Setzt das Passwort eines Benutzers als Admin zurück.
+     * Kein Altes Passwort nötig. Der Encryption-Key wird neu initialisiert —
+     * vorhandene verschlüsselte API-Keys des Benutzers werden dabei ungültig.
+     *
+     * @param array<string, mixed>|object|null $body
+     */
+    private function handleResetPassword(array|object|null $body): void
+    {
+        $targetId = $this->bodyInt($body, 'target_id');
+        $newPw    = $this->bodyString($body, 'new_password');
+        $confirm  = $this->bodyString($body, 'new_password_confirm');
+
+        if ($targetId <= 0) {
+            throw new \InvalidArgumentException(__('Please select a user.'));
+        }
+        if ($newPw === '' || $confirm === '') {
+            throw new \InvalidArgumentException(__('Please fill in all fields.'));
+        }
+        if ($newPw !== $confirm) {
+            throw new \InvalidArgumentException(__('New password and confirmation do not match.'));
+        }
+
+        $this->passwordPolicy->assertValid($newPw);
+
+        $user = $this->users->findById($targetId);
+        if ($user === null) {
+            throw new \RuntimeException(__('User not found.'));
+        }
+
+        $this->users->updatePassword($targetId, $this->passwordHasher->hash($newPw));
+
+        // Encryption-Key mit neuem Passwort neu initialisieren
+        $keyData = $this->userKeyManager->initForNewUser($newPw);
+        $this->users->updateWrappedKey($targetId, $keyData['salt'], $keyData['wrapped_key']);
+
+        // Alle aktiven Sessions des Benutzers invalidieren (Sicherheit: erzwingt Re-Login)
+        $this->sessionRepository->invalidateByUserId($targetId);
     }
 }
