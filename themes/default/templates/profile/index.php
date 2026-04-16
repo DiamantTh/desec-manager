@@ -6,12 +6,14 @@
  * @var ?string $message
  * @var string $messageType  'is-success'|'is-danger'
  * @var string[] $availableThemes
+ * @var int $minLength
  */
 $webAuthnKeys    ??= [];
 $totpEnabled     ??= false;
 $message         ??= null;
 $messageType     ??= 'is-success';
 $availableThemes ??= ['default', 'bulma'];
+$minLength       ??= 16;
 ?>
 
 <?php if ($message): ?>
@@ -64,14 +66,24 @@ $availableThemes ??= ['default', 'bulma'];
             <div class="field">
                 <label class="label" for="new_password"><?= __('New password') ?></label>
                 <div class="control">
-                    <input id="new_password" name="new_password" type="password" class="input" required minlength="12">
+                    <input id="new_password" name="new_password" type="password" class="input" required
+                           minlength="<?= $minLength ?>" data-strength-meter="pw-meter-profile">
                 </div>
-                <p class="help"><?= __('At least 12 characters.') ?></p>
+                <div id="pw-meter-profile" class="pw-strength-meter" style="display:none;">
+                    <div class="pw-strength-track">
+                        <div class="pw-strength-bar"></div>
+                    </div>
+                    <p class="help">
+                        <span class="pw-strength-label"></span>
+                        <span class="pw-strength-hint"></span>
+                    </p>
+                </div>
+                <p class="help"><?= sprintf(__('At least %d characters.'), $minLength) ?></p>
             </div>
             <div class="field">
                 <label class="label" for="new_password_confirm"><?= __('Confirm new password') ?></label>
                 <div class="control">
-                    <input id="new_password_confirm" name="new_password_confirm" type="password" class="input" required minlength="12">
+                    <input id="new_password_confirm" name="new_password_confirm" type="password" class="input" required minlength="<?= $minLength ?>">
                 </div>
             </div>
             <div class="field is-grouped is-justify-content-flex-end">

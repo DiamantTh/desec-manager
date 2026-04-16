@@ -6,6 +6,7 @@
  * @var string $csrfToken
  * @var string|null $message
  * @var string $messageType  'is-success'|'is-danger'
+ * @var int    $minLength
  */
 $users       ??= [];
 $sessions    ??= [];
@@ -13,6 +14,7 @@ $currentId   ??= 0;
 $csrfToken   ??= '';
 $message     ??= null;
 $messageType ??= 'is-success';
+$minLength   ??= 16;
 
 $now = (new \DateTimeImmutable())->format('Y-m-d H:i:s');
 
@@ -208,9 +210,31 @@ $authMethodTag = static function (string $method): string {
                     <label class="label" for="password"><?= __('Password') ?></label>
                     <div class="control">
                         <input id="password" name="password" type="password" class="input" required
-                               minlength="12" autocomplete="new-password">
+                               minlength="<?= $minLength ?>" autocomplete="new-password"
+                               data-strength-meter="pw-meter-create">
                     </div>
-                    <p class="help"><?= __('At least 12 characters. Will be hashed with Argon2id.') ?></p>
+                    <div id="pw-meter-create" class="pw-strength-meter" style="display:none;">
+                        <div class="pw-strength-track">
+                            <div class="pw-strength-bar"></div>
+                        </div>
+                        <p class="help">
+                            <span class="pw-strength-label"></span>
+                            <span class="pw-strength-hint"></span>
+                        </p>
+                    </div>
+                    <div style="margin-top:0.4rem;">
+                        <button type="button" class="button is-small is-light"
+                                data-gen-target="password" data-gen-panel="pw-gen-panel-create">
+                            🔑 Passwort vorschlagen
+                        </button>
+                    </div>
+                    <div id="pw-gen-panel-create" class="box" style="display:none; margin-top:0.5rem; padding:0.75rem;">
+                        <p class="help has-text-weight-semibold" style="margin-bottom:0.5rem;">Vorschläge:</p>
+                        <ul class="pw-suggestions" style="list-style:none; margin:0; padding:0;"></ul>
+                    </div>
+                    <p class="help">
+                        <?= sprintf(__('At least %d characters. Will be hashed with Argon2id.'), $minLength) ?>
+                    </p>
                 </div>
             </div>
             <div class="column is-narrow" style="display:flex; align-items:center; padding-top:1.5rem;">
@@ -229,6 +253,92 @@ $authMethodTag = static function (string $method): string {
             <div class="control">
                 <button type="submit" class="button is-primary">
                     <?= __('Create User') ?>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- ===================================================================
+     Admin-Passwort-Reset
+     =================================================================== -->
+<div class="box">
+    <h2 class="title is-5"><?= __('Reset User Password') ?></h2>
+    <p class="has-text-grey is-size-7 mb-4">
+        <?= __('Sets a new password for the selected user without requiring the current one.') ?>
+        <?= __('Active sessions of the user will be invalidated immediately.') ?>
+        <?= sprintf(__('Minimum length: %d characters.'), $minLength) ?>
+    </p>
+    <form method="post" autocomplete="off">
+        <input type="hidden" name="csrf"   value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
+        <input type="hidden" name="action" value="reset_password">
+
+        <div class="columns">
+            <div class="column is-one-third">
+                <div class="field">
+                    <label class="label" for="reset_target_id"><?= __('User') ?></label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select id="reset_target_id" name="target_id" required>
+                                <option value="">— <?= __('Please select') ?> —</option>
+                                <?php foreach ($users as $u): ?>
+                                    <option value="<?= (int) $u['id'] ?>">
+                                        <?= htmlspecialchars($u['username'], ENT_QUOTES, 'UTF-8') ?>
+                                        <?php if ((int) $u['id'] === $currentId): ?>
+                                            (<?= __('You') ?>)
+                                        <?php endif; ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="field">
+                    <label class="label" for="reset_new_password"><?= __('New Password') ?></label>
+                    <div class="control">
+                        <input id="reset_new_password" name="new_password" type="password" class="input"
+                               required minlength="<?= $minLength ?>" autocomplete="new-password"
+                               data-strength-meter="pw-meter-reset">
+                    </div>
+                    <div id="pw-meter-reset" class="pw-strength-meter" style="display:none;">
+                        <div class="pw-strength-track">
+                            <div class="pw-strength-bar"></div>
+                        </div>
+                        <p class="help">
+                            <span class="pw-strength-label"></span>
+                            <span class="pw-strength-hint"></span>
+                        </p>
+                    </div>
+                    <div style="margin-top:0.4rem;">
+                        <button type="button" class="button is-small is-light"
+                                data-gen-target="reset_new_password" data-gen-panel="pw-gen-panel-reset">
+                            🔑 Passwort vorschlagen
+                        </button>
+                    </div>
+                    <div id="pw-gen-panel-reset" class="box" style="display:none; margin-top:0.5rem; padding:0.75rem;">
+                        <p class="help has-text-weight-semibold" style="margin-bottom:0.5rem;">Vorschläge:</p>
+                        <ul class="pw-suggestions" style="list-style:none; margin:0; padding:0;"></ul>
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="field">
+                    <label class="label" for="reset_new_password_confirm"><?= __('Confirm New Password') ?></label>
+                    <div class="control">
+                        <input id="reset_new_password_confirm" name="new_password_confirm" type="password"
+                               class="input" required minlength="<?= $minLength ?>" autocomplete="new-password">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="field">
+            <div class="control">
+                <button type="submit" class="button is-warning"
+                        onclick="return confirm('<?= __('Really reset this password? The user will be logged out.') ?>')">
+                    <?= __('Reset Password') ?>
                 </button>
             </div>
         </div>

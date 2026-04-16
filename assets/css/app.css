@@ -7,6 +7,60 @@
     --success: #48c774;
 }
 
+/* -------------------------------------------------------------------------
+ * Passwort-Stärkemeter
+ * ------------------------------------------------------------------------- */
+.pw-strength-meter {
+    margin-top: 0.3rem;
+}
+.pw-strength-track {
+    background: #e2e8f0;
+    border-radius: 4px;
+    height: 6px;
+}
+.pw-strength-bar {
+    height: 6px;
+    border-radius: 4px;
+    width: 0;
+    transition: width 0.3s ease, background 0.3s ease;
+}
+.pw-strength-hint {
+    color: #718096;
+}
+
+/* Generator-Panel: Vorschlagsliste */
+.pw-suggestions {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.pw-suggestion-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+.pw-suggestion-item:last-child {
+    border-bottom: none;
+}
+.pw-suggestion-type {
+    font-size: 0.7rem;
+    background: #edf2f7;
+    color: #4a5568;
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    white-space: nowrap;
+}
+.pw-suggestion-value {
+    flex: 1;
+    font-size: 0.85rem;
+    word-break: break-all;
+}
+.pw-suggestion-use {
+    flex-shrink: 0;
+}
+
 /* Custom Bulma Overrides */
 .navbar {
     box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1);

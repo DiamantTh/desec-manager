@@ -186,6 +186,10 @@ if ($theme->supportsDarkMode()) {
 
 <script src="/assets/js/app.js"></script>
 
+<?php if (in_array($jsRoute, ['admin', 'profile'], true)): ?>
+<script src="/themes/default/js/pwtools.bundle.js"></script>
+<?php endif; ?>
+
 <?php if ($jsRoute !== '' && file_exists(dirname(__DIR__, 3) . '/assets/js/' . $jsRoute . '.js')): ?>
 <script src="/assets/js/<?= htmlspecialchars($jsRoute, ENT_QUOTES, 'UTF-8') ?>.js"></script>
 <?php endif; ?>
