@@ -38,9 +38,12 @@ use App\Service\SystemHealthService;
 use App\Command\CacheClearCommand;
 use App\Command\DbMigrateCommand;
 use App\Command\I18nCompileCommand;
+use App\Command\PasswordGenerateCommand;
 use App\Command\UserCreateCommand;
 use App\Security\EncryptionService;
+use App\Security\PasswordGenerator;
 use App\Security\PasswordHasher;
+use App\Security\PasswordPolicy;
 use App\Security\TlsDetector;
 use App\Security\TotpService;
 use App\Security\UserKeyManager;
@@ -265,6 +268,15 @@ $builder->addDefinitions([
             'time_cost'   => (int)($cfg['time_cost']   ?? 4),
             'threads'     => (int)($cfg['threads']     ?? 2),
         ]);
+    }),
+
+    PasswordPolicy::class => DI\factory(function (ContainerInterface $c): PasswordPolicy {
+        /** @var array<string, mixed> $cfg */
+        $cfg = $c->get('config')['security']['password'] ?? [];
+        return new PasswordPolicy(
+            (int)($cfg['min_length'] ?? 16),
+            (int)($cfg['min_score']  ?? 0),
+        );
     }),
 
     WebAuthnService::class => DI\factory(function (ContainerInterface $c): WebAuthnService {
@@ -496,12 +508,15 @@ $builder->addDefinitions([
 
     AuthorizationService::class => DI\autowire(),
 
+    PasswordGenerator::class => DI\create(PasswordGenerator::class),
+
     // -------------------------------------------------------------------------
     // CLI-Commands (symfony/console)
     // -------------------------------------------------------------------------
-    CacheClearCommand::class  => DI\autowire(),
-    I18nCompileCommand::class => DI\autowire(),
-    UserCreateCommand::class  => DI\autowire(),
+    CacheClearCommand::class       => DI\autowire(),
+    I18nCompileCommand::class      => DI\autowire(),
+    UserCreateCommand::class       => DI\autowire(),
+    PasswordGenerateCommand::class => DI\autowire(),
     DbMigrateCommand::class   => DI\factory(function (ContainerInterface $c): DbMigrateCommand {
         return new DbMigrateCommand($c->get(Connection::class), $c->get('config'));
     }),
