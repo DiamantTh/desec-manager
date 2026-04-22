@@ -38,7 +38,7 @@ Weboberfläche zur Verwaltung von [deSEC](https://desec.io)-Domains, DNS-Records
 
 1. **Repository klonen** und Abhängigkeiten installieren:
    ```bash
-   git clone https://github.com/your-org/desec-manager.git
+   git clone ssh://git@git.diath.systems/DiamantTh/desec-manager.git
    cd desec-manager
    composer install --no-dev --optimize-autoloader
    ```

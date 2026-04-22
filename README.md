@@ -38,7 +38,7 @@ Web interface for managing [deSEC](https://desec.io) domains, DNS records, and A
 
 1. **Clone** the repository and install dependencies:
    ```bash
-   git clone https://github.com/your-org/desec-manager.git
+   git clone ssh://git@git.diath.systems/DiamantTh/desec-manager.git
    cd desec-manager
    composer install --no-dev --optimize-autoloader
    ```

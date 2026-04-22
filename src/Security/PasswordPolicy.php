@@ -82,6 +82,9 @@ final class PasswordPolicy
             return ['score' => -1, 'feedback' => ['suggestions' => [], 'warning' => '']];
         }
 
-        return (new Zxcvbn())->passwordStrength($password);
+        /** @var array{score: int, feedback: array<string, mixed>} $result */
+        $result = (new Zxcvbn())->passwordStrength($password);
+
+        return $result;
     }
 }
