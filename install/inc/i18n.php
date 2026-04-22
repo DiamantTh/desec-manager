@@ -5,102 +5,113 @@ declare(strict_types=1);
 /**
  * Installer – i18n via Laminas\I18n\Translator
  *
- * Unterstützte EU-Sprachen (ISO 3166-1 Alpha-2):
- *   cz, de, gb, es, fr, hu, it, nl, pl, pt, ro, se
+ * Unterstützte Sprachen (BCP 47 Language Tags, RFC 5646):
+ *   cs-CZ, de-DE, en-GB, es-ES, fr-FR, hu-HU,
+ *   it-IT, nl-NL, pl-PL, pt-PT, ro-RO, sv-SE
  *
  * Spracherkennung (Priorität):
  *   1. GET-Parameter ?lang=xx  (wird in Session gespeichert)
  *   2. Session-Wert install_lang
- *   3. Accept-Language-Header
- *   4. Fallback: gb (English/United Kingdom)
+ *   3. Accept-Language-Header (Browser sendet BCP 47 nativ)
+ *   4. Fallback: en-GBt BCP 47 nativ)
+ *   4. Fallback: en-GB
  */
 
 use Laminas\I18n\Translator\Loader\PhpArray;
 use Laminas\I18n\Translator\Translator;
-
-/** Alle vom Installer unterstützten Sprachen: ISO 3166-1 Alpha-2 => native Bezeichnung */
+Unterstützte Installer-Sprachen: BCP 47 Tag => native Bezeichnung */
 const INSTALLER_LANGS = [
-    'cz' => 'Čeština',
-    'de' => 'Deutsch',
-    'gb' => 'English',
-    'es' => 'Español',
-    'fr' => 'Français',
-    'hu' => 'Magyar',
-    'it' => 'Italiano',
-    'nl' => 'Nederlands',
-    'pl' => 'Polski',
-    'pt' => 'Português',
-    'ro' => 'Română',
-    'se' => 'Svenska',
-];
-
-/**
- * Mapping ISO 639-1 Sprachcode → ISO 3166-1 Ländercode
- * (nur für Codes, die voneinander abweichen)
+    'cs-CZ' => 'Čeština',
+    'de-DE' => 'Deutsch',
+    'en-GB' => 'English',
+    'es-ES' => 'Español',
+    'fr-FR' => 'Français',
+    'hu-HU' => 'Magyar',
+    'it-IT' => 'Italiano',
+    'nl-NL' => 'Nederlands',
+    'pl-PL' => 'Polski',
+    'pt-PT' => 'Português',
+    'ro-RO' => 'Română',
+    'sv-SE' => 'Svenska
+    // Trennzeichen vereinheitlichen: _ → -
+    $tag = str_replace('_', '-', strtolower(trim($tag)));
+    // Exakter Treffer (case-insensitiv bereits durch strtolower)
+   Normalisiert einen beliebigen Sprachtag auf einen INSTALLER_LANGS-Schlüssel.
+ * Eingabe: BCP 47-Tag oder ISO 639-1-Kurzcode, mit - oder _ getrennt.
+ * Ausgabe: passender BCP 47-Key aus INSTALLER_LANGS oder leer.
  */
-const LANG_ISO639_TO_ISO3166 = [
-    'cs' => 'cz',
-    'en' => 'gb',
-    'sv' => 'se',
-];
+function normalizeLangTag(string $tag): string
+{
+    // Trennzeichen vereinheitlichen: _ → -
+    $tag = str_replace('_', '-', strtolower(trim($tag)));
+    // Exakter Treffer (case-insensitiv bereits durch strtolower)
+    foreach (array_keys(INSTALLER_LANGS) as $key) {
+        if (strtolower($key) === $tag) {
+            return $key;
+        }
+    }
+    // Nur Sprachteil angegeben (z. B. "de", "en", "sv"): ersten passenden Eintrag wählen
+    $base = explode('-', $tag)[0];
+    foreach (array_keys(INSTALLER_LANGS) as $key) {
+        if (strtolower(explode('-', $key)[0]) === $base) {
+            return $key;
+        }
+    }
+    return '';
+}
 
 /**
  * Sprache aus GET / Session / Accept-Language ermitteln.
- * Gibt immer einen gültigen Schlüssel aus INSTALLER_LANGS zurück.
+ * Gibt immer einen gültigen BCP 47-Schlüssel aus INSTALLER_LANGS zurück.
  */
 function detectInstallerLocale(): string
 {
     // 1. Explizit per GET gesetzt?
-    $req = isset($_GET['lang']) ? strtolower(substr((string) $_GET['lang'], 0, 5)) : '';
-    // Normalisieren: "de-AT", "de_AT" → "de" / "sv-SE" → "sv"
-    $req = preg_replace('/[-_].+$/', '', $req) ?? '';
-    // ISO 639-1 → ISO 3166-1 konvertieren (z. B. "sv" → "se")
-    $req = LANG_ISO639_TO_ISO3166[$req] ?? $req;
-    if (isset(INSTALLER_LANGS[$req])) {
-        $_SESSION['install_lang'] = $req;
-        return $req;
+    if (isset($_GET['lang'])) {
+        $tag = normalizeLangTag(substr((string) $_GET['lang'], 0, 16));
+        if ($tag !== '') {
+            $_SESSION['install_lang'] = $tag;
+            return $tag;
+        }
     }
 
-    // 2. Aus Session (Migration alter Codes berücksichtigen)
-    $sess = isset($_SESSION['install_lang']) ? (string) $_SESSION['install_lang'] : '';
-    $sess = LANG_ISO639_TO_ISO3166[$sess] ?? $sess;
-    if (isset(INSTALLER_LANGS[$sess])) {
+    // 2. Aus Session
+    $sess = isset($_SESSION['install_lang']) ? normalizeLangTag((string) $_SESSION['install_lang']) : '';
+    if ($sess !== '') {
         return $sess;
     }
 
-    // 3. Accept-Language-Header parsen
+    // 3. Accept-Language-Header parsen (Browser sendet BCP 47 nativ)
     $header = $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '';
     if ($header !== '') {
-        // Format: "de-AT,de;q=0.9,en;q=0.8,..."
+        // Format: "sv-SE,sv;q=0.9,en-GB;q=0.8,..."
         $parts = explode(',', $header);
         foreach ($parts as $part) {
-            $lang = strtolower(trim(explode(';', $part)[0]));
-            $base = preg_replace('/[-_].+$/', '', $lang) ?? '';
-            // ISO 639-1 → ISO 3166-1 konvertieren
-            $base = LANG_ISO639_TO_ISO3166[$base] ?? $base;
-            if (isset(INSTALLER_LANGS[$base])) {
-                $_SESSION['install_lang'] = $base;
-                return $base;
+            $raw = trim(explode(';', $part)[0]);
+            $tag = normalizeLangTag($raw);
+            if ($tag !== '') {
+                $_SESSION['install_lang'] = $tag;
+                return $tag;
             }
         }
     }
 
     // 4. Fallback
-    $_SESSION['install_lang'] = 'gb';
-    return 'gb';
+    $_SESSION['install_lang'] = 'en-GB';
+    return 'en-GBaw = trim(explode(';', $part)[0]);
+            $tag = normalizeLangTag($raw);
+            if ($tag !== '') {
+                $_SESSION['install_lang'] = $tag;
+                return $tag;
+            }
+        }
+    }
+
+    // 4. Fallback
+    $_SESSION['install_lang'] = 'en-GB';
+    return 'en-GB';
 }
-
-/**
- * Laminas Translator initialisieren und global registrieren.
- * Gibt den aktiven Locale-String zurück.
- */
-function initTranslator(): string
-{
-    $locale = detectInstallerLocale();
-    $langDir = __DIR__ . '/../lang';
-
-    $translator = new Translator();
-    $translator->setFallbackLocale('gb');
+en-GB');
     $translator->setLocale($locale);
 
     // PhpArray-Loader registrieren
@@ -112,13 +123,24 @@ function initTranslator(): string
     $translator->setPluginManager($pluginManager);
 
     // Englisch/GB (Fallback) immer laden
-    $gbFile = $langDir . '/gb.php';
-    if (file_exists($gbFile)) {
-        $translator->addTranslationFile('phparray', $gbFile, 'installer', 'gb');
+    $enFile = $langDir . '/en-GB.php';
+    if (file_exists($enFile)) {
+        $translator->addTranslationFile('phparray', $enFile, 'installer', 'en-GB');
     }
 
-    // Aktive Sprache laden (falls nicht schon gb)
-    if ($locale !== 'gb') {
+    // Aktive Sprache laden (falls nicht schon en-GB)
+    if ($locale !== 'en-GBAlias('phparray', PhpArray::class);
+    $pluginManager->setFactory(PhpArray::class, static fn() => new PhpArray());
+    $translator->setPluginManager($pluginManager);
+
+    // Englisch/GB (Fallback) immer laden
+    $enFile = $langDir . '/en-GB.php';
+    if (file_exists($enFile)) {
+        $translator->addTranslationFile('phparray', $enFile, 'installer', 'en-GB');
+    }
+
+    // Aktive Sprache laden (falls nicht schon en-GB)
+    if ($locale !== 'en-GB') {
         $localeFile = $langDir . '/' . $locale . '.php';
         if (file_exists($localeFile)) {
             $translator->addTranslationFile('phparray', $localeFile, 'installer', $locale);

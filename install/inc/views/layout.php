@@ -14,7 +14,7 @@ declare(strict_types=1);
  *   string[] $errors         – Fehlermeldungen (leer = keine)
  */
 
-$locale      = $GLOBALS['_installer_locale'] ?? 'en';
+$locale      = $GLOBALS['_installer_locale'] ?? 'en-GB';
 $showProgress = $showProgress ?? true;
 $errors       = $errors ?? [];
 $stepLabels   = $stepLabels ?? [];
