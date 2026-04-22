@@ -1,7 +1,7 @@
 {
     "name": "desec/manager",
     "description": "deSEC DNS Manager",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "type": "project",
     "require": {
         "php": ">=8.4",

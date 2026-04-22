@@ -92,12 +92,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         default => ['Ungültiger Schritt.'],
     };
 
+    // Installer-Ordner löschen (nur wenn Installation abgeschlossen)
+    if (($_POST['action'] ?? '') === 'cleanup') {
+        if (!file_exists(LOCK_FILE)) {
+            http_response_code(403);
+            die('Löschen nicht erlaubt: Installation noch nicht abgeschlossen.');
+        }
+        rmDirRecursive(__DIR__);
+        header('Location: ../index.php');
+        exit;
+    }
+
     if (empty($errors)) {
         // PRG: nach erfolgreichem Schritt auf GET umleiten,
         // damit F5 / Zurück-Button kein doppeltes POST auslöst.
         header('Location: index.php');
         exit;
     }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  Hilfsfunktion: Installer-Ordner rekursiv löschen
+// ─────────────────────────────────────────────────────────────────────────────
+function rmDirRecursive(string $dir): bool
+{
+    if (!is_dir($dir)) {
+        return false;
+    }
+    $items = new \RecursiveIteratorIterator(
+        new \RecursiveDirectoryIterator($dir, \FilesystemIterator::SKIP_DOTS),
+        \RecursiveIteratorIterator::CHILD_FIRST
+    );
+    foreach ($items as $item) {
+        $item->isDir() ? rmdir((string) $item->getRealPath()) : unlink((string) $item->getRealPath());
+    }
+    return rmdir($dir);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1246,8 +1275,7 @@ $displayStep = $isSuccess ? 4 : $step;   // 4 = Erfolgs-Anzeige
         </div>
 
         <div class="notification is-warning warn-left mb-4">
-            <strong>⚠️ Nach der Installation:</strong> Den <code>install/</code>-Ordner löschen:<br>
-            <pre><code>rm -rf install/</code></pre>
+            <strong>⚠️ Nach der Installation:</strong> Den <code>install/</code>-Ordner löschen. Der Installer bietet nach der Installation einen Button dafür an.
         </div>
 
         <div class="buttons">
@@ -1278,12 +1306,20 @@ $displayStep = $isSuccess ? 4 : $step;   // 4 = Erfolgs-Anzeige
         </div>
 
         <div class="notification is-danger is-light mt-3 warn-left">
-            <strong>Sicherheitshinweis:</strong> Löschen Sie jetzt den <code>install/</code>-Ordner:<br>
-            <pre><code>rm -rf install/</code></pre>
+            <strong>Sicherheitshinweis:</strong> Löschen Sie jetzt den <code>install/</code>-Ordner.
             Der Installer ist bereits durch eine Lock-Datei gesperrt, aber das Löschen ist die sicherste Option.
         </div>
 
-        <a href="../index.php" class="button is-primary mt-2">→ Zur Anwendung</a>
+        <div class="buttons mt-3">
+            <form method="post" style="display:inline">
+                <input type="hidden" name="_csrf" value="<?= e(CSRF_TOKEN) ?>">
+                <input type="hidden" name="action" value="cleanup">
+                <button type="submit" class="button is-danger" onclick="return confirm('Den install/-Ordner jetzt wirklich löschen? Dieser Vorgang kann nicht rückgängig gemacht werden.')">
+                    🗑 Installer-Ordner jetzt löschen
+                </button>
+            </form>
+            <a href="../index.php" class="button is-primary">→ Zur Anwendung</a>
+        </div>
 
         <?php endif; ?>
 

@@ -4,7 +4,7 @@
  * Creates database, tables and initial admin user
  */
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 // Prüfe PHP-Version und Erweiterungen
 $requiredExtensions = ['pdo_mysql', 'sodium', 'openssl'];
@@ -26,7 +26,7 @@ if (version_compare(PHP_VERSION, '8.1.0') < 0) {
 
 // Prüfe Schreibrechte
 $requiredPaths = [
-    __DIR__ . '/config',
+    dirname(__DIR__) . '/config',
 ];
 
 foreach ($requiredPaths as $path) {
@@ -62,7 +62,6 @@ $securityConfig = [
 $argon2_options = $securityConfig['options'];
 
 // Generiere Encryption Key für API-Keys
-require_once __DIR__ . '/vendor/autoload.php';
 $encryptionKey = \App\Security\EncryptionService::generateKey();
 
 // Hilfsfunktionen
@@ -87,8 +86,8 @@ function validatePassword(string $password): bool {
 function createConfigFile(array $config, string $dbUser, string $dbPass): void {
     global $encryptionKey;
 
-    $configFile = __DIR__ . '/config/config.php';
-    $distFile = __DIR__ . '/config/config.php.dist';
+    $configFile = dirname(__DIR__) . '/config/config.php';
+    $distFile = dirname(__DIR__) . '/config/config.php.dist';
     
     if (!file_exists($distFile)) {
         die("config.php.dist Template nicht gefunden!\n");
@@ -244,8 +243,8 @@ try {
     echo "Admin user created successfully.\n";
 
     // 6. Erstelle Konfigurationsdatei
-    if (!is_dir(__DIR__ . '/config')) {
-        mkdir(__DIR__ . '/config');
+    if (!is_dir(dirname(__DIR__) . '/config')) {
+        mkdir(dirname(__DIR__) . '/config');
     }
     createConfigFile($config, $dbUser, $dbPass);
 
