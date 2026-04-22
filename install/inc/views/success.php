@@ -18,12 +18,12 @@ unset($_SESSION['install_result']);
 <div class="box" style="border: 2px solid #4caf50">
     <p class="mb-2">
         <strong><?= e(t('success.admin_user')) ?>:</strong>
-        <code><?= e($result['admin_user'] ?? '') ?></code>
+        <code><?= e($result['admin_user']) ?></code>
     </p>
     <p>
         <strong><?= e(t('success.admin_pass')) ?>:</strong>
         <code style="background:#e8f5e9;padding:.3em .6em;border-radius:4px">
-            <?= e($result['admin_pass'] ?? '') ?>
+            <?= e($result['admin_pass']) ?>
         </code>
     </p>
     <p class="mt-3 is-size-7 has-text-danger">⚠️ <?= e(t('success.pass_warning')) ?></p>

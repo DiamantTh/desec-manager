@@ -1,27 +1,23 @@
 parameters:
     level: 8
     phpVersion: 80400
+    bootstrapFiles:
+        # Stub: runtime-define()d Installer-Konstanten für PHPStan bekannt machen
+        - install/inc/phpstan-globals.php
     paths:
         - src
         - index.php
-        - install.php
+        - install/index.php
+        - install/inc
         - status.php
     excludePaths:
         - vendor
         - src/Controller
+        - install/inc/phpstan-globals.php
     reportUnmatchedIgnoredErrors: false
     ignoreErrors:
         # Konfigurationsdatei wird erst bei Installation erstellt
         - '#require\(\): Failed opening#'
-        # install.php — Legacy-Installationsskript, scandir() kann false zurückgeben
-        - message: '#Cannot access offset 0 on string\|false#'
-          path: install.php
-        # install.php — PHP-Version wird zur Analyse-Zeit als >= 8.4 betrachtet
-        - message: '#Comparison operation ">=" between 1 and 0 is always true#'
-          path: install.php
-        # install.php — Array-Key aus gemischtem Array: string ist korrekt
-        - message: '#Parameter \#1 \$s of function e expects string, int\|string given#'
-          path: install.php
         # Legacy-Controller und DNSService instanziieren ApiKeyRepository noch direkt
         # — werden in Phase 2 durch DI-fähige Handler ersetzt
         - message: '#Class App\\Repository\\ApiKeyRepository constructor invoked with 0 parameters, 2 required#'
@@ -36,3 +32,9 @@ parameters:
           path: src/Controller
         - message: '#Class App\\Service\\DeSECProxyService constructor invoked with 0 parameters, 2 required#'
           path: src/Controller
+        # Installer-Bootstrap-Stub: VENDOR_OK wird als define() mit Laufzeit-Wert definiert.
+        # PHPStan sieht den Stub-Wert und meldet Ternary/Negation als statisch — bewusstes Artefakt.
+        - message: '#(Ternary operator condition is always|Negated boolean expression is always|Unreachable statement)#'
+          paths:
+              - install/inc/helpers.php
+              - install/inc/step1.php

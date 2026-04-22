@@ -99,7 +99,7 @@ $displayStep  = $displayStep ?? 1;
         </div>
         <?php endif; ?>
 
-        <?php ($renderContent)(); ?>
+        <?php /** @var callable(): void $renderContent */ ($renderContent)(); ?>
 
     </div>
 </div>
