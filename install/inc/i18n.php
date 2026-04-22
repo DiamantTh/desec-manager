@@ -5,24 +5,24 @@ declare(strict_types=1);
 /**
  * Installer – i18n via Laminas\I18n\Translator
  *
- * Unterstützte EU-Sprachen:
- *   cs, de, en, es, fr, hu, it, nl, pl, pt, ro, sv
+ * Unterstützte EU-Sprachen (ISO 3166-1 Alpha-2):
+ *   cz, de, gb, es, fr, hu, it, nl, pl, pt, ro, se
  *
  * Spracherkennung (Priorität):
  *   1. GET-Parameter ?lang=xx  (wird in Session gespeichert)
  *   2. Session-Wert install_lang
  *   3. Accept-Language-Header
- *   4. Fallback: en
+ *   4. Fallback: gb (English/United Kingdom)
  */
 
 use Laminas\I18n\Translator\Loader\PhpArray;
 use Laminas\I18n\Translator\Translator;
 
-/** Alle vom Installer unterstützten Sprachen: locale => native Bezeichnung */
+/** Alle vom Installer unterstützten Sprachen: ISO 3166-1 Alpha-2 => native Bezeichnung */
 const INSTALLER_LANGS = [
-    'cs' => 'Čeština',
+    'cz' => 'Čeština',
     'de' => 'Deutsch',
-    'en' => 'English',
+    'gb' => 'English',
     'es' => 'Español',
     'fr' => 'Français',
     'hu' => 'Magyar',
@@ -31,7 +31,17 @@ const INSTALLER_LANGS = [
     'pl' => 'Polski',
     'pt' => 'Português',
     'ro' => 'Română',
-    'sv' => 'Svenska',
+    'se' => 'Svenska',
+];
+
+/**
+ * Mapping ISO 639-1 Sprachcode → ISO 3166-1 Ländercode
+ * (nur für Codes, die voneinander abweichen)
+ */
+const LANG_ISO639_TO_ISO3166 = [
+    'cs' => 'cz',
+    'en' => 'gb',
+    'sv' => 'se',
 ];
 
 /**
@@ -42,15 +52,18 @@ function detectInstallerLocale(): string
 {
     // 1. Explizit per GET gesetzt?
     $req = isset($_GET['lang']) ? strtolower(substr((string) $_GET['lang'], 0, 5)) : '';
-    // Normalisieren: "de-AT", "de_AT" → "de"
+    // Normalisieren: "de-AT", "de_AT" → "de" / "sv-SE" → "sv"
     $req = preg_replace('/[-_].+$/', '', $req) ?? '';
+    // ISO 639-1 → ISO 3166-1 konvertieren (z. B. "sv" → "se")
+    $req = LANG_ISO639_TO_ISO3166[$req] ?? $req;
     if (isset(INSTALLER_LANGS[$req])) {
         $_SESSION['install_lang'] = $req;
         return $req;
     }
 
-    // 2. Aus Session
+    // 2. Aus Session (Migration alter Codes berücksichtigen)
     $sess = isset($_SESSION['install_lang']) ? (string) $_SESSION['install_lang'] : '';
+    $sess = LANG_ISO639_TO_ISO3166[$sess] ?? $sess;
     if (isset(INSTALLER_LANGS[$sess])) {
         return $sess;
     }
@@ -63,6 +76,8 @@ function detectInstallerLocale(): string
         foreach ($parts as $part) {
             $lang = strtolower(trim(explode(';', $part)[0]));
             $base = preg_replace('/[-_].+$/', '', $lang) ?? '';
+            // ISO 639-1 → ISO 3166-1 konvertieren
+            $base = LANG_ISO639_TO_ISO3166[$base] ?? $base;
             if (isset(INSTALLER_LANGS[$base])) {
                 $_SESSION['install_lang'] = $base;
                 return $base;
@@ -71,8 +86,8 @@ function detectInstallerLocale(): string
     }
 
     // 4. Fallback
-    $_SESSION['install_lang'] = 'en';
-    return 'en';
+    $_SESSION['install_lang'] = 'gb';
+    return 'gb';
 }
 
 /**
@@ -85,7 +100,7 @@ function initTranslator(): string
     $langDir = __DIR__ . '/../lang';
 
     $translator = new Translator();
-    $translator->setFallbackLocale('en');
+    $translator->setFallbackLocale('gb');
     $translator->setLocale($locale);
 
     // PhpArray-Loader registrieren
@@ -96,14 +111,14 @@ function initTranslator(): string
     $pluginManager->setFactory(PhpArray::class, static fn() => new PhpArray());
     $translator->setPluginManager($pluginManager);
 
-    // Englisch (Fallback) immer laden
-    $enFile = $langDir . '/en.php';
-    if (file_exists($enFile)) {
-        $translator->addTranslationFile('phparray', $enFile, 'installer', 'en');
+    // Englisch/GB (Fallback) immer laden
+    $gbFile = $langDir . '/gb.php';
+    if (file_exists($gbFile)) {
+        $translator->addTranslationFile('phparray', $gbFile, 'installer', 'gb');
     }
 
-    // Aktive Sprache laden (falls nicht schon en)
-    if ($locale !== 'en') {
+    // Aktive Sprache laden (falls nicht schon gb)
+    if ($locale !== 'gb') {
         $localeFile = $langDir . '/' . $locale . '.php';
         if (file_exists($localeFile)) {
             $translator->addTranslationFile('phparray', $localeFile, 'installer', $locale);
@@ -123,7 +138,7 @@ function initTranslator(): string
  * Beispiel:
  *   t('req.php_detail', '8.4.1')  →  'Installed: 8.4.1'
  *
- * @param string|int ...$args  Erster Arg = Schlüssel, weitere = sprintf-Parameter
+ * @param string ...$args  Erster Arg = Schlüssel, weitere = sprintf-Parameter
  */
 function t(string $key, string ...$args): string
 {
