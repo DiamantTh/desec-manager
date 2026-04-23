@@ -30,7 +30,7 @@ Directly required in `composer.json` (`require`):
 | symfony/mailer | v7.4.6 | MIT |
 | twig/twig | v3.24.0 | BSD-3-Clause |
 | web-auth/webauthn-lib | 5.2.4 | MIT |
-| yosymfony/toml | v1.0.4 | MIT |
+| devium/toml | 1.1.0 | MIT |
 
 ---
 
@@ -99,7 +99,7 @@ Installed automatically as dependencies of the packages above:
 | symfony/uid | v7.4.4 | MIT |
 | web-auth/cose-lib | 4.5.0 | MIT |
 | webmozart/assert | 2.1.6 | MIT |
-| yosymfony/parser-utils | v2.0.0 | MIT |
+| php-ds/php-ds | v1.8.0 | MIT |
 
 ---
 

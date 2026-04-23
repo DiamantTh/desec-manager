@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Config;
 
 use RuntimeException;
-use Yosymfony\Toml\Toml;
+use Devium\Toml\Toml;
 
 /**
  * Loads and merges TOML configuration files into a unified PHP array.
@@ -53,7 +53,7 @@ final class TomlLoader
             }
 
             /** @var array<string, mixed> $data */
-            $data   = Toml::parseFile($path);
+            $data   = Toml::decode((string) file_get_contents($path), asArray: true);
             $merged = array_replace_recursive($merged, $data);
         }
 
@@ -62,7 +62,7 @@ final class TomlLoader
             $path = $this->configDir . '/' . $name . '.toml';
             if (file_exists($path)) {
                 /** @var array<string, mixed> $data */
-                $data   = Toml::parseFile($path);
+                $data   = Toml::decode((string) file_get_contents($path), asArray: true);
                 $merged = array_replace_recursive($merged, $data);
             }
         }
@@ -71,7 +71,7 @@ final class TomlLoader
         $localPath = $this->configDir . '/config.local.toml';
         if (file_exists($localPath)) {
             /** @var array<string, mixed> $local */
-            $local  = Toml::parseFile($localPath);
+            $local  = Toml::decode((string) file_get_contents($localPath), asArray: true);
             $merged = array_replace_recursive($merged, $local);
         }
 
